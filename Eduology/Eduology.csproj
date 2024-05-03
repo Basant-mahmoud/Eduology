@@ -24,8 +24,4 @@
     <ProjectReference Include="..\Eduology.Application\Eduology.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="hello\" />
-  </ItemGroup>
-
 </Project>
