@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eduology.Infrastructure.Persistence
+namespace Eduology.Application.Interfaces
 {
-    internal class EduologyContext
+    internal class Class1
     {
     }
 }
