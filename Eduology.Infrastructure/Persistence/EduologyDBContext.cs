@@ -11,7 +11,7 @@ namespace Eduology.Infrastructure.Persistence
 {
     public class EduologyDBContext: IdentityDbContext<ApplicationUser>
     {
-        public EduologyDBContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        public EduologyDBContext(DbContextOptions<EduologyDBContext> options) : base(options)
         {
         }
     }

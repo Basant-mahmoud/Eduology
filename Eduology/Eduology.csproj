@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Eduology.Application\Eduology.Application.csproj" />
+    <ProjectReference Include="..\Eduology.Infrastructure\Eduology.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
