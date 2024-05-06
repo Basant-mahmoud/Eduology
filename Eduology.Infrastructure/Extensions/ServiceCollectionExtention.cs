@@ -16,8 +16,7 @@ namespace Eduology.Infrastructure.Extensions
         public static void AddInfrastructure(this IServiceCollection services,IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<EduologyDBContext>(options => options.UseSqlServer("connectionString"));
-
+            services.AddDbContext<EduologyDBContext>(options => options.UseSqlServer(connectionString));
         }
     }
 }
