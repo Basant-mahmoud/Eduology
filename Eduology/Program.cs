@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Eduology.Infrastructure.Extensions;
 using Eduology.Infrastructure.Persistence;
+using System.Configuration;
 namespace Eduology
 {
     public class Program
@@ -29,7 +30,7 @@ namespace Eduology
             builder.Services.Configure<JWT>(configuration.GetSection("JWT")); // Use configuration
 
             // Add Entity Framework Core DbContext
-            builder.Services.AddInfrastructure(builder.Configuration);
+            builder.Services.AddInfrastructure(configuration);
             // Add Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<EduologyDBContext>();
