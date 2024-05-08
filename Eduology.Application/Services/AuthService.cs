@@ -71,7 +71,7 @@ namespace Eduology.Application.Services
             };
         }
 
-        public async Task<AuthModel> GetTokenAsync(TokenRequestModel model)
+        public async Task<AuthModel> LoginAsync(LoginModel model)
         {
             var authModel = new AuthModel();
 

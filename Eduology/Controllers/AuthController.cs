@@ -29,13 +29,13 @@ namespace Eduology.Controllers
             return Ok(result);
         }
 
-        [HttpPost("token")]
-        public async Task<IActionResult> GetTokenAsync([FromBody] TokenRequestModel model)
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginAsync([FromBody] LoginModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _authService.GetTokenAsync(model);
+            var result = await _authService.LoginAsync(model);
 
             if (!result.IsAuthenticated)
                 return BadRequest(result.Message);
