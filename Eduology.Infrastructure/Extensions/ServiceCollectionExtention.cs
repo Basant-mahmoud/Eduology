@@ -13,10 +13,11 @@ namespace Eduology.Infrastructure.Extensions
 {
     public static class ServiceCollectionExtention
     {
-        public static void AddInfrastructure(this IServiceCollection services,IConfiguration configuration)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services,IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<EduologyDBContext>(options => options.UseSqlServer(connectionString));
+            return services;
         }
     }
 }
