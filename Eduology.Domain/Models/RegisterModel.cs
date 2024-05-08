@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Eduology.Domain.Models
-{
+{ 
     public class RegisterModel
     {
         [Required, StringLength(100)]
