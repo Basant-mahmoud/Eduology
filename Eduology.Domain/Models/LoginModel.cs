@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Eduology.Domain.Models
 {
-    public class TokenRequestModel
+    public class LoginModel
     {
         [Required]
         public string Email { get; set; }

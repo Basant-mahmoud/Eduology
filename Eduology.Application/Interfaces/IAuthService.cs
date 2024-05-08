@@ -9,7 +9,7 @@ namespace Eduology.Application.Interfaces
     public interface IAuthService
     {
         Task<AuthModel> RegisterAsync(RegisterModel model);
-        Task<AuthModel> GetTokenAsync(TokenRequestModel model);
+        Task<AuthModel> LoginAsync(LoginModel model);
         Task<string> AddRoleAsync(AddRoleModel model);
     }
 }
