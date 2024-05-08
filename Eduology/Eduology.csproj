@@ -26,6 +26,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Eduology.Application\Eduology.Application.csproj" />
+    <ProjectReference Include="..\Eduology.Infrastructure\Eduology.Infrastructure.csproj" />
   </ItemGroup>
-
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive </IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 </Project>
