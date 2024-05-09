@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eduology.Infrastructure.Migrations
 {
     [DbContext(typeof(EduologyDBContext))]
-    [Migration("20240506151434_init")]
-    partial class init
+    [Migration("20240508182008_SeedRoles")]
+    partial class SeedRoles
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

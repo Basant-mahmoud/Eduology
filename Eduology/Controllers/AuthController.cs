@@ -2,6 +2,7 @@
 using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 
 namespace Eduology.Controllers
 {
@@ -14,10 +15,16 @@ namespace Eduology.Controllers
         {
             _authService = authService;
         }
-
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterModel model)
         {
+            // Custom email format validation
+            if (!IsValidEmail(model.Email))
+            {
+                ModelState.AddModelError("", "Invalid email format");
+                return BadRequest(ModelState);
+            }
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -27,6 +34,15 @@ namespace Eduology.Controllers
                 return BadRequest(result.Message);
 
             return Ok(result);
+        }
+
+
+        // Helper method to validate email format
+        private bool IsValidEmail(string email)
+        {
+            // Email regex pattern for a more realistic email validation
+            const string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+            return Regex.IsMatch(email, pattern);
         }
 
         [HttpPost("login")]
