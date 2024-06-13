@@ -58,8 +58,9 @@ namespace Eduology.Controllers
 
             return Ok(result);
         }
+        
 
-        [HttpPost("addrole")]
+        [HttpPost("addrole")]//should be auth
         public async Task<IActionResult> AddRoleAsync([FromBody] AddRoleModel model)
         {
             if (!ModelState.IsValid)
