@@ -12,12 +12,11 @@ namespace Eduology.Domain.Models
     {
         [Required, MaxLength(50)]
         public string Name { get; set; }
+        public virtual Organization organization { get; set; }
         // to represent one to many relationship between instructor and course
         public virtual ICollection<Course> Courses { get; set; }
         public virtual ICollection<Announcement> Announcements { get; set; }
         public virtual ICollection<Material> Materials { get; set; } 
-
-
 
     }
 }
