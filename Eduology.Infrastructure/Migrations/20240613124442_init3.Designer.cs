@@ -4,6 +4,7 @@ using Eduology.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eduology.Infrastructure.Migrations
 {
     [DbContext(typeof(EduologyDBContext))]
-    partial class EduologyDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240613124442_init3")]
+    partial class init3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,41 +24,6 @@ namespace Eduology.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Eduology.Domain.Models.Announcement", b =>
-                {
-                    b.Property<int>("AnnouncementId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnnouncementId"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAT")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("InstructorId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("AnnouncementId");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("InstructorId");
-
-                    b.ToTable("Announcements");
-                });
 
             modelBuilder.Entity("Eduology.Domain.Models.ApplicationUser", b =>
                 {
@@ -159,60 +127,6 @@ namespace Eduology.Infrastructure.Migrations
                     b.HasIndex("InstructorId");
 
                     b.ToTable("Courses");
-                });
-
-            modelBuilder.Entity("Eduology.Domain.Models.Material", b =>
-                {
-                    b.Property<int>("MaterialId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaterialId"));
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("InstructorId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("URL")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("MaterialId");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("InstructorId");
-
-                    b.HasIndex("TypeId");
-
-                    b.ToTable("Materials");
-                });
-
-            modelBuilder.Entity("Eduology.Domain.Models.Type", b =>
-                {
-                    b.Property<int>("TypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TypeId"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("TypeId");
-
-                    b.ToTable("MaterialTypes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -348,25 +262,6 @@ namespace Eduology.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Eduology.Domain.Models.Announcement", b =>
-                {
-                    b.HasOne("Eduology.Domain.Models.Course", "Course")
-                        .WithMany("Announcements")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Eduology.Domain.Models.ApplicationUser", "Instructor")
-                        .WithMany("Announcements")
-                        .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("Instructor");
-                });
-
             modelBuilder.Entity("Eduology.Domain.Models.Course", b =>
                 {
                     b.HasOne("Eduology.Domain.Models.ApplicationUser", "Instructor")
@@ -376,33 +271,6 @@ namespace Eduology.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Instructor");
-                });
-
-            modelBuilder.Entity("Eduology.Domain.Models.Material", b =>
-                {
-                    b.HasOne("Eduology.Domain.Models.Course", "Course")
-                        .WithMany("Materials")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Eduology.Domain.Models.ApplicationUser", "Instructor")
-                        .WithMany("Materials")
-                        .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Eduology.Domain.Models.Type", "MaterialType")
-                        .WithMany("Materials")
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("Instructor");
-
-                    b.Navigation("MaterialType");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -458,23 +326,7 @@ namespace Eduology.Infrastructure.Migrations
 
             modelBuilder.Entity("Eduology.Domain.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("Announcements");
-
                     b.Navigation("Courses");
-
-                    b.Navigation("Materials");
-                });
-
-            modelBuilder.Entity("Eduology.Domain.Models.Course", b =>
-                {
-                    b.Navigation("Announcements");
-
-                    b.Navigation("Materials");
-                });
-
-            modelBuilder.Entity("Eduology.Domain.Models.Type", b =>
-                {
-                    b.Navigation("Materials");
                 });
 #pragma warning restore 612, 618
         }

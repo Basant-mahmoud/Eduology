@@ -12,8 +12,13 @@ namespace Eduology.Infrastructure.Persistence
 {
     public class EduologyDBContext: IdentityDbContext<ApplicationUser>
     {
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<Material> Materials { get; set; } // Add this line
+        public DbSet<Domain.Models.Type> MaterialTypes { get; set; } // Add this line
+        public DbSet<Announcement> Announcements { get; set; } // Add this line
+
         public EduologyDBContext(DbContextOptions<EduologyDBContext> options) : base(options)
-        {
-        }
+        { }
+
     }
 }

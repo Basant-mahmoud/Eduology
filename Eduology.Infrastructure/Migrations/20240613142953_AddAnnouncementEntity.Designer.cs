@@ -4,6 +4,7 @@ using Eduology.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eduology.Infrastructure.Migrations
 {
     [DbContext(typeof(EduologyDBContext))]
-    partial class EduologyDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240613142953_AddAnnouncementEntity")]
+    partial class AddAnnouncementEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,10 +175,6 @@ namespace Eduology.Infrastructure.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.Property<string>("InstructorId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -190,8 +189,6 @@ namespace Eduology.Infrastructure.Migrations
                     b.HasKey("MaterialId");
 
                     b.HasIndex("CourseId");
-
-                    b.HasIndex("InstructorId");
 
                     b.HasIndex("TypeId");
 
@@ -386,12 +383,6 @@ namespace Eduology.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Eduology.Domain.Models.ApplicationUser", "Instructor")
-                        .WithMany("Materials")
-                        .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Eduology.Domain.Models.Type", "MaterialType")
                         .WithMany("Materials")
                         .HasForeignKey("TypeId")
@@ -399,8 +390,6 @@ namespace Eduology.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
-
-                    b.Navigation("Instructor");
 
                     b.Navigation("MaterialType");
                 });
@@ -461,8 +450,6 @@ namespace Eduology.Infrastructure.Migrations
                     b.Navigation("Announcements");
 
                     b.Navigation("Courses");
-
-                    b.Navigation("Materials");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.Course", b =>
