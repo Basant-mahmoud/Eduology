@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,6 +21,7 @@ namespace Eduology.Infrastructure.Persistence
         public DbSet<Submission> submissions { get; set; }
         public DbSet<Domain.Models.File> Files { get; set; }
         public DbSet<Organization> Organizations { get; set; }
+        public DbSet<Address> Addresses { get; set; }
         public EduologyDBContext(DbContextOptions<EduologyDBContext> options) : base(options)
         { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

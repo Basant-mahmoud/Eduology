@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace Eduology.Domain.Models
 {
-    internal class Address
+    public class Address
     {
+        public int AddressId { get; set; }
         [Required]
         [MaxLength(100)]
         public String Street { get; set; }
