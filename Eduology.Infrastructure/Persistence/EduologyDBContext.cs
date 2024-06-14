@@ -19,8 +19,19 @@ namespace Eduology.Infrastructure.Persistence
         public DbSet<Assignment> Assignments { get; set; }
         public DbSet<Submission> submissions { get; set; }
         public DbSet<Domain.Models.File> Files { get; set; }
+        public DbSet<Organization> Organizations { get; set; }
         public EduologyDBContext(DbContextOptions<EduologyDBContext> options) : base(options)
         { }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configure one-to-one relationship between ApplicationUser (Admin) and Organization
+            modelBuilder.Entity<ApplicationUser>()
+                .HasOne(a => a.organization)
+                .WithOne(o => o.Admin)
+                .HasForeignKey<Organization>(o => o.AdminId);
+        }
 
     }
 }

@@ -30,6 +30,16 @@ namespace Eduology
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowWebApp",
+                    policyBuilder => policyBuilder
+                        .WithOrigins("http://localhost:4200")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod().
+                        AllowCredentials());
+            });
+
             // Add services to the container.
             builder.Services.Configure<JWT>(Configuration.GetSection("JWT"));
             // Add Entity Framework Core DbContext
@@ -74,6 +84,9 @@ namespace Eduology
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+
+            app.UseCors("AllowWebApp");
 
             app.UseAuthentication();
             app.UseAuthorization();
