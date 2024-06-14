@@ -18,7 +18,7 @@ namespace Eduology.Domain.Models
         public virtual ICollection<Material> Materials { get; set; } 
         public virtual ICollection<Announcement> Announcements { get; set; }
         public ICollection<Assignment> Assignments { get; set; } // One-to-many relationship with Assignment
-
+        public virtual ICollection<StudentCourse> StudentCourses { get; set; }
 
     }
 }

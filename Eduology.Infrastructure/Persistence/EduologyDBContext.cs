@@ -33,6 +33,21 @@ namespace Eduology.Infrastructure.Persistence
                 .HasOne(a => a.organization)
                 .WithOne(o => o.Admin)
                 .HasForeignKey<Organization>(o => o.AdminId);
+            // Many-to-Many relationship between Students and Courses
+            modelBuilder.Entity<StudentCourse>()
+                .HasKey(sc => new { sc.StudentId, sc.CourseId });
+
+            modelBuilder.Entity<StudentCourse>()
+                .HasOne(sc => sc.Student)
+                .WithMany(s => s.StudentCourses)
+                .HasForeignKey(sc => sc.StudentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<StudentCourse>()
+                .HasOne(sc => sc.Course)
+                .WithMany(c => c.StudentCourses)
+                .HasForeignKey(sc => sc.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
     }
