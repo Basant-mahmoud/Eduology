@@ -16,7 +16,8 @@ namespace Eduology.Domain.Models
         // to represent one to many relationship between instructor and course
         public virtual ICollection<Course> Courses { get; set; }
         public virtual ICollection<Announcement> Announcements { get; set; }
-        public virtual ICollection<Material> Materials { get; set; } 
+        public virtual ICollection<Material> Materials { get; set; }
+        public virtual ICollection<Assignment> Assignments { get; set;} 
 
     }
 }

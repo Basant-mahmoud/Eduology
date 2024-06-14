@@ -16,8 +16,10 @@ namespace Eduology.Infrastructure.Persistence
         public DbSet<Material> Materials { get; set; } // Add this line
         public DbSet<Domain.Models.Type> MaterialTypes { get; set; } // Add this line
         public DbSet<Announcement> Announcements { get; set; } // Add this line
+        public DbSet<Assignment> Assignments { get; set; }
+        public DbSet<Submission> submissions { get; set; }
+        public DbSet<Domain.Models.File> Files { get; set; }
         public DbSet<Organization> Organizations { get; set; }
-
         public EduologyDBContext(DbContextOptions<EduologyDBContext> options) : base(options)
         { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
