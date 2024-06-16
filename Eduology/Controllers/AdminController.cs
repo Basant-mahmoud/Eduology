@@ -18,7 +18,7 @@ namespace Eduology.Controllers
             _AdminRepository = adminRepository;
         }
 
-        [HttpGet("Instructors")]
+        [HttpGet("GetAllInstructors")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetInstructors()
         {
             var instructors = await _AdminRepository.GetAllInstructorsAsync();
@@ -29,7 +29,7 @@ namespace Eduology.Controllers
 
             return Ok(instructors);
         }
-        [HttpGet("byId/{id}")]
+        [HttpGet("SearchInstructorbyId/{id}")]
         public async Task<ActionResult<UserDto>> GetInstructorById(string id)
         {
             var instructor = await _AdminRepository.GetInstructorByIdAsync(id);
@@ -40,7 +40,7 @@ namespace Eduology.Controllers
 
             return Ok(instructor);
         }
-        [HttpGet("byName/{name}")]
+        [HttpGet("SearchInstructorbyName/{name}")]
         public async Task<ActionResult<UserDto>> GetInstructorByName(string name)
         {
             var instructor = await _AdminRepository.GetInstructorByNameAsync(name);
@@ -51,7 +51,7 @@ namespace Eduology.Controllers
 
             return Ok(instructor);
         }
-        [HttpGet("byUserName/{username}")]
+        [HttpGet("SearchInstructorbyUserName/{username}")]
         public async Task<ActionResult<UserDto>> GetInstructorByUserName(string username)
         {
             var instructor = await _AdminRepository.GetInstructorByUserNameAsync(username);
@@ -62,7 +62,7 @@ namespace Eduology.Controllers
 
             return Ok(instructor);
         }
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("deleteInstructor/{id}")]
         public async Task<IActionResult> DeleteInstructor(string id)
         {
             var result = await _AdminRepository.DeleteInstructorAsync(id);
