@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Eduology.Application.Interfaces
 {
-    public interface IAdminService
+    public interface IInstructorService
     {
         Task<IEnumerable<UserDto>> GetAllInstructorsAsync();
         Task<UserDto> GetInstructorByIdAsync(string instructorId);

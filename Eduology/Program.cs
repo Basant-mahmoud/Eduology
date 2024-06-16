@@ -51,8 +51,8 @@ namespace Eduology
                 .AddEntityFrameworkStores<EduologyDBContext>();
             // Add Services of the role
             builder.Services.AddScoped<IAuthService, AuthService>();
-            builder.Services.AddScoped<IAdminRepository, AdminRepository>();
-            builder.Services.AddScoped<AdminService>();
+            builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
+            builder.Services.AddScoped<InstructorService>();
             //Add configuration of JWT Service
             builder.Services.AddAuthentication(options =>
             {

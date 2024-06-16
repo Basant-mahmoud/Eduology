@@ -11,17 +11,17 @@ namespace Eduology.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
-        private readonly IAdminRepository _AdminRepository;
+        private readonly IInstructorRepository _InstructorRepository;
 
-        public AdminController(IAdminRepository adminRepository)
+        public AdminController(IInstructorRepository InstructorRepository)
         {
-            _AdminRepository = adminRepository;
+            _InstructorRepository = InstructorRepository;
         }
 
         [HttpGet("GetAllInstructors")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetInstructors()
         {
-            var instructors = await _AdminRepository.GetAllInstructorsAsync();
+            var instructors = await _InstructorRepository.GetAllInstructorsAsync();
             if (instructors == null || !instructors.Any())
             {
                 return NotFound();
@@ -32,7 +32,7 @@ namespace Eduology.Controllers
         [HttpGet("SearchInstructorbyId/{id}")]
         public async Task<ActionResult<UserDto>> GetInstructorById(string id)
         {
-            var instructor = await _AdminRepository.GetInstructorByIdAsync(id);
+            var instructor = await _InstructorRepository.GetInstructorByIdAsync(id);
             if (instructor == null)
             {
                 return NotFound(); // Or appropriate HTTP status code
@@ -43,7 +43,7 @@ namespace Eduology.Controllers
         [HttpGet("SearchInstructorbyName/{name}")]
         public async Task<ActionResult<UserDto>> GetInstructorByName(string name)
         {
-            var instructor = await _AdminRepository.GetInstructorByNameAsync(name);
+            var instructor = await _InstructorRepository.GetInstructorByNameAsync(name);
             if (instructor == null)
             {
                 return NotFound();
@@ -54,7 +54,7 @@ namespace Eduology.Controllers
         [HttpGet("SearchInstructorbyUserName/{username}")]
         public async Task<ActionResult<UserDto>> GetInstructorByUserName(string username)
         {
-            var instructor = await _AdminRepository.GetInstructorByUserNameAsync(username);
+            var instructor = await _InstructorRepository.GetInstructorByUserNameAsync(username);
             if (instructor == null)
             {
                 return NotFound();
@@ -65,7 +65,7 @@ namespace Eduology.Controllers
         [HttpDelete("deleteInstructor/{id}")]
         public async Task<IActionResult> DeleteInstructor(string id)
         {
-            var result = await _AdminRepository.DeleteInstructorAsync(id);
+            var result = await _InstructorRepository.DeleteInstructorAsync(id);
             if (!result)
             {
                 return NotFound(); // Or appropriate HTTP status code

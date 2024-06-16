@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Eduology.Domain.Interfaces
 {
-    public interface IAdminRepository
+    public interface IInstructorRepository
     {
         Task<IEnumerable<UserDto>> GetAllInstructorsAsync();
         Task<UserDto> GetInstructorByIdAsync(string id);

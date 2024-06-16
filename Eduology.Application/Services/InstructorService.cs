@@ -6,34 +6,34 @@ using System.Threading.Tasks;
 
 namespace Eduology.Application.Services
 {
-    public class AdminService: IAdminService
+    public class AdminService: IInstructorService
     {
-        private readonly IAdminRepository _AdminRepository;
+        private readonly IInstructorRepository _InstructorRepository;
 
-        public AdminService(IAdminRepository AdminRepository)
+        public AdminService(IInstructorRepository InstrucorRepository)
         {
-            _AdminRepository = AdminRepository;
+            _InstructorRepository = InstrucorRepository;
         }
 
         public async Task<IEnumerable<UserDto>> GetAllInstructorsAsync()
         {
-            return await _AdminRepository.GetAllInstructorsAsync();
+            return await _InstructorRepository.GetAllInstructorsAsync();
         }
         public async Task<UserDto> GetInstructorByIdAsync(string instructorId)
         {
-            return await _AdminRepository.GetInstructorByIdAsync(instructorId);
+            return await _InstructorRepository.GetInstructorByIdAsync(instructorId);
         }
         public async Task<UserDto> GetInstructorByNameAsync(string instructorName)
         {
-            return await _AdminRepository.GetInstructorByNameAsync(instructorName);
+            return await _InstructorRepository.GetInstructorByNameAsync(instructorName);
         }
         public async Task<UserDto> GetInstructorByUserNameAsync(string instructorUserName)
         {
-            return await _AdminRepository.GetInstructorByUserNameAsync(instructorUserName);
+            return await _InstructorRepository.GetInstructorByUserNameAsync(instructorUserName);
         }
         public async Task<bool> DeleteInstructorAsync(string instructorId)
         {
-            return await _AdminRepository.DeleteInstructorAsync(instructorId);
+            return await _InstructorRepository.DeleteInstructorAsync(instructorId);
         }
 
     }

@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace Eduology.Infrastructure.Repositories
 {
-    public class AdminRepository : IAdminRepository
+    public class InstructorRepository : IInstructorRepository
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly EduologyDBContext _context; 
 
-        public AdminRepository(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, EduologyDBContext context)
+        public InstructorRepository(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, EduologyDBContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
