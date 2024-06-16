@@ -9,11 +9,11 @@ namespace Eduology.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AdminController : ControllerBase
+    public class InstructorController : ControllerBase
     {
         private readonly IInstructorRepository _InstructorRepository;
 
-        public AdminController(IInstructorRepository InstructorRepository)
+        public InstructorController(IInstructorRepository InstructorRepository)
         {
             _InstructorRepository = InstructorRepository;
         }

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Eduology.Application.Services
 {
-    public class AdminService: IInstructorService
+    public class InstructorService: IInstructorService
     {
         private readonly IInstructorRepository _InstructorRepository;
 
-        public AdminService(IInstructorRepository InstrucorRepository)
+        public InstructorService(IInstructorRepository InstrucorRepository)
         {
             _InstructorRepository = InstrucorRepository;
         }
