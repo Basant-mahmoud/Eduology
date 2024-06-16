@@ -1,11 +1,12 @@
-﻿using Eduology.Domain.DTO;
+﻿using Eduology.Application.Interfaces;
+using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Eduology.Application.Services
 {
-    public class AdminService
+    public class AdminService: IAdminService
     {
         private readonly IAdminRepository _AdminRepository;
 
