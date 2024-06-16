@@ -16,6 +16,8 @@ using System.Text;
 using Eduology.Infrastructure.Persistence;
 using Eduology.Infrastructure.Extensions;
 using Eduology.Application.Interfaces;
+using Eduology.Domain.Interfaces;
+using Eduology.Infrastructure.Repositories;
 namespace Eduology
 {
     public class Program
@@ -49,6 +51,8 @@ namespace Eduology
                 .AddEntityFrameworkStores<EduologyDBContext>();
             // Add Services of the role
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+            builder.Services.AddScoped<AdminService>();
             //Add configuration of JWT Service
             builder.Services.AddAuthentication(options =>
             {

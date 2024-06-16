@@ -25,6 +25,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.1" />
+    <PackageReference Include="System.Net.Mail.Abstractions" Version="1.1.21" />
   </ItemGroup>
 
 </Project>
