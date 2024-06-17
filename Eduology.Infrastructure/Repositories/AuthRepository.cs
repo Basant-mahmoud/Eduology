@@ -16,7 +16,7 @@ using System.Net.Mail;
 using System.Net;
 namespace Eduology.Application.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService : IAuthRepository
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
