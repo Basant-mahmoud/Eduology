@@ -40,7 +40,6 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<UserDto> GetInstructorByIdAsync(string id)
         {
             var instructor = await _context.Users
-                .Include(u => u.Courses)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             return await MapUserToDtoAsync(instructor);
@@ -48,7 +47,6 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<UserDto> GetInstructorByNameAsync(string name)
         {
             var instructor = await _context.Users
-                .Include(u => u.Courses)
                 .FirstOrDefaultAsync(u => u.Name == name);
 
             return await MapUserToDtoAsync(instructor);
@@ -56,7 +54,6 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<UserDto> GetInstructorByUserNameAsync(string userName)
         {
             var instructor = await _context.Users
-                .Include(u => u.Courses)
                 .FirstOrDefaultAsync(u => u.UserName == userName);
 
             return await MapUserToDtoAsync(instructor);
@@ -79,15 +76,13 @@ namespace Eduology.Infrastructure.Repositories
                 return null;
 
             await _userManager.GetRolesAsync(user);
-            var numberOfCourses = user.Courses?.Count ?? 0;
 
             return new UserDto
             {
                 Id = user.Id,
                 Name = user.Name,
                 UserName = user.UserName,
-                Email = user.Email,
-                NumberOfCourses = numberOfCourses
+                Email = user.Email
             };
         }
     }
