@@ -10,12 +10,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Configuration;
-using Eduology.Application.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Eduology.Infrastructure.Persistence;
 using Eduology.Infrastructure.Extensions;
-using Eduology.Application.Interfaces;
 using Eduology.Domain.Interfaces;
 using Eduology.Infrastructure.Repositories;
 namespace Eduology
@@ -50,7 +48,7 @@ namespace Eduology
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<EduologyDBContext>();
             // Add Services of the role
-            builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+            builder.Services.AddScoped<IAuthRepository,AuthRepository>();
             builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
             //Add configuration of JWT Service
             builder.Services.AddAuthentication(options =>
