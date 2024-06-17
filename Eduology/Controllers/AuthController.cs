@@ -12,8 +12,8 @@ namespace Eduology.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
-        public AuthController(IAuthService authService)
+        private readonly IAuthRepository _authService;
+        public AuthController(IAuthRepository authService)
         {
             _authService = authService;
         }
