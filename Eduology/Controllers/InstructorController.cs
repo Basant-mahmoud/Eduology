@@ -61,6 +61,18 @@ namespace Eduology.Controllers
 
             return Ok(instructor);
         }
+        [HttpPut("UpdateInstructor/{id}")]
+        public async Task<IActionResult> UpdateInstructor(string id, [FromBody] UpdateUserDto updateInstructorDto)
+        {
+            var result = await _InstructorRepository.UpdateInstructorAsync(id, updateInstructorDto);
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            var updatedInstructor = await _InstructorRepository.GetInstructorByIdAsync(id);
+            return Ok(updatedInstructor);
+        }
         [HttpDelete("deleteInstructor/{id}")]
         public async Task<IActionResult> DeleteInstructor(string id)
         {
