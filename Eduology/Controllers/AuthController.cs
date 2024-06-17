@@ -1,9 +1,9 @@
-﻿using Eduology.Application.Interfaces;
-using Eduology.Domain.Models;
+﻿using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 using Eduology.Application.Utilities;
+using Eduology.Domain.Interfaces;
 
 
 namespace Eduology.Controllers
