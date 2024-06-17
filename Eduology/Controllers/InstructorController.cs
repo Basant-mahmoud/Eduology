@@ -34,7 +34,7 @@ namespace Eduology.Controllers
             var instructor = await _InstructorRepository.GetInstructorByIdAsync(id);
             if (instructor == null)
             {
-                return NotFound(); // Or appropriate HTTP status code
+                return NotFound(); 
             }
 
             return Ok(instructor);
@@ -62,7 +62,7 @@ namespace Eduology.Controllers
             return Ok(instructor);
         }
         [HttpPut("UpdateInstructor/{id}")]
-        public async Task<IActionResult> UpdateInstructor(string id, [FromBody] UpdateUserDto updateInstructorDto)
+        public async Task<IActionResult> UpdateInstructor(string id, [FromBody] UserDto updateInstructorDto)
         {
             var result = await _InstructorRepository.UpdateInstructorAsync(id, updateInstructorDto);
             if (!result)
@@ -79,7 +79,7 @@ namespace Eduology.Controllers
             var result = await _InstructorRepository.DeleteInstructorAsync(id);
             if (!result)
             {
-                return NotFound(); // Or appropriate HTTP status code
+                return NotFound();
             }
 
             return Ok(new { message = "Instructor deleted successfully" });

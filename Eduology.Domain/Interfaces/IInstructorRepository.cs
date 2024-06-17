@@ -15,6 +15,6 @@ namespace Eduology.Domain.Interfaces
         Task<UserDto> GetInstructorByNameAsync(string Name);
         Task<UserDto> GetInstructorByUserNameAsync(string UserName);
         Task<bool> DeleteInstructorAsync(string id);
-        Task<bool> UpdateInstructorAsync(string id, UpdateUserDto updateInstructorDto);
+        Task<bool> UpdateInstructorAsync(string id, UserDto updateInstructorDto);
     }
 }

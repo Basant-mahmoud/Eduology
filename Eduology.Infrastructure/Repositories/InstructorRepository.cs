@@ -70,7 +70,7 @@ namespace Eduology.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> UpdateInstructorAsync(string id, UpdateUserDto updateInstructorDto)
+        public async Task<bool> UpdateInstructorAsync(string id, UserDto updateInstructorDto)
         {
             var instructor = await _context.Users.FindAsync(id);
             if (instructor == null)

@@ -87,5 +87,7 @@ namespace Eduology.Infrastructure.Repositories
                 Email = user.Email
             };
         }
+
+       
     }
 }
