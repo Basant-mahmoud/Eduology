@@ -46,7 +46,22 @@ namespace Eduology.Infrastructure.Repositories
             }
             return result;
         }
-        public async Task<bool> DeleteAsync(string studentId)
+        public async Task<bool> UpdateStudentAsync(UserDto userDto)
+        {
+            var student = await _userManager.FindByIdAsync(userDto.Id);
+            if (student == null)
+            {
+                return false;
+            }
+
+            student.Name = userDto.Name; 
+            student.UserName = userDto.UserName;
+            student.Email = userDto.Email;
+
+            var result = await _userManager.UpdateAsync(student);
+            return result.Succeeded;
+        }
+        public async Task<bool> DeleteStudentAsync(string studentId)
         {
             var student = await _context.Users.FindAsync(studentId);
             if (student == null)
