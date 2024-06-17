@@ -102,16 +102,15 @@ namespace Eduology.Infrastructure.Repositories
             if (user == null)
                 return null;
 
-            await _userManager.GetRolesAsync(user);
-
             return new UserDto
             {
+                Id = user.Id,
                 Name = user.Name,
                 UserName = user.UserName,
                 Email = user.Email
             };
         }
 
-       
+
     }
 }
