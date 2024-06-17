@@ -4,6 +4,7 @@ using Eduology.Domain.Models;
 using Eduology.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,15 +46,15 @@ namespace Eduology.Infrastructure.Repositories
             }
             return result;
         }
-        public async Task<bool> UpdateStudentAsync(UserDto userDto)
+        public async Task<bool> UpdateStudentAsync(string studentId, UserDto userDto)
         {
-            var student = await _userManager.FindByIdAsync(userDto.Id);
+            var student = await _userManager.FindByIdAsync(studentId);
             if (student == null)
             {
                 return false;
             }
 
-            student.Name = userDto.Name; 
+            student.Name = userDto.Name;
             student.UserName = userDto.UserName;
             student.Email = userDto.Email;
 
@@ -81,7 +82,6 @@ namespace Eduology.Infrastructure.Repositories
 
             return new UserDto
             {
-                Id = user.Id,
                 Name = user.Name,
                 UserName = user.UserName,
                 Email = user.Email

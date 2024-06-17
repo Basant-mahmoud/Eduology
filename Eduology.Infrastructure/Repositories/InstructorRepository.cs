@@ -106,7 +106,6 @@ namespace Eduology.Infrastructure.Repositories
 
             return new UserDto
             {
-                Id = user.Id,
                 Name = user.Name,
                 UserName = user.UserName,
                 Email = user.Email

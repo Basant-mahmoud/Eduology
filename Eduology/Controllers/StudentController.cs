@@ -34,11 +34,16 @@ namespace Eduology.Controllers
             }
             return Ok(student);
         }
-        [HttpPut("UpdateStudent")]
-        public async Task<IActionResult> UpdateStudentAsync(UserDto student)
+        [HttpPut("UpdateStudent/{studentId}")]
+        public async Task<IActionResult> UpdateStudentAsync(string studentId, [FromBody] UserDto studentDto)
         {
-            var result = await _StudentRepository.UpdateStudentAsync(student);
-            if (!result)
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var updated = await _StudentRepository.UpdateStudentAsync(studentId, studentDto);
+            if (!updated)
             {
                 return NotFound();
             }
