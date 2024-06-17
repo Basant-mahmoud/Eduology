@@ -28,7 +28,7 @@ namespace Eduology.Controllers
 
             return Ok(instructors);
         }
-        [HttpGet("SearchInstructorbyId/{id}")]
+        [HttpGet("GetInstructorbyId/{id}")]
         public async Task<ActionResult<UserDto>> GetInstructorById(string id)
         {
             var instructor = await _InstructorRepository.GetInstructorByIdAsync(id);
