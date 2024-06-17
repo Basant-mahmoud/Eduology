@@ -79,16 +79,16 @@ namespace Eduology.Infrastructure.Repositories
         {
             try
             {
-                var smtpClient = new SmtpClient("smtp.your-email-provider.com")
+                var smtpClient = new SmtpClient("eduology.mabw@gmail.com")
                 {
                     Port = 587,
-                    Credentials = new NetworkCredential("your-email@example.com", "your-email-password"),
+                    Credentials = new NetworkCredential(email, password),
                     EnableSsl = true,
                 };
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress("your-email@example.com"),
+                    From = new MailAddress("eduology.mabw@gmail.com"),
                     Subject = "Your Account Created",
                     Body = $"Hello,\n\nYour account has been created. Here are your login details:\n\nUsername: {email}\nPassword: {password}\n\nPlease change your password after logging in.\n\nThank you!",
                     IsBodyHtml = false,

@@ -50,6 +50,7 @@ namespace Eduology.Controllers
 
             return Ok(new { message = "Student updated successfully" });
         }
+
         [HttpDelete("deleteStudent/{studentId}")]
         public async Task<IActionResult> DeleteStudentAsync(string studentId)
         {

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Eduology.Infrastructure.Persistence
 {
@@ -33,6 +34,11 @@ namespace Eduology.Infrastructure.Persistence
                 .HasOne(a => a.organization)
                 .WithOne(o => o.Admin)
                 .HasForeignKey<Organization>(o => o.AdminId);
+            modelBuilder.Entity<Course>()
+            .HasIndex(e => e.CourseCode)
+            .IsUnique();
+
+            base.OnModelCreating(modelBuilder);
             // Many-to-Many relationship between Students and Courses
             modelBuilder.Entity<StudentCourse>()
                 .HasKey(sc => new { sc.StudentId, sc.CourseId });
@@ -68,10 +74,11 @@ namespace Eduology.Infrastructure.Persistence
                .OnDelete(DeleteBehavior.Cascade);
             // Configure one-to-many relationship between course and annuncement
             modelBuilder.Entity<Course>()
-    .HasMany(c => c.Announcements)
-    .WithOne(a => a.Course)
-    .HasForeignKey(a => a.CourseId)
-    .OnDelete(DeleteBehavior.Cascade);
+            .HasMany(c => c.Announcements)
+            .WithOne(a => a.Course)
+            .HasForeignKey(a => a.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         }
 
 
