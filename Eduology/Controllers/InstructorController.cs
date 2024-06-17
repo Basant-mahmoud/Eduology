@@ -28,13 +28,13 @@ namespace Eduology.Controllers
 
             return Ok(instructors);
         }
-        [HttpGet("SearchInstructorbyId/{id}")]
+        [HttpGet("GetInstructorbyId/{id}")]
         public async Task<ActionResult<UserDto>> GetInstructorById(string id)
         {
             var instructor = await _InstructorRepository.GetInstructorByIdAsync(id);
             if (instructor == null)
             {
-                return NotFound(); // Or appropriate HTTP status code
+                return NotFound(); 
             }
 
             return Ok(instructor);
@@ -61,13 +61,25 @@ namespace Eduology.Controllers
 
             return Ok(instructor);
         }
+        [HttpPut("UpdateInstructor/{id}")]
+        public async Task<IActionResult> UpdateInstructor(string id, [FromBody] UserDto updateInstructorDto)
+        {
+            var result = await _InstructorRepository.UpdateInstructorAsync(id, updateInstructorDto);
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            var updatedInstructor = await _InstructorRepository.GetInstructorByIdAsync(id);
+            return Ok(updatedInstructor);
+        }
         [HttpDelete("deleteInstructor/{id}")]
         public async Task<IActionResult> DeleteInstructor(string id)
         {
             var result = await _InstructorRepository.DeleteInstructorAsync(id);
             if (!result)
             {
-                return NotFound(); // Or appropriate HTTP status code
+                return NotFound();
             }
 
             return Ok(new { message = "Instructor deleted successfully" });

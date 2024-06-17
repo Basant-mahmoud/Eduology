@@ -40,7 +40,6 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<UserDto> GetInstructorByIdAsync(string id)
         {
             var instructor = await _context.Users
-                .Include(u => u.Courses)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             return await MapUserToDtoAsync(instructor);
@@ -48,7 +47,6 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<UserDto> GetInstructorByNameAsync(string name)
         {
             var instructor = await _context.Users
-                .Include(u => u.Courses)
                 .FirstOrDefaultAsync(u => u.Name == name);
 
             return await MapUserToDtoAsync(instructor);
@@ -56,7 +54,6 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<UserDto> GetInstructorByUserNameAsync(string userName)
         {
             var instructor = await _context.Users
-                .Include(u => u.Courses)
                 .FirstOrDefaultAsync(u => u.UserName == userName);
 
             return await MapUserToDtoAsync(instructor);
@@ -73,22 +70,47 @@ namespace Eduology.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> UpdateInstructorAsync(string id, UserDto updateInstructorDto)
+        {
+            var instructor = await _context.Users.FindAsync(id);
+            if (instructor == null)
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(updateInstructorDto.Name))
+            {
+                instructor.Name = updateInstructorDto.Name;
+            }
+
+            if (!string.IsNullOrEmpty(updateInstructorDto.UserName))
+            {
+                instructor.UserName = updateInstructorDto.UserName;
+            }
+
+            if (!string.IsNullOrEmpty(updateInstructorDto.Email))
+            {
+                instructor.Email = updateInstructorDto.Email;
+
+            }
+            _context.Users.Update(instructor);
+            await _context.SaveChangesAsync();
+            return true;
+        }
         private async Task<UserDto> MapUserToDtoAsync(ApplicationUser user)
         {
             if (user == null)
                 return null;
-
-            await _userManager.GetRolesAsync(user);
-            var numberOfCourses = user.Courses?.Count ?? 0;
 
             return new UserDto
             {
                 Id = user.Id,
                 Name = user.Name,
                 UserName = user.UserName,
-                Email = user.Email,
-                NumberOfCourses = numberOfCourses
+                Email = user.Email
             };
         }
+
+
     }
 }

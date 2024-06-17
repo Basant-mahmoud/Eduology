@@ -4,6 +4,7 @@ using Eduology.Domain.Models;
 using Eduology.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +26,6 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<UserDto> GetStudentByIdAsync(string studentId)
         {
             var student = await _context.Users
-                .Include(u => u.Courses)
                 .FirstOrDefaultAsync(u => u.Id == studentId);
 
             return await MapUserToDtoAsync(student);
@@ -46,7 +46,22 @@ namespace Eduology.Infrastructure.Repositories
             }
             return result;
         }
-        public async Task<bool> DeleteAsync(string studentId)
+        public async Task<bool> UpdateStudentAsync(string studentId, UserDto userDto)
+        {
+            var student = await _userManager.FindByIdAsync(studentId);
+            if (student == null)
+            {
+                return false;
+            }
+
+            student.Name = userDto.Name;
+            student.UserName = userDto.UserName;
+            student.Email = userDto.Email;
+
+            var result = await _userManager.UpdateAsync(student);
+            return result.Succeeded;
+        }
+        public async Task<bool> DeleteStudentAsync(string studentId)
         {
             var student = await _context.Users.FindAsync(studentId);
             if (student == null)
@@ -64,16 +79,16 @@ namespace Eduology.Infrastructure.Repositories
                 return null;
 
             await _userManager.GetRolesAsync(user);
-            var numberOfCourses = user.Courses?.Count ?? 0;
 
             return new UserDto
             {
                 Id = user.Id,
                 Name = user.Name,
                 UserName = user.UserName,
-                Email = user.Email,
-                NumberOfCourses = numberOfCourses
+                Email = user.Email
             };
         }
+
+       
     }
 }

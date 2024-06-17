@@ -12,6 +12,7 @@ namespace Eduology.Domain.Interfaces
     {
         Task<UserDto> GetStudentByIdAsync(string StudentId);
         Task<IEnumerable<UserDto>> GetAllStudentsAsync();
-        Task<bool> DeleteAsync(string studentId);
+        Task<bool> UpdateStudentAsync(string studentId, UserDto userDto);
+        Task<bool> DeleteStudentAsync(string studentId);
     }
 }
