@@ -52,7 +52,6 @@ namespace Eduology
             // Add Services of the role
             builder.Services.AddScoped<IAuthRepository, AuthService>();
             builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
-            builder.Services.AddScoped<IInstructorService, InstructorService>();
             //Add configuration of JWT Service
             builder.Services.AddAuthentication(options =>
             {

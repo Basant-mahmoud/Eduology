@@ -14,113 +14,52 @@ namespace Eduology.Infrastructure.Repositories
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly EduologyDBContext _context; 
-
+        private readonly EduologyDBContext _context;
         public InstructorRepository(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, EduologyDBContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
         }
-
         public async Task<IEnumerable<UserDto>> GetAllInstructorsAsync()
         {
             var instructorRole = await _roleManager.FindByNameAsync("Instructor");
             if (instructorRole == null)
-                return new List<UserDto>(); 
+                return new List<UserDto>();
 
             var instructors = await _userManager.GetUsersInRoleAsync("Instructor");
-
             var result = new List<UserDto>();
 
             foreach (var instructor in instructors)
             {
-                // Load instructor's courses
-                await _context.Entry(instructor)
-                    .Collection(u => u.Courses)
-                    .LoadAsync();
-
-                var numberOfCourses = instructor.Courses.Count;
-
-                var dto = new UserDto
-                {
-                    Id = instructor.Id,
-                    Name = instructor.Name,
-                    UserName = instructor.UserName,
-                    Email = instructor.Email,
-                    NumberOfCourses = numberOfCourses
-                };
-
+                var dto = await MapUserToDtoAsync(instructor);
                 result.Add(dto);
             }
-
             return result;
         }
         public async Task<UserDto> GetInstructorByIdAsync(string id)
         {
             var instructor = await _context.Users
-                .Include(u => u.Courses) 
+                .Include(u => u.Courses)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
-            if (instructor == null)
-                return null;
-
-            await _userManager.GetRolesAsync(instructor);
-
-            var numberOfCourses = instructor.Courses?.Count ?? 0;
-
-            return new UserDto
-            {
-                Id = instructor.Id,
-                Name = instructor.Name,
-                UserName = instructor.UserName,
-                Email = instructor.Email,
-                NumberOfCourses = numberOfCourses
-            };
+            return await MapUserToDtoAsync(instructor);
         }
-        public async Task<UserDto> GetInstructorByNameAsync(string Name)
+        public async Task<UserDto> GetInstructorByNameAsync(string name)
         {
             var instructor = await _context.Users
                 .Include(u => u.Courses)
-                .FirstOrDefaultAsync(u => u.Name == Name);
+                .FirstOrDefaultAsync(u => u.Name == name);
 
-            if (instructor == null)
-                return null;
-
-            await _userManager.GetRolesAsync(instructor);
-
-            var numberOfCourses = instructor.Courses?.Count ?? 0;
-
-            return new UserDto
-            {
-                Id = instructor.Id,
-                Name = instructor.Name,
-                UserName = instructor.UserName,
-                Email = instructor.Email,
-                NumberOfCourses = numberOfCourses
-            };
+            return await MapUserToDtoAsync(instructor);
         }
-        public async Task<UserDto> GetInstructorByUserNameAsync(string UserName)
+        public async Task<UserDto> GetInstructorByUserNameAsync(string userName)
         {
             var instructor = await _context.Users
                 .Include(u => u.Courses)
-                .FirstOrDefaultAsync(u => u.UserName == UserName);
+                .FirstOrDefaultAsync(u => u.UserName == userName);
 
-            if (instructor == null)
-                return null;
-
-            await _userManager.GetRolesAsync(instructor);
-
-            var numberOfCourses = instructor.Courses?.Count ?? 0;
-
-            return new UserDto
-            {
-                Id = instructor.Id,
-                Name = instructor.Name,
-                UserName = instructor.UserName,
-                Email = instructor.Email,
-                NumberOfCourses = numberOfCourses
-            };
+            return await MapUserToDtoAsync(instructor);
         }
         public async Task<bool> DeleteInstructorAsync(string id)
         {
@@ -133,6 +72,23 @@ namespace Eduology.Infrastructure.Repositories
             _context.Users.Remove(instructor);
             await _context.SaveChangesAsync();
             return true;
+        }
+        private async Task<UserDto> MapUserToDtoAsync(ApplicationUser user)
+        {
+            if (user == null)
+                return null;
+
+            await _userManager.GetRolesAsync(user);
+            var numberOfCourses = user.Courses?.Count ?? 0;
+
+            return new UserDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                UserName = user.UserName,
+                Email = user.Email,
+                NumberOfCourses = numberOfCourses
+            };
         }
     }
 }
