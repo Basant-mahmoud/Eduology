@@ -16,8 +16,8 @@ namespace Eduology.Controllers
         {
             _courseRepository = courseRepository;
         }
-        [HttpPost("CreateCourse")]
-        public async Task<IActionResult> CreateCourse([FromBody] CourseDto course)
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromBody] CourseDto course)
         {
             if (!ModelState.IsValid)
             {
