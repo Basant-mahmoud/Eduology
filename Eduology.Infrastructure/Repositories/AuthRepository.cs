@@ -14,7 +14,7 @@ using Eduology.Application.Interfaces;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Net.Mail;
 using System.Net;
-namespace Eduology.Application.Services
+namespace Eduology.Infrastructure.Repositories
 {
     public class AuthRepository : IAuthRepository
     {

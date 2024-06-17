@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Eduology.Domain.Models;
-namespace Eduology.Application.Interfaces
+namespace Eduology.Domain.Interfaces
 {
     public interface IAuthRepository
     {
