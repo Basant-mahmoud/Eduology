@@ -102,8 +102,6 @@ namespace Eduology.Infrastructure.Repositories
             if (user == null)
                 return null;
 
-            await _userManager.GetRolesAsync(user);
-
             return new UserDto
             {
                 Id = user.Id,
@@ -113,6 +111,6 @@ namespace Eduology.Infrastructure.Repositories
             };
         }
 
-       
+
     }
 }
