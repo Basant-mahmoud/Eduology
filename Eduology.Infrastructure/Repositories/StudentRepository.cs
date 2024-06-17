@@ -22,13 +22,14 @@ namespace Eduology.Infrastructure.Repositories
             _roleManager = roleManager;
             _context = context;
         }
-
-        public async Task<UserDto> GetStudentByIdAsync(string userId)
+        public async Task<UserDto> GetStudentByIdAsync(string studentId)
         {
-            var student = await _userManager.FindByIdAsync(userId);
-            return MapUserToDto(student);
-        }
+            var student = await _context.Users
+                .Include(u => u.Courses)
+                .FirstOrDefaultAsync(u => u.Id == studentId);
 
+            return await MapUserToDtoAsync(student);
+        }
         public async Task<IEnumerable<UserDto>> GetAllStudentsAsync()
         {
             var studentRole = await _roleManager.FindByNameAsync("Student");
@@ -40,12 +41,11 @@ namespace Eduology.Infrastructure.Repositories
 
             foreach (var student in students)
             {
-                var dto = MapUserToDto(student);
+                var dto = await MapUserToDtoAsync(student);
                 result.Add(dto);
             }
             return result;
         }
-
         public async Task<bool> DeleteAsync(string studentId)
         {
             var student = await _context.Users.FindAsync(studentId);
@@ -58,12 +58,12 @@ namespace Eduology.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-
-        private UserDto MapUserToDto(ApplicationUser user)
+        private async Task<UserDto> MapUserToDtoAsync(ApplicationUser user)
         {
             if (user == null)
                 return null;
 
+            await _userManager.GetRolesAsync(user);
             var numberOfCourses = user.Courses?.Count ?? 0;
 
             return new UserDto

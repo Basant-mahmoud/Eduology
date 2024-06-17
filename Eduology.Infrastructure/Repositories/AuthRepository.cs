@@ -10,10 +10,10 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Eduology.Helpers;
-using Eduology.Application.Interfaces;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Net.Mail;
 using System.Net;
+using Eduology.Domain.Interfaces;
 namespace Eduology.Infrastructure.Repositories
 {
     public class AuthRepository : IAuthRepository

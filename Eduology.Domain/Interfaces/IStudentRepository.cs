@@ -10,7 +10,7 @@ namespace Eduology.Domain.Interfaces
 {
     public interface IStudentRepository
     {
-        Task<UserDto> GetStudentByIdAsync(string userId);
+        Task<UserDto> GetStudentByIdAsync(string StudentId);
         Task<IEnumerable<UserDto>> GetAllStudentsAsync();
         Task<bool> DeleteAsync(string studentId);
     }
