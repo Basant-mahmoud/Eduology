@@ -70,6 +70,33 @@ namespace Eduology.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> UpdateInstructorAsync(string id, UpdateUserDto updateInstructorDto)
+        {
+            var instructor = await _context.Users.FindAsync(id);
+            if (instructor == null)
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(updateInstructorDto.Name))
+            {
+                instructor.Name = updateInstructorDto.Name;
+            }
+
+            if (!string.IsNullOrEmpty(updateInstructorDto.UserName))
+            {
+                instructor.UserName = updateInstructorDto.UserName;
+            }
+
+            if (!string.IsNullOrEmpty(updateInstructorDto.Email))
+            {
+                instructor.Email = updateInstructorDto.Email;
+
+            }
+            _context.Users.Update(instructor);
+            await _context.SaveChangesAsync();
+            return true;
+        }
         private async Task<UserDto> MapUserToDtoAsync(ApplicationUser user)
         {
             if (user == null)
@@ -85,5 +112,7 @@ namespace Eduology.Infrastructure.Repositories
                 Email = user.Email
             };
         }
+
+       
     }
 }
