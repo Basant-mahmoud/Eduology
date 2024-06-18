@@ -10,7 +10,7 @@ namespace Eduology.Domain.Interfaces
 {
     public interface ICourseRepository
     {
-        Task CreateAsync(CourseDto course);
+        Task<Course> CreateAsync(CourseDto course);
         Task<bool> DeleteAsync(int id);
         Task<CourseDetailsDto> GetByIdAsync(int id);
         Task<CourseDetailsDto> GetByNameAsync(string name);

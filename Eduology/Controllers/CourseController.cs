@@ -24,9 +24,9 @@ namespace Eduology.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _courseRepository.CreateAsync(course);
-
-            return CreatedAtAction(nameof(GetCourseById), new { id = course.CourseId }, course);
+            Course _course = await _courseRepository.CreateAsync(course);
+            course.CourseId = _course.CourseId;
+            return CreatedAtAction(nameof(GetCourseById), new { id = _course.CourseId }, course);
         }
 
         [HttpGet("GetById/{id}")]

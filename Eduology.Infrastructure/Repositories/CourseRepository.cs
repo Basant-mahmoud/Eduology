@@ -21,12 +21,11 @@ namespace Eduology.Infrastructure.Repositories
         {
             _context = context;
         }
-        public async Task CreateAsync(CourseDto courseDto)
+        public async Task<Course> CreateAsync(CourseDto courseDto)
         {
             var course = new Course
             {
                 CourseCode = courseDto.CourseCode,
-                CourseId = courseDto.CourseId,
                 Description = courseDto.Description,
                 Name = courseDto.Name,
                 Year = courseDto.Year,
@@ -36,6 +35,8 @@ namespace Eduology.Infrastructure.Repositories
 
             await _context.Courses.AddAsync(course);
             await _context.SaveChangesAsync();
+            return course;
+
         }
 
 
@@ -91,7 +92,6 @@ namespace Eduology.Infrastructure.Repositories
             var _course = await _context.Courses.FindAsync(id);
             if (_course == null)
                 return false;
-            _course.CourseId = course.CourseId;
             _course.Name = course.Name;
             _course.CourseCode = course.CourseCode;
             _course.InstructorId = course.InstructorId;
