@@ -359,7 +359,7 @@ namespace Eduology.Infrastructure.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("StudentCourse");
+                    b.ToTable("StudentCourses");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.Submission", b =>

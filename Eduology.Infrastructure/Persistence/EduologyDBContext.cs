@@ -25,6 +25,7 @@ namespace Eduology.Infrastructure.Persistence
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<CourseInstructor> courseInstructors { get; set; }
+        public DbSet<StudentCourse> StudentCourses { get; set; }
         public EduologyDBContext(DbContextOptions<EduologyDBContext> options) : base(options)
         { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
