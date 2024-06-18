@@ -53,7 +53,7 @@ namespace Eduology.Controllers
         {
             CourseDetailsDto course = await _courseRepository.GetByNameAsync(name);
             if (course == null)
-                return Ok(new CourseDetailsDto { });
+                return NoContent();
             return Ok(course);
         }
         [HttpPut("Update/{id}")]
@@ -77,7 +77,7 @@ namespace Eduology.Controllers
         {
            var course =  await _courseRepository.DeleteAsync(id);
            if(!course)
-                return NotFound();
+                return Ok(new { message = "This course is not exist" });
            return Ok(new { message = "Course deleted successfully" });
         }
 
