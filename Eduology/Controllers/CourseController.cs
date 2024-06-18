@@ -34,7 +34,7 @@ namespace Eduology.Controllers
             var course = await _courseRepository.GetByIdAsync(id);
             if (course == null)
             {
-                return Ok(new CourseDetailsDto { });
+                return NoContent();
             }
             return Ok(course);
         }
@@ -44,7 +44,7 @@ namespace Eduology.Controllers
             var courses = await _courseRepository.GetAllAsync();
             if (courses == null || !courses.Any())
             {
-                return Ok(new List<CourseDetailsDto>());
+                return NoContent();
             }
             return Ok(courses);
         }
