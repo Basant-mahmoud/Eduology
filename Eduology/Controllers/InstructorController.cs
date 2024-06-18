@@ -3,6 +3,7 @@ using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Eduology.Controllers
 {
@@ -18,15 +19,19 @@ namespace Eduology.Controllers
         }
 
         [HttpGet("GetAllInstructors")]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetInstructors()
+public async Task<ActionResult<IEnumerable<UserDto>>> GetInstructors()
         {
             var instructors = await _InstructorRepository.GetAllInstructorsAsync();
-            if (instructors == null || !instructors.Any())
+            if (instructors == null||!instructors.Any())
             {
-                return NotFound();
+                return Ok(new List<UserDto>());
             }
 
-            return Ok(instructors);
+            else
+            {
+                return Ok(instructors);  // Return list of instructors as Ok result
+
+            }
         }
         [HttpGet("GetInstructorbyId/{id}")]
         public async Task<ActionResult<UserDto>> GetInstructorById(string id)

@@ -51,6 +51,7 @@ namespace Eduology
             builder.Services.AddScoped<IAuthRepository,AuthRepository>();
             builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+            builder.Services.AddScoped<IStudentRepository, StudentRepository>();
             //Add configuration of JWT Service
             builder.Services.AddAuthentication(options =>
             {
