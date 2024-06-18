@@ -26,11 +26,8 @@ namespace Eduology.Infrastructure.Repositories
             var course = new Course
             {
                 CourseCode = courseDto.CourseCode,
-                Description = courseDto.Description,
                 Name = courseDto.Name,
                 Year = courseDto.Year,
-                Image = courseDto.Image,
-                InstructorId = courseDto.InstructorId,
             };
 
             await _context.Courses.AddAsync(course);
@@ -94,10 +91,7 @@ namespace Eduology.Infrastructure.Repositories
                 return false;
             _course.Name = course.Name;
             _course.CourseCode = course.CourseCode;
-            _course.InstructorId = course.InstructorId;
-            _course.Description = course.Description;
             _course.Year = course.Year;
-            _course.Image = course.Image;
             _context.SaveChanges();
             return true;
         }
