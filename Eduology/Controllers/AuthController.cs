@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 using Eduology.Application.Utilities;
 using Eduology.Domain.Interfaces;
-using Eduology.Application.Interface;
-
+using Eduology.Application.Services.Interface;
 
 namespace Eduology.Controllers
 {

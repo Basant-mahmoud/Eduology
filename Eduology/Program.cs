@@ -1,6 +1,5 @@
 using Eduology.Domain.Models;
-//using Eduology.Infrastructure.Persistence;
-using Eduology.Helpers;
+//using Eduology.Infrastructure.Persistence
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,8 +15,10 @@ using Eduology.Infrastructure.Persistence;
 using Eduology.Infrastructure.Extensions;
 using Eduology.Domain.Interfaces;
 using Eduology.Infrastructure.Repositories;
-using Eduology.Application.Interface;
 using Eduology.Application.Services;
+using Eduology.Application.Services.Interface;
+using Eduology.Infrastructure.Services_class;
+using Eduology.Application.Services.Helper;
 namespace Eduology
 {
     public class Program
@@ -54,6 +55,7 @@ namespace Eduology
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
             builder.Services.AddScoped<IStudentRepository, StudentRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IInstructorService, InstructorService>();
             //Add configuration of JWT Service
             builder.Services.AddAuthentication(options =>
             {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eduology.Application.Interface
+namespace Eduology.Application.Services.Interface
 {
     public interface IAuthService
     {

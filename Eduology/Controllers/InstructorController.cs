@@ -1,4 +1,5 @@
-﻿using Eduology.Domain.DTO;
+﻿using Eduology.Application.Services.Interface;
+using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Http;
@@ -11,43 +12,43 @@ namespace Eduology.Controllers
     [ApiController]
     public class InstructorController : ControllerBase
     {
-        private readonly IInstructorRepository _InstructorRepository;
+        private readonly IInstructorService _instructorService;
 
-        public InstructorController(IInstructorRepository InstructorRepository)
+        public InstructorController(IInstructorService instructorService)
         {
-            _InstructorRepository = InstructorRepository;
+            _instructorService = instructorService;
         }
 
         [HttpGet("GetAllInstructors")]
-public async Task<ActionResult<IEnumerable<UserDto>>> GetInstructors()
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetInstructors()
         {
-            var instructors = await _InstructorRepository.GetAllInstructorsAsync();
-            if (instructors == null||!instructors.Any())
+            var instructors = await _instructorService.GetAllInstructorsAsync();
+            if (instructors == null || !instructors.Any())
             {
                 return Ok(new List<UserDto>());
             }
-
             else
             {
-                return Ok(instructors);  // Return list of instructors as Ok result
-
+                return Ok(instructors); // Return list of instructors as Ok result
             }
         }
-        [HttpGet("GetInstructorbyId/{id}")]
+
+        [HttpGet("GetInstructorById/{id}")]
         public async Task<ActionResult<UserDto>> GetInstructorById(string id)
         {
-            var instructor = await _InstructorRepository.GetInstructorByIdAsync(id);
+            var instructor = await _instructorService.GetInstructorByIdAsync(id);
             if (instructor == null)
             {
-                return NotFound(); 
+                return NotFound();
             }
 
             return Ok(instructor);
         }
-        [HttpGet("SearchInstructorbyName/{name}")]
+
+        [HttpGet("SearchInstructorByName/{name}")]
         public async Task<ActionResult<UserDto>> GetInstructorByName(string name)
         {
-            var instructor = await _InstructorRepository.GetInstructorByNameAsync(name);
+            var instructor = await _instructorService.GetInstructorByNameAsync(name);
             if (instructor == null)
             {
                 return NotFound();
@@ -55,10 +56,11 @@ public async Task<ActionResult<IEnumerable<UserDto>>> GetInstructors()
 
             return Ok(instructor);
         }
-        [HttpGet("SearchInstructorbyUserName/{username}")]
+
+        [HttpGet("SearchInstructorByUserName/{username}")]
         public async Task<ActionResult<UserDto>> GetInstructorByUserName(string username)
         {
-            var instructor = await _InstructorRepository.GetInstructorByUserNameAsync(username);
+            var instructor = await _instructorService.GetInstructorByUserNameAsync(username);
             if (instructor == null)
             {
                 return NotFound();
@@ -66,22 +68,24 @@ public async Task<ActionResult<IEnumerable<UserDto>>> GetInstructors()
 
             return Ok(instructor);
         }
+
         [HttpPut("UpdateInstructor/{id}")]
         public async Task<IActionResult> UpdateInstructor(string id, [FromBody] UserDto updateInstructorDto)
         {
-            var result = await _InstructorRepository.UpdateInstructorAsync(id, updateInstructorDto);
+            var result = await _instructorService.UpdateInstructorAsync(id, updateInstructorDto);
             if (!result)
             {
                 return NotFound();
             }
 
-            var updatedInstructor = await _InstructorRepository.GetInstructorByIdAsync(id);
+            var updatedInstructor = await _instructorService.GetInstructorByIdAsync(id);
             return Ok(updatedInstructor);
         }
-        [HttpDelete("deleteInstructor/{id}")]
+
+        [HttpDelete("DeleteInstructor/{id}")]
         public async Task<IActionResult> DeleteInstructor(string id)
         {
-            var result = await _InstructorRepository.DeleteInstructorAsync(id);
+            var result = await _instructorService.DeleteInstructorAsync(id);
             if (!result)
             {
                 return NotFound();

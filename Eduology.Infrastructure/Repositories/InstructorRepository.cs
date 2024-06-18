@@ -15,12 +15,14 @@ namespace Eduology.Infrastructure.Repositories
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly EduologyDBContext _context;
+
         public InstructorRepository(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, EduologyDBContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
         }
+
         public async Task<IEnumerable<UserDto>> GetAllInstructorsAsync()
         {
             var instructorRole = await _roleManager.FindByNameAsync("Instructor");
@@ -37,27 +39,25 @@ namespace Eduology.Infrastructure.Repositories
             }
             return result;
         }
+
         public async Task<UserDto> GetInstructorByIdAsync(string id)
         {
-            var instructor = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == id);
-
+            var instructor = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
             return await MapUserToDtoAsync(instructor);
         }
+
         public async Task<UserDto> GetInstructorByNameAsync(string name)
         {
-            var instructor = await _context.Users
-                .FirstOrDefaultAsync(u => u.Name == name);
-
+            var instructor = await _context.Users.FirstOrDefaultAsync(u => u.Name == name);
             return await MapUserToDtoAsync(instructor);
         }
+
         public async Task<UserDto> GetInstructorByUserNameAsync(string userName)
         {
-            var instructor = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserName == userName);
-
+            var instructor = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
             return await MapUserToDtoAsync(instructor);
         }
+
         public async Task<bool> DeleteInstructorAsync(string id)
         {
             var instructor = await _context.Users.FindAsync(id);
@@ -70,6 +70,7 @@ namespace Eduology.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
         public async Task<bool> UpdateInstructorAsync(string id, UserDto updateInstructorDto)
         {
             var instructor = await _context.Users.FindAsync(id);
@@ -91,12 +92,13 @@ namespace Eduology.Infrastructure.Repositories
             if (!string.IsNullOrEmpty(updateInstructorDto.Email))
             {
                 instructor.Email = updateInstructorDto.Email;
-
             }
+
             _context.Users.Update(instructor);
             await _context.SaveChangesAsync();
             return true;
         }
+
         private async Task<UserDto> MapUserToDtoAsync(ApplicationUser user)
         {
             if (user == null)
@@ -110,7 +112,5 @@ namespace Eduology.Infrastructure.Repositories
                 Email = user.Email
             };
         }
-
-
     }
 }

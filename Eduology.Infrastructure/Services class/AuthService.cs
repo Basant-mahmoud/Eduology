@@ -9,8 +9,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Eduology.Helpers;
-using Eduology.Application.Interface;
+using Eduology.Application.Services.Helper;
+using Eduology.Application.Services.Interface;
 namespace Eduology.Application.Services
 {
     public class AuthService : IAuthService
