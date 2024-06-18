@@ -18,11 +18,11 @@ namespace Eduology.Domain.Models
         public int Year { get; set; }
         public string? Image {  get; set; }
         public string? InstructorId { get; set; } // Ensure this matches the primary key type in ApplicationUser
-        public virtual ApplicationUser Instructor { get; set; }
-        public virtual ICollection<Material> Materials { get; set; } 
-        public virtual ICollection<Announcement> Announcements { get; set; }
-        public ICollection<Assignment> Assignments { get; set; } // One-to-many relationship with Assignment
-        public virtual ICollection<StudentCourse> StudentCourses { get; set; }
+        public virtual ApplicationUser? Instructor { get; set; }
+        public virtual ICollection<Material>? Materials { get; set; } 
+        public virtual ICollection<Announcement>? Announcements { get; set; }
+        public ICollection<Assignment>? Assignments { get; set; } // One-to-many relationship with Assignment
+        public virtual ICollection<StudentCourse>? StudentCourses { get; set; }
 
     }
 }
