@@ -39,7 +39,7 @@ namespace Eduology.Infrastructure.Repositories
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var course  = await _context.Courses.FindAsync(id);
+            var course = await _context.Courses.FindAsync(id);
             if (course == null)
                 return false;
             _context.Courses.Remove(course);
@@ -49,40 +49,47 @@ namespace Eduology.Infrastructure.Repositories
 
         public async Task<IEnumerable<CourseDetailsDto>> GetAllAsync()
         {
-            var courses = await _context.Courses.ToListAsync();
-            if (courses == null)
-                return null;
-            var result = new List<CourseDetailsDto>();
-            foreach(var Course in courses)
+            var courses = await _context.Courses
+                .Include(c => c.CourseInstructors)
+                    .ThenInclude(ci => ci.Instructor)
+                .Include(c => c.StudentCourses)
+                    .ThenInclude(sc => sc.Student)
+                .ToListAsync();
+
+            return courses.Select(c => new CourseDetailsDto
             {
-                result.Add(
-                new CourseDetailsDto
-                {
-                    CourseId = Course.CourseId,
-                    Name = Course.Name,
-                    CourseCode = Course.CourseCode,
-                    studentCourses = Course.StudentCourses,
-                });
-            }
-            return result;
+                CourseId = c.CourseId,
+                Name = c.Name,
+                CourseCode = c.CourseCode,
+                Instructors = c.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
+                students = c.StudentCourses.Select(sc => sc.Student.Name).ToList()
+            }).ToList();
 
         }
 
         public async Task<CourseDetailsDto> GetByIdAsync(int id)
         {
-            var course = _context.Courses.Find(id);
+            var course = await _context.Courses
+                .Include(c => c.CourseInstructors)
+                    .ThenInclude(ci => ci.Instructor)
+                .Include(c => c.StudentCourses)
+                    .ThenInclude(sc => sc.Student)
+                .FirstOrDefaultAsync(c => c.CourseId == id);
+
             if (course == null)
                 return null;
-            return new CourseDetailsDto 
-            { 
+
+            return new CourseDetailsDto
+            {
                 CourseId = course.CourseId,
                 Name = course.Name,
-                CourseCode= course.CourseCode,
-                studentCourses = course.StudentCourses,
+                CourseCode = course.CourseCode,
+                Instructors = course.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
+                students = course.StudentCourses.Select(sc => sc.Student.Name).ToList()
             };
 
         }
-        public async Task<bool> UpdateAsync(int id,CourseDto course)
+        public async Task<bool> UpdateAsync(int id, CourseDto course)
         {
             var _course = await _context.Courses.FindAsync(id);
             if (_course == null)
@@ -96,19 +103,23 @@ namespace Eduology.Infrastructure.Repositories
 
         async Task<CourseDetailsDto> ICourseRepository.GetByNameAsync(string name)
         {
-            var _course = await _context.Courses.FirstOrDefaultAsync(c => c.Name == name);
+            var course = await _context.Courses
+                .Include(c => c.CourseInstructors)
+                    .ThenInclude(ci => ci.Instructor)
+                .Include(c => c.StudentCourses)
+                    .ThenInclude(sc => sc.Student)
+                .FirstOrDefaultAsync(c => c.Name == name);
 
-            if (_course == null)
-            {
-               return null;
-            }
+            if (course == null)
+                return null;
 
             return new CourseDetailsDto
             {
-                Name = _course.Name,
-                CourseCode = _course.CourseCode,
-                CourseId = _course.CourseId,
-                studentCourses = _course.StudentCourses,
+                CourseId = course.CourseId,
+                Name = course.Name,
+                CourseCode = course.CourseCode,
+                Instructors = course.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
+                students = course.StudentCourses.Select(sc => sc.Student.Name).ToList()
             };
         }
     }
