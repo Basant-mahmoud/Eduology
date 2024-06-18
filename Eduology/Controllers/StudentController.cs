@@ -20,9 +20,15 @@ namespace Eduology.Controllers
             var Students = await _StudentRepository.GetAllStudentsAsync();
             if (Students == null || !Students.Any())
             {
-                return NotFound();
+               
+                    return Ok(new List<UserDto>());
+                
             }
-            return Ok(Students);
+            else
+            {
+                return Ok(Students);
+            }
+          
         }
         [HttpGet("GetStudentbyId/{studentId}")]
         public async Task<ActionResult<UserDto>> GetStudentById(string studentId)
