@@ -79,10 +79,10 @@ namespace Eduology.Infrastructure.Repositories
         {
             try
             {
-                var smtpClient = new SmtpClient("eduology.mabw@gmail.com")
+                var smtpClient = new SmtpClient("smtp.gmail.com")
                 {
                     Port = 587,
-                    Credentials = new NetworkCredential(email, password),
+                    Credentials = new NetworkCredential("eduology.mabw@gmail.com", "eduology2024"),
                     EnableSsl = true,
                 };
 

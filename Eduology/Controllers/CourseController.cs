@@ -25,7 +25,6 @@ namespace Eduology.Controllers
             }
 
             Course _course = await _courseRepository.CreateAsync(course);
-            course.CourseId = _course.CourseId;
             return CreatedAtAction(nameof(GetCourseById), new { id = _course.CourseId }, course);
         }
 
