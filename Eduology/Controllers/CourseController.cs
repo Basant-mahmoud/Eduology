@@ -34,7 +34,7 @@ namespace Eduology.Controllers
             var course = await _courseRepository.GetByIdAsync(id);
             if (course == null)
             {
-                return NotFound();
+                return Ok(new CourseDetailsDto { });
             }
             return Ok(course);
         }
@@ -44,7 +44,7 @@ namespace Eduology.Controllers
             var courses = await _courseRepository.GetAllAsync();
             if (courses == null || !courses.Any())
             {
-                return NotFound();
+                return Ok(new List<CourseDetailsDto>());
             }
             return Ok(courses);
         }
@@ -53,7 +53,7 @@ namespace Eduology.Controllers
         {
             CourseDetailsDto course = await _courseRepository.GetByNameAsync(name);
             if (course == null)
-                return NotFound();
+                return Ok(new CourseDetailsDto { });
             return Ok(course);
         }
         [HttpPut("Update/{id}")]
