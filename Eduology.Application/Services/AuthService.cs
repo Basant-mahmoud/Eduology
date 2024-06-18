@@ -10,19 +10,16 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Eduology.Helpers;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Net.Mail;
-using System.Net;
-using Eduology.Domain.Interfaces;
-namespace Eduology.Infrastructure.Repositories
+using Eduology.Application.Interface;
+namespace Eduology.Application.Services
 {
-    public class AuthRepository : IAuthRepository
+    public class AuthService : IAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWT _jwt;
 
-        public AuthRepository(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt)
+        public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -60,8 +57,6 @@ namespace Eduology.Infrastructure.Repositories
             {
                 await _userManager.AddToRoleAsync(user, model.Role);
             }
-            await SendEmail(user.Email, model.Password);
-
             var jwtSecurityToken = await CreateJwtToken(user);
 
             return new AuthModel
@@ -73,67 +68,6 @@ namespace Eduology.Infrastructure.Repositories
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
                 Username = user.UserName
             };
-        }
-
-        private async Task SendEmail(string email, string password)
-        {
-            try
-            {
-                var smtpClient = new SmtpClient("smtp.gmail.com")
-                {
-                    Port = 587,
-                    Credentials = new NetworkCredential("eduology.mabw@gmail.com", "eduology2024"),
-                    EnableSsl = true,
-                };
-
-                var mailMessage = new MailMessage
-                {
-                    From = new MailAddress("eduology.mabw@gmail.com"),
-                    Subject = "Your Account Created",
-                    Body = $"Hello,\n\nYour account has been created. Here are your login details:\n\nUsername: {email}\nPassword: {password}\n\nPlease change your password after logging in.\n\nThank you!",
-                    IsBodyHtml = false,
-                };
-
-                mailMessage.To.Add(email);
-
-                await smtpClient.SendMailAsync(mailMessage);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to send email: {ex.Message}");
-            }
-        }
-
-        private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
-        {
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            var roles = await _userManager.GetRolesAsync(user);
-            var roleClaims = new List<Claim>();
-
-            foreach (var role in roles)
-                roleClaims.Add(new Claim("roles", role));
-
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id)
-            }
-            .Union(userClaims)
-            .Union(roleClaims);
-
-            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
-            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
-
-            var jwtSecurityToken = new JwtSecurityToken(
-                issuer: _jwt.Issuer,
-                audience: _jwt.Audience,
-                claims: claims,
-                expires: DateTime.Now.AddDays(_jwt.DurationInDays),
-                signingCredentials: signingCredentials);
-
-            return jwtSecurityToken;
         }
 
         public async Task<AuthModel> LoginAsync(LoginModel model)
@@ -174,6 +108,38 @@ namespace Eduology.Infrastructure.Repositories
             var result = await _userManager.AddToRoleAsync(user, model.Role);
 
             return result.Succeeded ? string.Empty : "Sonething went wrong";
+        }
+
+        private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
+        {
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            var roleClaims = new List<Claim>();
+
+            foreach (var role in roles)
+                roleClaims.Add(new Claim("roles", role));
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("uid", user.Id)
+            }
+            .Union(userClaims)
+            .Union(roleClaims);
+
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
+            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+            var jwtSecurityToken = new JwtSecurityToken(
+                issuer: _jwt.Issuer,
+                audience: _jwt.Audience,
+                claims: claims,
+                expires: DateTime.Now.AddDays(_jwt.DurationInDays),
+                signingCredentials: signingCredentials);
+
+            return jwtSecurityToken;
         }
     }
 }

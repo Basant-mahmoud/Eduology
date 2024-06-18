@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 using Eduology.Application.Utilities;
 using Eduology.Domain.Interfaces;
+using Eduology.Application.Interface;
 
 
 namespace Eduology.Controllers
@@ -12,8 +13,8 @@ namespace Eduology.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthRepository _authService;
-        public AuthController(IAuthRepository authService)
+        private readonly IAuthService _authService;
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
         }

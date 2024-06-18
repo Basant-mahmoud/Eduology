@@ -16,6 +16,8 @@ using Eduology.Infrastructure.Persistence;
 using Eduology.Infrastructure.Extensions;
 using Eduology.Domain.Interfaces;
 using Eduology.Infrastructure.Repositories;
+using Eduology.Application.Interface;
+using Eduology.Application.Services;
 namespace Eduology
 {
     public class Program
@@ -48,10 +50,10 @@ namespace Eduology
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<EduologyDBContext>();
             // Add Services of the role
-            builder.Services.AddScoped<IAuthRepository,AuthRepository>();
             builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
             builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
             //Add configuration of JWT Service
             builder.Services.AddAuthentication(options =>
             {
