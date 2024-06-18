@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eduology.Infrastructure.Migrations
 {
     [DbContext(typeof(EduologyDBContext))]
-    [Migration("20240617163012_inti_again")]
-    partial class inti_again
+    [Migration("20240618144319_update_course1")]
+    partial class update_course1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -207,15 +207,7 @@ namespace Eduology.Infrastructure.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Image")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InstructorId")
+                    b.Property<string>("CourseCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -230,9 +222,25 @@ namespace Eduology.Infrastructure.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("InstructorId");
+                    b.HasIndex("CourseCode")
+                        .IsUnique();
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("Eduology.Domain.Models.CourseInstructor", b =>
+                {
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InstructorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CourseId", "InstructorId");
+
+                    b.HasIndex("InstructorId");
+
+                    b.ToTable("courseInstructors");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.File", b =>
@@ -581,14 +589,25 @@ namespace Eduology.Infrastructure.Migrations
                     b.HasOne("Eduology.Domain.Models.ApplicationUser", null)
                         .WithMany("Courses")
                         .HasForeignKey("ApplicationUserId");
+                });
+
+            modelBuilder.Entity("Eduology.Domain.Models.CourseInstructor", b =>
+                {
+                    b.HasOne("Eduology.Domain.Models.Course", "course")
+                        .WithMany("CourseInstructors")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Eduology.Domain.Models.ApplicationUser", "Instructor")
-                        .WithMany()
+                        .WithMany("CourseInstructors")
                         .HasForeignKey("InstructorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Instructor");
+
+                    b.Navigation("course");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.File", b =>
@@ -751,6 +770,8 @@ namespace Eduology.Infrastructure.Migrations
 
                     b.Navigation("Assignments");
 
+                    b.Navigation("CourseInstructors");
+
                     b.Navigation("Courses");
 
                     b.Navigation("Materials");
@@ -773,6 +794,8 @@ namespace Eduology.Infrastructure.Migrations
                     b.Navigation("Announcements");
 
                     b.Navigation("Assignments");
+
+                    b.Navigation("CourseInstructors");
 
                     b.Navigation("Materials");
 

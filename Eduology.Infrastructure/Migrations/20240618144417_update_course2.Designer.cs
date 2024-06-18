@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eduology.Infrastructure.Migrations
 {
     [DbContext(typeof(EduologyDBContext))]
-    [Migration("20240613224341_studentrelation")]
-    partial class studentrelation
+    [Migration("20240618144417_update_course2")]
+    partial class update_course2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,34 @@ namespace Eduology.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Eduology.Domain.Models.Address", b =>
+                {
+                    b.Property<int>("AddressId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AddressId"));
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("AddressId");
+
+                    b.ToTable("Addresses");
+                });
 
             modelBuilder.Entity("Eduology.Domain.Models.Announcement", b =>
                 {
@@ -176,17 +204,15 @@ namespace Eduology.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseId"));
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Image")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InstructorId")
+                    b.Property<string>("CourseCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -197,9 +223,27 @@ namespace Eduology.Infrastructure.Migrations
 
                     b.HasKey("CourseId");
 
-                    b.HasIndex("InstructorId");
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("CourseCode")
+                        .IsUnique();
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("Eduology.Domain.Models.CourseInstructor", b =>
+                {
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InstructorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CourseId", "InstructorId");
+
+                    b.HasIndex("InstructorId");
+
+                    b.ToTable("courseInstructors");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.File", b =>
@@ -265,6 +309,60 @@ namespace Eduology.Infrastructure.Migrations
                     b.HasIndex("TypeId");
 
                     b.ToTable("Materials");
+                });
+
+            modelBuilder.Entity("Eduology.Domain.Models.Organization", b =>
+                {
+                    b.Property<int>("OrganizationID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrganizationID"));
+
+                    b.Property<string>("AdminId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("OrganizationAddressAddressId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("OrganizationID");
+
+                    b.HasIndex("AdminId")
+                        .IsUnique();
+
+                    b.HasIndex("OrganizationAddressAddressId");
+
+                    b.ToTable("Organizations");
+                });
+
+            modelBuilder.Entity("Eduology.Domain.Models.StudentCourse", b =>
+                {
+                    b.Property<string>("StudentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("StudentId", "CourseId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("StudentCourse");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.Submission", b =>
@@ -491,13 +589,28 @@ namespace Eduology.Infrastructure.Migrations
 
             modelBuilder.Entity("Eduology.Domain.Models.Course", b =>
                 {
-                    b.HasOne("Eduology.Domain.Models.ApplicationUser", "Instructor")
+                    b.HasOne("Eduology.Domain.Models.ApplicationUser", null)
                         .WithMany("Courses")
+                        .HasForeignKey("ApplicationUserId");
+                });
+
+            modelBuilder.Entity("Eduology.Domain.Models.CourseInstructor", b =>
+                {
+                    b.HasOne("Eduology.Domain.Models.Course", "course")
+                        .WithMany("CourseInstructors")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Eduology.Domain.Models.ApplicationUser", "Instructor")
+                        .WithMany("CourseInstructors")
                         .HasForeignKey("InstructorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Instructor");
+
+                    b.Navigation("course");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.File", b =>
@@ -544,6 +657,44 @@ namespace Eduology.Infrastructure.Migrations
                     b.Navigation("Instructor");
 
                     b.Navigation("MaterialType");
+                });
+
+            modelBuilder.Entity("Eduology.Domain.Models.Organization", b =>
+                {
+                    b.HasOne("Eduology.Domain.Models.ApplicationUser", "Admin")
+                        .WithOne("organization")
+                        .HasForeignKey("Eduology.Domain.Models.Organization", "AdminId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Eduology.Domain.Models.Address", "OrganizationAddress")
+                        .WithMany()
+                        .HasForeignKey("OrganizationAddressAddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
+
+                    b.Navigation("OrganizationAddress");
+                });
+
+            modelBuilder.Entity("Eduology.Domain.Models.StudentCourse", b =>
+                {
+                    b.HasOne("Eduology.Domain.Models.Course", "Course")
+                        .WithMany("StudentCourses")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Eduology.Domain.Models.ApplicationUser", "Student")
+                        .WithMany("StudentCourses")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.Submission", b =>
@@ -622,9 +773,16 @@ namespace Eduology.Infrastructure.Migrations
 
                     b.Navigation("Assignments");
 
+                    b.Navigation("CourseInstructors");
+
                     b.Navigation("Courses");
 
                     b.Navigation("Materials");
+
+                    b.Navigation("StudentCourses");
+
+                    b.Navigation("organization")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.Assignment", b =>
@@ -640,7 +798,11 @@ namespace Eduology.Infrastructure.Migrations
 
                     b.Navigation("Assignments");
 
+                    b.Navigation("CourseInstructors");
+
                     b.Navigation("Materials");
+
+                    b.Navigation("StudentCourses");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.Type", b =>

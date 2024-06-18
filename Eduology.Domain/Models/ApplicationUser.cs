@@ -19,5 +19,6 @@ namespace Eduology.Domain.Models
         public virtual ICollection<Material> Materials { get; set; }
         public virtual ICollection<Assignment> Assignments { get; set;}
         public virtual ICollection<StudentCourse> StudentCourses { get; set; }
+        public virtual ICollection<CourseInstructor> CourseInstructors { get; set; }
     }
 }

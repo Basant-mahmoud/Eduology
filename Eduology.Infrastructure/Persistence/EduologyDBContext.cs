@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Eduology.Domain.Models;
 
 namespace Eduology.Infrastructure.Persistence
 {
@@ -23,6 +24,7 @@ namespace Eduology.Infrastructure.Persistence
         public DbSet<Domain.Models.File> Files { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<CourseInstructor> courseInstructors { get; set; }
         public EduologyDBContext(DbContextOptions<EduologyDBContext> options) : base(options)
         { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -54,12 +56,19 @@ namespace Eduology.Infrastructure.Persistence
                 .WithMany(c => c.StudentCourses)
                 .HasForeignKey(sc => sc.CourseId)
                 .OnDelete(DeleteBehavior.Cascade);
-            // Configure one-to-many relationship between Course and ApplicationUser (Instructor)
-            modelBuilder.Entity<Course>()
-                .HasOne(c => c.Instructor)
-                .WithMany()
-                .HasForeignKey(c => c.InstructorId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // Configure many-to-many relationship between Course and ApplicationUser (Instructor)
+            modelBuilder.Entity<CourseInstructor>()
+               .HasKey(ci => new { ci.CourseId, ci.InstructorId });
+
+            modelBuilder.Entity<CourseInstructor>()
+                .HasOne(ci => ci.course)
+                .WithMany(c => c.CourseInstructors)
+                .HasForeignKey(ci => ci.CourseId);
+
+            modelBuilder.Entity<CourseInstructor>()
+                .HasOne(ci => ci.Instructor)
+                .WithMany(i => i.CourseInstructors)
+                .HasForeignKey(ci => ci.InstructorId);
             // Configure one-to-many relationship between ApplicationUser (Instructor) and Material
             modelBuilder.Entity<Material>()
                 .HasOne(m => m.Instructor)

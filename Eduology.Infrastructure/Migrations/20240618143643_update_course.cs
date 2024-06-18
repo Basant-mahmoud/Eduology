@@ -5,7 +5,7 @@
 namespace Eduology.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class intiii : Migration
+    public partial class update_course : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

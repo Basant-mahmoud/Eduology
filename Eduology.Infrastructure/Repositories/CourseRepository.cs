@@ -61,7 +61,6 @@ namespace Eduology.Infrastructure.Repositories
                     CourseId = Course.CourseId,
                     Name = Course.Name,
                     CourseCode = Course.CourseCode,
-                    InstructorId = Course.InstructorId,
                     studentCourses = Course.StudentCourses,
                 });
             }
@@ -79,7 +78,6 @@ namespace Eduology.Infrastructure.Repositories
                 CourseId = course.CourseId,
                 Name = course.Name,
                 CourseCode= course.CourseCode,
-                InstructorId = course.InstructorId,
                 studentCourses = course.StudentCourses,
             };
 
@@ -109,7 +107,6 @@ namespace Eduology.Infrastructure.Repositories
             {
                 Name = _course.Name,
                 CourseCode = _course.CourseCode,
-                InstructorId = _course.InstructorId,
                 CourseId = _course.CourseId,
                 studentCourses = _course.StudentCourses,
             };

@@ -211,12 +211,6 @@ namespace Eduology.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InstructorId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -231,9 +225,22 @@ namespace Eduology.Infrastructure.Migrations
                     b.HasIndex("CourseCode")
                         .IsUnique();
 
+                    b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("Eduology.Domain.Models.CourseInstructor", b =>
+                {
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InstructorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CourseId", "InstructorId");
+
                     b.HasIndex("InstructorId");
 
-                    b.ToTable("Courses");
+                    b.ToTable("courseInstructors");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.File", b =>
@@ -582,13 +589,25 @@ namespace Eduology.Infrastructure.Migrations
                     b.HasOne("Eduology.Domain.Models.ApplicationUser", null)
                         .WithMany("Courses")
                         .HasForeignKey("ApplicationUserId");
+                });
+
+            modelBuilder.Entity("Eduology.Domain.Models.CourseInstructor", b =>
+                {
+                    b.HasOne("Eduology.Domain.Models.Course", "course")
+                        .WithMany("CourseInstructors")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Eduology.Domain.Models.ApplicationUser", "Instructor")
-                        .WithMany()
+                        .WithMany("CourseInstructors")
                         .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Instructor");
+
+                    b.Navigation("course");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.File", b =>
@@ -751,6 +770,8 @@ namespace Eduology.Infrastructure.Migrations
 
                     b.Navigation("Assignments");
 
+                    b.Navigation("CourseInstructors");
+
                     b.Navigation("Courses");
 
                     b.Navigation("Materials");
@@ -773,6 +794,8 @@ namespace Eduology.Infrastructure.Migrations
                     b.Navigation("Announcements");
 
                     b.Navigation("Assignments");
+
+                    b.Navigation("CourseInstructors");
 
                     b.Navigation("Materials");
 
