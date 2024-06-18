@@ -24,6 +24,7 @@ namespace Eduology.Infrastructure.Persistence
         public DbSet<Domain.Models.File> Files { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<StudentCourse> Students { get; set; }
         public DbSet<CourseInstructor> courseInstructors { get; set; }
         public EduologyDBContext(DbContextOptions<EduologyDBContext> options) : base(options)
         { }
