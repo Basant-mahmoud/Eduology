@@ -39,6 +39,8 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<Course> DeleteAsync(string id)
         {
             var course = await _context.Courses.FindAsync(id);
+            if (course == null)
+                return null;
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
             return course;
@@ -52,7 +54,8 @@ namespace Eduology.Infrastructure.Repositories
                 .Include(c => c.StudentCourses)
                     .ThenInclude(sc => sc.Student)
                 .ToListAsync();
-
+            if (courses == null || courses.Count == 0)
+                return null;
             return courses.Select(c => new CourseDetailsDto
             {
                 CourseId = c.CourseId,
