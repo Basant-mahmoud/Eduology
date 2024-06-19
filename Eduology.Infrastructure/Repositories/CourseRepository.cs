@@ -24,6 +24,7 @@ namespace Eduology.Infrastructure.Repositories
         {
             var course = new Course
             {
+                CourseId = Guid.NewGuid().ToString(),
                 CourseCode = courseDto.CourseCode,
                 Name = courseDto.Name,
                 Year = courseDto.Year,
