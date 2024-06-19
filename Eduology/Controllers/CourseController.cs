@@ -21,15 +21,15 @@ namespace Eduology.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromBody] CourseDto course)
+        public async Task<IActionResult> Create([FromBody] CourseCreationDto course)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            Course _course = await _courseService.CreateAsync(course);
-            return CreatedAtAction(nameof(GetCourseById), new { id = _course.CourseId }, course);
+            var createdCourse = await _courseService.CreateAsync(course);
+            return CreatedAtAction(nameof(GetCourseById), new { id = createdCourse.CourseId }, createdCourse);
         }
 
         [HttpGet("GetById/{id}")]

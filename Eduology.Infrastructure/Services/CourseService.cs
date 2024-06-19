@@ -13,21 +13,41 @@ namespace Eduology.Infrastructure.Services
     public class CourseService : ICourseService
     {
         private readonly ICourseRepository _courseRepository;
-       
+
 
         public CourseService(ICourseRepository courseRepository)
         {
             _courseRepository = courseRepository;
         }
 
-        public async Task<Course> CreateAsync(CourseDto courseDto)
+        public async Task<Course> CreateAsync(CourseCreationDto courseDto)
         {
-            var course = await _courseRepository.CreateAsync(courseDto);
-            if (course == null)
+            // Generate a unique course code
+            string courseCode;
+            do
             {
-                return null;
-            }
+                courseCode = GenerateCourseCode();
+            } while (await _courseRepository.ExistsByCourseCodeAsync( courseCode));
+
+            var course = new Course
+            {
+                CourseId = Guid.NewGuid().ToString(),
+                Name = courseDto.Name,
+                CourseCode = courseCode,
+                Year = courseDto.Year,
+               OrganizationID = courseDto.OrganizationId // Assuming OrganizationID is part of CourseCreationDto
+
+            };
+
+            await _courseRepository.CreateAsync(course);
             return course;
+        }
+
+        private string GenerateCourseCode()
+        {
+            var random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, 6).Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
         public async Task<bool> DeleteAsync(String id)
@@ -69,6 +89,6 @@ namespace Eduology.Infrastructure.Services
                 return null;
             return course;
         }
-        
+
     }
 }
