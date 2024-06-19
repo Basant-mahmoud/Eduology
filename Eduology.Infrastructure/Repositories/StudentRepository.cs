@@ -47,7 +47,10 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<bool> UpdateStudentAsync(string studentId, UserDto userDto)
         {
             var student = await _userManager.FindByIdAsync(studentId);
-
+            if (student == null)
+            {
+                return false;
+            }
             student.Name = userDto.Name;
             student.UserName = userDto.UserName;
             student.Email = userDto.Email;
@@ -58,7 +61,10 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<bool> DeleteStudentAsync(string studentId)
         {
             var student = await _context.Users.FindAsync(studentId);
-
+            if(student == null)
+            { 
+                return false; 
+            }
             _context.Users.Remove(student);
             await _context.SaveChangesAsync();
             return true;
