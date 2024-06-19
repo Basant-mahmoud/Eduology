@@ -1,5 +1,4 @@
 using Eduology.Domain.Models;
-//using Eduology.Infrastructure.Persistence
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,19 +7,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using System.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Eduology.Infrastructure.Persistence;
-using Eduology.Infrastructure.Extensions;
 using Eduology.Domain.Interfaces;
 using Eduology.Infrastructure.Repositories;
 using Eduology.Application.Services;
 using Eduology.Application.Services.Interface;
-using Eduology.Infrastructure.Services_class;
-using Eduology.Application.Services.Helper;
 using Eduology.Infrastructure.Services;
 using Eduology.Application.Interface;
+using Microsoft.IdentityModel.Tokens;
+using Eduology.Application.Services.Helper;
+using Eduology.Infrastructure.Services_class;
+
 namespace Eduology
 {
     public class Program
@@ -41,56 +39,63 @@ namespace Eduology
                     policyBuilder => policyBuilder
                         .WithOrigins("http://localhost:4200")
                         .AllowAnyHeader()
-                        .AllowAnyMethod().
-                        AllowCredentials());
+                        .AllowAnyMethod()
+                        .AllowCredentials());
             });
 
             // Add services to the container.
             builder.Services.Configure<JWT>(Configuration.GetSection("JWT"));
+
             // Add Entity Framework Core DbContext
-            builder.Services.AddInfrastructure(Configuration);
+            builder.Services.AddDbContext<EduologyDBContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             // Add Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<EduologyDBContext>();
-            // Add Services of the role
+
+            // Register repositories
             builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
             builder.Services.AddScoped<IStudentRepository, StudentRepository>();
             builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
             builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
-            builder.Services.AddScoped<IAuthService,AuthService>();
+
+            // Register services
+            builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IInstructorService, InstructorService>();
             builder.Services.AddScoped<IStudentService, StudentService>();
             builder.Services.AddScoped<ICourseService, CourseService>();
             builder.Services.AddScoped<IAsignmentServices, AssignmentServices>();
             builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
-            //Add configuration of JWT Service
+
+            // Configure JWT authentication
             builder.Services.AddAuthentication(options =>
             {
-               options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-               options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-                .AddJwtBearer( o =>
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    o.RequireHttpsMetadata = false;
-                    o.SaveToken = false;
-                    o.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidIssuer = Configuration["JWT:Issuer"],
-                        ValidAudience = Configuration["JWT:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
-                    };
-                });
-            builder.Services.Configure<JWT>(Configuration.GetSection("JWT"));
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = Configuration["JWT:Issuer"],
+                    ValidAudience = Configuration["JWT:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
+                };
+            });
 
+            // Add controllers and Swagger
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-           
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -99,7 +104,6 @@ namespace Eduology
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
 
             app.UseCors("AllowWebApp");
 
