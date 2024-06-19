@@ -1,6 +1,5 @@
 using Eduology.Domain.Models;
 //using Eduology.Infrastructure.Persistence;
-using Eduology.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -19,6 +18,7 @@ using Eduology.Infrastructure.Repositories;
 using Eduology.Application.Interface;
 using Eduology.Application.Services;
 using Eduology.Infrastructure.Services;
+using Eduology.Application.Services.Helper;
 namespace Eduology
 {
     public class Program

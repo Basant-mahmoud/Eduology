@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eduology.Application.Services.Interface
+namespace Eduology.Application.Interface
 {
     public interface IInstructorService
     {

@@ -1,4 +1,4 @@
-﻿using Eduology.Application.Services.Interface;
+﻿using Eduology.Application.Interface;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using System;
