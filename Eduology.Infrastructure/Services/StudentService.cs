@@ -20,7 +20,7 @@ namespace Eduology.Infrastructure.Services
             var student = await _studentRepository.GetStudentByIdAsync(studentId);
             if (student == null)
             {
-                throw new KeyNotFoundException("Student not found.");
+                return null;
             }
             return student;
         }
@@ -40,7 +40,7 @@ namespace Eduology.Infrastructure.Services
             var success = await _studentRepository.UpdateStudentAsync(studentId, userDto);
             if (!success)
             {
-                throw new InvalidOperationException("Student update failed.");
+                return false;
             }
             return success;
         }
@@ -49,7 +49,7 @@ namespace Eduology.Infrastructure.Services
             var success = await _studentRepository.DeleteStudentAsync(studentId);
             if (!success)
             {
-                throw new KeyNotFoundException("Student not found.");
+                return false;
             }
             return success;
         }
