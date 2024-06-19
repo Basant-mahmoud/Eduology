@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Eduology.Application.Services.Helper;
 using Eduology.Application.Services.Interface;
+using Eduology.Application.Interface;
 namespace Eduology.Application.Services
 {
     public class AuthService : IAuthService
