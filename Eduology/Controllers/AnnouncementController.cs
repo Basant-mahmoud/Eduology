@@ -26,10 +26,14 @@ namespace Eduology.Controllers
             return CreatedAtAction(nameof(GetAnnouncement), new { id = createdAnnouncement.Id }, createdAnnouncement);
         }
 
-        [HttpGet("GetAllAnnouncement")]
+        [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncements()
         {
             var announcements = await _announcementService.GetAllAsync();
+            if (announcements == null || !announcements.Any())
+            {
+                return NotFound("No announcements found.");
+            }
             return Ok(announcements);
         }
 
@@ -44,11 +48,17 @@ namespace Eduology.Controllers
             return Ok(announcement);
         }
 
-        [HttpDelete("DeleteAnnouncement/{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteAnnouncement(int id)
         {
+            var announcement = await _announcementService.GetByIdAsync(id);
+            if (announcement == null)
+            {
+                return NotFound();
+            }
+
             await _announcementService.DeleteAsync(id);
-            return NoContent();
+            return Ok(new { message = "Announcement deleted successfully." });
         }
     }
 }
