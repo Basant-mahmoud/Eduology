@@ -5,7 +5,6 @@ using Eduology.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Eduology.Infrastructure.Repositories
@@ -63,7 +62,7 @@ namespace Eduology.Infrastructure.Repositories
             var instructor = await _context.Users.FindAsync(id);
             if (instructor == null)
             {
-                return false;
+                throw new KeyNotFoundException("Instructor not found.");
             }
 
             _context.Users.Remove(instructor);
@@ -76,7 +75,7 @@ namespace Eduology.Infrastructure.Repositories
             var instructor = await _context.Users.FindAsync(id);
             if (instructor == null)
             {
-                return false;
+                throw new KeyNotFoundException("Instructor not found.");
             }
 
             if (!string.IsNullOrEmpty(updateInstructorDto.Name))

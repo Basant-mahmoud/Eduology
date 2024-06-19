@@ -4,7 +4,6 @@ using Eduology.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Eduology.Infrastructure.Services_class
@@ -21,7 +20,7 @@ namespace Eduology.Infrastructure.Services_class
         public async Task<IEnumerable<UserDto>> GetAllInstructorsAsync()
         {
             var instructors = await _instructorRepository.GetAllInstructorsAsync();
-            return instructors; 
+            return instructors;
         }
 
         public async Task<UserDto> GetInstructorByIdAsync(string id)
