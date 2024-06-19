@@ -1,4 +1,5 @@
-﻿using Eduology.Domain.DTO;
+﻿using Eduology.Application.Services.Interface;
+using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -9,20 +10,18 @@ namespace Eduology.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly IStudentRepository _StudentRepository;
-        public StudentController(IStudentRepository studentRepository)
+        private readonly IStudentService _StudentService;
+        public StudentController(IStudentService studentService)
         {
-            _StudentRepository = studentRepository;
+            _StudentService = studentService;
         }
         [HttpGet("GetAllStudents")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetStudents()
         {
-            var Students = await _StudentRepository.GetAllStudentsAsync();
+            var Students = await _StudentService.GetAllStudentsAsync();
             if (Students == null || !Students.Any())
             {
-               
-                    return Ok(new List<UserDto>());
-                
+               return Ok(new List<UserDto>());   
             }
             else
             {
@@ -33,7 +32,7 @@ namespace Eduology.Controllers
         [HttpGet("GetStudentbyId/{studentId}")]
         public async Task<ActionResult<UserDto>> GetStudentById(string studentId)
         {
-            var student = await _StudentRepository.GetStudentByIdAsync(studentId);
+            var student = await _StudentService.GetStudentByIdAsync(studentId);
             if (student == null)
             {
                 return NotFound();
@@ -48,7 +47,7 @@ namespace Eduology.Controllers
                 return BadRequest(ModelState);
             }
 
-            var updated = await _StudentRepository.UpdateStudentAsync(studentId, studentDto);
+            var updated = await _StudentService.UpdateStudentAsync(studentId, studentDto);
             if (!updated)
             {
                 return NotFound();
@@ -60,7 +59,7 @@ namespace Eduology.Controllers
         [HttpDelete("deleteStudent/{studentId}")]
         public async Task<IActionResult> DeleteStudentAsync(string studentId)
         {
-            var student = await _StudentRepository.DeleteStudentAsync(studentId);
+            var student = await _StudentService.DeleteStudentAsync(studentId);
             if (!student)
             {
                 return NotFound(); 
