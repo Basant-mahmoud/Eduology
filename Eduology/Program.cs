@@ -18,6 +18,7 @@ using Eduology.Domain.Interfaces;
 using Eduology.Infrastructure.Repositories;
 using Eduology.Application.Interface;
 using Eduology.Application.Services;
+using Eduology.Infrastructure.Services;
 namespace Eduology
 {
     public class Program
@@ -54,6 +55,7 @@ namespace Eduology
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
             builder.Services.AddScoped<IStudentRepository, StudentRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ICourseService, CourseService>();
             //Add configuration of JWT Service
             builder.Services.AddAuthentication(options =>
             {

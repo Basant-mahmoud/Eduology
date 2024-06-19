@@ -16,7 +16,6 @@ namespace Eduology.Infrastructure.Repositories
 
     {
         private readonly EduologyDBContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
         public CourseRepository(EduologyDBContext context)
         {
             _context = context;
@@ -36,15 +35,12 @@ namespace Eduology.Infrastructure.Repositories
 
         }
 
-
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<Course> DeleteAsync(string id)
         {
             var course = await _context.Courses.FindAsync(id);
-            if (course == null)
-                return false;
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
-            return true;
+            return course;
         }
 
         public async Task<IEnumerable<CourseDetailsDto>> GetAllAsync()
@@ -67,17 +63,14 @@ namespace Eduology.Infrastructure.Repositories
 
         }
 
-        public async Task<CourseDetailsDto> GetByIdAsync(int id)
+        public async Task<CourseDetailsDto> GetByIdAsync(String id)
         {
             var course = await _context.Courses
                 .Include(c => c.CourseInstructors)
-                    .ThenInclude(ci => ci.Instructor)
+                .ThenInclude(ci => ci.Instructor)
                 .Include(c => c.StudentCourses)
-                    .ThenInclude(sc => sc.Student)
+                .ThenInclude(sc => sc.Student)
                 .FirstOrDefaultAsync(c => c.CourseId == id);
-
-            if (course == null)
-                return null;
 
             return new CourseDetailsDto
             {
@@ -89,16 +82,14 @@ namespace Eduology.Infrastructure.Repositories
             };
 
         }
-        public async Task<bool> UpdateAsync(int id, CourseDto course)
+        public async Task<Course> UpdateAsync(String id, CourseDto course)
         {
             var _course = await _context.Courses.FindAsync(id);
-            if (_course == null)
-                return false;
             _course.Name = course.Name;
             _course.CourseCode = course.CourseCode;
             _course.Year = course.Year;
             _context.SaveChanges();
-            return true;
+            return _course;
         }
 
         async Task<CourseDetailsDto> ICourseRepository.GetByNameAsync(string name)
@@ -109,9 +100,6 @@ namespace Eduology.Infrastructure.Repositories
                 .Include(c => c.StudentCourses)
                     .ThenInclude(sc => sc.Student)
                 .FirstOrDefaultAsync(c => c.Name == name);
-
-            if (course == null)
-                return null;
 
             return new CourseDetailsDto
             {

@@ -6,16 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eduology.Domain.Interfaces
+namespace Eduology.Application.Interface
 {
-    public interface ICourseRepository
+    public interface ICourseService
     {
         Task<Course> CreateAsync(CourseDto course);
-        Task<Course> DeleteAsync(String id);
-        Task<CourseDetailsDto> GetByIdAsync(string id);
+        Task<bool> DeleteAsync(String id);
+        Task<CourseDetailsDto> GetByIdAsync(String id);
         Task<CourseDetailsDto> GetByNameAsync(string name);
         Task<IEnumerable<CourseDetailsDto>> GetAllAsync();
-        Task<Course> UpdateAsync(string id,CourseDto course);
-            
+        Task<bool> UpdateAsync(String id, CourseDto course);
     }
 }
