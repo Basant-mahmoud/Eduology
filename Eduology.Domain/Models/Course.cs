@@ -21,6 +21,8 @@ namespace Eduology.Domain.Models
         public ICollection<Assignment>? Assignments { get; set; } // One-to-many relationship with Assignment
         public virtual ICollection<StudentCourse>? StudentCourses { get; set; }
         public virtual ICollection<CourseInstructor>? CourseInstructors { get; set; }
+        public int OrganizationID { get; set; }
+        public virtual Organization Organization { get; set; }
 
     }
 }

@@ -156,6 +156,8 @@ namespace Eduology.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("OrganizationId");
+
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
@@ -217,6 +219,9 @@ namespace Eduology.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("OrganizationID")
+                        .HasColumnType("int");
+
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
@@ -226,6 +231,8 @@ namespace Eduology.Infrastructure.Migrations
 
                     b.HasIndex("CourseCode")
                         .IsUnique();
+
+                    b.HasIndex("OrganizationID");
 
                     b.ToTable("Courses");
                 });
@@ -323,10 +330,6 @@ namespace Eduology.Infrastructure.Migrations
                     b.Property<int>("AddressId")
                         .HasColumnType("int");
 
-                    b.Property<string>("AdminId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -344,9 +347,6 @@ namespace Eduology.Infrastructure.Migrations
                     b.HasKey("OrganizationID");
 
                     b.HasIndex("AddressId");
-
-                    b.HasIndex("AdminId")
-                        .IsUnique();
 
                     b.ToTable("Organizations");
                 });
@@ -569,6 +569,17 @@ namespace Eduology.Infrastructure.Migrations
                     b.Navigation("Instructor");
                 });
 
+            modelBuilder.Entity("Eduology.Domain.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("Eduology.Domain.Models.Organization", "organization")
+                        .WithMany("Users")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("organization");
+                });
+
             modelBuilder.Entity("Eduology.Domain.Models.Assignment", b =>
                 {
                     b.HasOne("Eduology.Domain.Models.Course", "Course")
@@ -593,6 +604,14 @@ namespace Eduology.Infrastructure.Migrations
                     b.HasOne("Eduology.Domain.Models.ApplicationUser", null)
                         .WithMany("Courses")
                         .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("Eduology.Domain.Models.Organization", "Organization")
+                        .WithMany("Courses")
+                        .HasForeignKey("OrganizationID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.CourseInstructor", b =>
@@ -668,15 +687,7 @@ namespace Eduology.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Eduology.Domain.Models.ApplicationUser", "Admin")
-                        .WithOne("organization")
-                        .HasForeignKey("Eduology.Domain.Models.Organization", "AdminId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Address");
-
-                    b.Navigation("Admin");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.StudentCourse", b =>
@@ -781,9 +792,6 @@ namespace Eduology.Infrastructure.Migrations
                     b.Navigation("Materials");
 
                     b.Navigation("StudentCourses");
-
-                    b.Navigation("organization")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.Assignment", b =>
@@ -805,6 +813,13 @@ namespace Eduology.Infrastructure.Migrations
                     b.Navigation("Materials");
 
                     b.Navigation("StudentCourses");
+                });
+
+            modelBuilder.Entity("Eduology.Domain.Models.Organization", b =>
+                {
+                    b.Navigation("Courses");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.Type", b =>

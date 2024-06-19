@@ -35,11 +35,7 @@ namespace Eduology.Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure one-to-one relationship between ApplicationUser (Admin) and Organization
-            modelBuilder.Entity<ApplicationUser>()
-                .HasOne(a => a.organization)
-                .WithOne(o => o.Admin)
-                .HasForeignKey<Organization>(o => o.AdminId);
+            // organization is one to one with address
             modelBuilder.Entity<Organization>()
             .HasOne(o => o.Address)
             .WithMany()
@@ -95,13 +91,25 @@ namespace Eduology.Infrastructure.Persistence
             .WithOne(a => a.Course)
             .HasForeignKey(a => a.CourseId)
             .OnDelete(DeleteBehavior.Cascade);
+            // Configure one-to-many relationship between course and organization
+            modelBuilder.Entity<Organization>()
+           .HasMany(o => o.Courses)
+           .WithOne(c => c.Organization)
+           .HasForeignKey(c => c.OrganizationID)
+           .OnDelete(DeleteBehavior.Cascade);
+            
             // Configure one-to-one relationship between assignment and file
             modelBuilder.Entity<Assignment>()
               .HasOne(a => a.File)
               .WithOne(f => f.Assignment)
               .HasForeignKey< File>(f => f.AssignmentId)
               .OnDelete(DeleteBehavior.Cascade);
-
+            // One-to-many relationship between ApplicationUser and Organization
+            modelBuilder.Entity<Organization>()
+            .HasMany(o => o.Users)
+            .WithOne(u => u.organization)
+            .HasForeignKey(u => u.OrganizationId)
+            .OnDelete(DeleteBehavior.Cascade);
         }
 
 
