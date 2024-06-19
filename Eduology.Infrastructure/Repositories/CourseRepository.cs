@@ -72,7 +72,8 @@ namespace Eduology.Infrastructure.Repositories
                 .Include(c => c.StudentCourses)
                 .ThenInclude(sc => sc.Student)
                 .FirstOrDefaultAsync(c => c.CourseId == id);
-
+            if (course == null)
+                return null;
             return new CourseDetailsDto
             {
                 CourseId = course.CourseId,
@@ -100,7 +101,8 @@ namespace Eduology.Infrastructure.Repositories
                 .Include(c => c.StudentCourses)
                     .ThenInclude(sc => sc.Student)
                 .FirstOrDefaultAsync(c => c.Name == name);
-
+            if (course == null)
+                return null;
             return new CourseDetailsDto
             {
                 CourseId = course.CourseId,
