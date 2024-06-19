@@ -38,6 +38,10 @@ namespace Eduology.Infrastructure.Persistence
                 .HasOne(a => a.organization)
                 .WithOne(o => o.Admin)
                 .HasForeignKey<Organization>(o => o.AdminId);
+            modelBuilder.Entity<Organization>()
+            .HasOne(o => o.Address)
+            .WithMany()
+            .HasForeignKey(o => o.AddressId);
             modelBuilder.Entity<Course>()
             .HasIndex(e => e.CourseCode)
             .IsUnique();

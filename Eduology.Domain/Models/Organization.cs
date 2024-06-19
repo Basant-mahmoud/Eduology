@@ -20,7 +20,7 @@ namespace Eduology.Domain.Models
         [MaxLength(100)]
         public string Email { get; set; }
         public int AddressId { get; set; }
-        public  Address OrganizationAddress { get; set; }
+        public virtual Address Address { get; set; }
         public string AdminId { get; set; }
         public virtual ApplicationUser Admin {  get; set; }
     }
