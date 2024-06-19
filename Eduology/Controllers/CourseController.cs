@@ -29,7 +29,7 @@ namespace Eduology.Controllers
         }
 
         [HttpGet("GetById/{id}")]
-        public async Task<IActionResult> GetCourseById(int id)
+        public async Task<IActionResult> GetCourseById(String id)
         {
             var course = await _courseRepository.GetByIdAsync(id);
             if (course == null)
@@ -57,7 +57,7 @@ namespace Eduology.Controllers
             return Ok(course);
         }
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> UpdateAsync(int id,[FromBody] CourseDto courseDto)
+        public async Task<IActionResult> UpdateAsync(String id,[FromBody] CourseDto courseDto)
         {
             if (!ModelState.IsValid)
             {
@@ -65,7 +65,7 @@ namespace Eduology.Controllers
             }
 
             var updated = await _courseRepository.UpdateAsync(id,courseDto);
-            if (!updated)
+            if (updated == null)
             {
                 return NotFound();
             }
@@ -73,10 +73,10 @@ namespace Eduology.Controllers
             return Ok(new { message = "Course updated successfully" });
         }
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
            var course =  await _courseRepository.DeleteAsync(id);
-           if(!course)
+           if(course == null)
                 return Ok(new { message = "This course is not exist" });
            return Ok(new { message = "Course deleted successfully" });
         }

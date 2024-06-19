@@ -91,7 +91,6 @@ namespace Eduology.Infrastructure.Repositories
             _context.SaveChanges();
             return _course;
         }
-
         async Task<CourseDetailsDto> ICourseRepository.GetByNameAsync(string name)
         {
             var course = await _context.Courses

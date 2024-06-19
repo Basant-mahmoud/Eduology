@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Eduology.Infrastructure.Services
 {
+
     public class CourseService : ICourseService
     {
         private readonly ICourseRepository _courseRepository;

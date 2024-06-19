@@ -13,7 +13,7 @@ namespace Eduology.Domain.Models
         public string URL { get; set; }
         public int TypeId { get; set; } // Foreign key
         public virtual Type MaterialType { get; set; } // Navigation property
-        public int CourseId { get; set; } // Foreign key
+        public String CourseId { get; set; } // Foreign key
         public virtual Course Course { get; set; } // Navigation property
         public string InstructorId { get; set; } 
         public virtual ApplicationUser Instructor { get; set; }

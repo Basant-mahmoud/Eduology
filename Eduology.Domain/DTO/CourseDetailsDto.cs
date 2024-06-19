@@ -10,7 +10,7 @@ namespace Eduology.Domain.DTO
 {
     public class CourseDetailsDto
     {
-        public int CourseId { get; set; }
+        public string CourseId { get; set; }
         [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }
         public string CourseCode { get; set; }
