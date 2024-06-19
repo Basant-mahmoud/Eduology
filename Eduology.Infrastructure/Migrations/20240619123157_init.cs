@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Eduology.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class inti : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,6 +46,7 @@ namespace Eduology.Infrastructure.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    OrganizationId = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -215,15 +216,15 @@ namespace Eduology.Infrastructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    OrganizationAddressAddressId = table.Column<int>(type: "int", nullable: false),
+                    AddressId = table.Column<int>(type: "int", nullable: false),
                     AdminId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Organizations", x => x.OrganizationID);
                     table.ForeignKey(
-                        name: "FK_Organizations_Addresses_OrganizationAddressAddressId",
-                        column: x => x.OrganizationAddressAddressId,
+                        name: "FK_Organizations_Addresses_AddressId",
+                        column: x => x.AddressId,
                         principalTable: "Addresses",
                         principalColumn: "AddressId",
                         onDelete: ReferentialAction.Cascade);
@@ -534,15 +535,15 @@ namespace Eduology.Infrastructure.Migrations
                 column: "TypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Organizations_AddressId",
+                table: "Organizations",
+                column: "AddressId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Organizations_AdminId",
                 table: "Organizations",
                 column: "AdminId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Organizations_OrganizationAddressAddressId",
-                table: "Organizations",
-                column: "OrganizationAddressAddressId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudentCourses_CourseId",

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eduology.Infrastructure.Migrations
 {
     [DbContext(typeof(EduologyDBContext))]
-    [Migration("20240619011416_inti")]
-    partial class inti
+    [Migration("20240619123157_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,6 +126,9 @@ namespace Eduology.Infrastructure.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -319,6 +322,9 @@ namespace Eduology.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrganizationID"));
 
+                    b.Property<int>("AddressId")
+                        .HasColumnType("int");
+
                     b.Property<string>("AdminId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -333,19 +339,16 @@ namespace Eduology.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("OrganizationAddressAddressId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("OrganizationID");
 
+                    b.HasIndex("AddressId");
+
                     b.HasIndex("AdminId")
                         .IsUnique();
-
-                    b.HasIndex("OrganizationAddressAddressId");
 
                     b.ToTable("Organizations");
                 });
@@ -661,15 +664,15 @@ namespace Eduology.Infrastructure.Migrations
 
             modelBuilder.Entity("Eduology.Domain.Models.Organization", b =>
                 {
-                    b.HasOne("Eduology.Domain.Models.ApplicationUser", "Admin")
-                        .WithOne("organization")
-                        .HasForeignKey("Eduology.Domain.Models.Organization", "AdminId")
+                    b.HasOne("Eduology.Domain.Models.Address", "OrganizationAddress")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Eduology.Domain.Models.Address", "OrganizationAddress")
-                        .WithMany()
-                        .HasForeignKey("OrganizationAddressAddressId")
+                    b.HasOne("Eduology.Domain.Models.ApplicationUser", "Admin")
+                        .WithOne("organization")
+                        .HasForeignKey("Eduology.Domain.Models.Organization", "AdminId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
