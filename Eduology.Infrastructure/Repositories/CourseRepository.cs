@@ -110,5 +110,31 @@ namespace Eduology.Infrastructure.Repositories
                 students = course.StudentCourses.Select(sc => sc.Student.Name).ToList()
             };
         }
+        public async Task<bool> AddInstructorToCourseAsync(string instructorId, string courseCode)
+        {
+            var instructor = await _context.Users.FindAsync(instructorId);
+            if (instructor == null)
+                return false; 
+            // Find the course by course code
+            var course = await _context.Courses
+                .Include(c => c.CourseInstructors)
+                .FirstOrDefaultAsync(c => c.CourseCode == courseCode);
+            if (course == null)
+                return false; 
+            // Check if the instructor is already assigned to the course
+            if (course.CourseInstructors.Any(ci => ci.InstructorId == instructorId))
+                return true; 
+
+            var courseInstructor = new CourseInstructor
+            {
+                InstructorId = instructorId,
+                CourseId = course.CourseId
+            };
+
+            _context.courseInstructors.Add(courseInstructor);
+            await _context.SaveChangesAsync();
+
+            return true; 
+        }
     }
 }

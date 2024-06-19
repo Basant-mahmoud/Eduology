@@ -2,16 +2,18 @@
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
+using Eduology.Infrastructure.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Eduology.Infrastructure.Repositories;
 namespace Eduology.Infrastructure.Services
 {
 
     public class CourseService : ICourseService
     {
         private readonly ICourseRepository _courseRepository;
+       
 
         public CourseService(ICourseRepository courseRepository)
         {
@@ -66,6 +68,13 @@ namespace Eduology.Infrastructure.Services
             if (course == null)
                 return null;
             return course;
+        }
+        public async Task<bool> AddInstructorToCourseAsync(string instructorId, string courseCode)
+        {
+            var instructor = await _courseRepository.AddInstructorToCourseAsync(instructorId, courseCode);
+            if (instructor == null|| instructor==false)
+                return false; 
+           return instructor;
         }
     }
 }
