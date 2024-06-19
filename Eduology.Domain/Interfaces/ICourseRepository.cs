@@ -18,6 +18,6 @@ namespace Eduology.Domain.Interfaces
         Task<CourseDetailsDto> GetByNameAsync(string name);
         Task<IEnumerable<CourseDetailsDto>> GetAllAsync();
         Task<Course> UpdateAsync(String id, CourseDto course);
-
+        Task<bool> AddMateriaCourseAsync(Material material);
     }
 }
