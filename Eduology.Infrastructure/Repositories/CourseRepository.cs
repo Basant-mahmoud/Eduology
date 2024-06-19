@@ -87,6 +87,8 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<Course> UpdateAsync(String id, CourseDto course)
         {
             var _course = await _context.Courses.FindAsync(id);
+            if (_course == null)
+                return null;
             _course.Name = course.Name;
             _course.CourseCode = course.CourseCode;
             _course.Year = course.Year;
