@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Eduology.Domain.Models;
+using Eduology.Domain.Models;
+using File = Eduology.Domain.Models.File;
 
 namespace Eduology.Infrastructure.Persistence
 {
@@ -93,6 +95,12 @@ namespace Eduology.Infrastructure.Persistence
             .WithOne(a => a.Course)
             .HasForeignKey(a => a.CourseId)
             .OnDelete(DeleteBehavior.Cascade);
+            // Configure one-to-one relationship between assignment and file
+            modelBuilder.Entity<Assignment>()
+              .HasOne(a => a.File)
+              .WithOne(f => f.Assignment)
+              .HasForeignKey< File>(f => f.AssignmentId)
+              .OnDelete(DeleteBehavior.Cascade);
 
         }
 
