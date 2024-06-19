@@ -13,7 +13,7 @@ namespace Eduology.Infrastructure.Services
     public class AssignmentServices : IAsignmentServices
     {
         private readonly IAssignmentRepository _asignmentRepository;
-        AssignmentServices(IAssignmentRepository asignmentRepository)
+        public AssignmentServices(IAssignmentRepository asignmentRepository)
         {
             _asignmentRepository = asignmentRepository;
         }
