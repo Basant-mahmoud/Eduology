@@ -20,6 +20,7 @@ using Eduology.Application.Services.Interface;
 using Eduology.Infrastructure.Services_class;
 using Eduology.Application.Services.Helper;
 using Eduology.Infrastructure.Services;
+using Eduology.Application.Interface;
 namespace Eduology
 {
     public class Program
