@@ -75,7 +75,8 @@ namespace Eduology.Infrastructure.Repositories
             var instructor = await _context.Users.FindAsync(id);
             if (instructor == null)
             {
-                throw new KeyNotFoundException("Instructor not found.");
+                //throw new KeyNotFoundException("Instructor not found.");
+                return false;
             }
 
             if (!string.IsNullOrEmpty(updateInstructorDto.Name))
