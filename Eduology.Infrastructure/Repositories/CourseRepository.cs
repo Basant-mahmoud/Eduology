@@ -72,7 +72,8 @@ namespace Eduology.Infrastructure.Repositories
                 .Include(c => c.StudentCourses)
                 .ThenInclude(sc => sc.Student)
                 .FirstOrDefaultAsync(c => c.CourseId == id);
-
+            if (course == null)
+                return null;
             return new CourseDetailsDto
             {
                 CourseId = course.CourseId,
@@ -86,6 +87,8 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<Course> UpdateAsync(String id, CourseDto course)
         {
             var _course = await _context.Courses.FindAsync(id);
+            if (_course == null)
+                return null;
             _course.Name = course.Name;
             _course.CourseCode = course.CourseCode;
             _course.Year = course.Year;
@@ -100,7 +103,8 @@ namespace Eduology.Infrastructure.Repositories
                 .Include(c => c.StudentCourses)
                     .ThenInclude(sc => sc.Student)
                 .FirstOrDefaultAsync(c => c.Name == name);
-
+            if (course == null)
+                return null;
             return new CourseDetailsDto
             {
                 CourseId = course.CourseId,
