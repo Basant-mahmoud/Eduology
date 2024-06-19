@@ -69,12 +69,6 @@ namespace Eduology.Infrastructure.Services
                 return null;
             return course;
         }
-        public async Task<bool> AddInstructorToCourseAsync(string instructorId, string courseCode)
-        {
-            var instructor = await _courseRepository.AddInstructorToCourseAsync(instructorId, courseCode);
-            if (instructor == null|| instructor==false)
-                return false; 
-           return instructor;
-        }
+        
     }
 }

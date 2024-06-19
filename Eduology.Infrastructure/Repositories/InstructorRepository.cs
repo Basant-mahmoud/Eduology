@@ -112,5 +112,30 @@ namespace Eduology.Infrastructure.Repositories
                 Email = user.Email
             };
         }
+        public async Task<bool> RegisterToCourseAsync(string instructorId, string courseCode)
+        {
+            var instructor = await _context.Users.FindAsync(instructorId);
+            if (instructor == null)
+                return false;
+            var course = await _context.Courses
+                .Include(c => c.CourseInstructors)
+                .FirstOrDefaultAsync(c => c.CourseCode == courseCode);
+            if (course == null)
+                return false;
+            // Check if the instructor is already assigned to the course
+            if (course.CourseInstructors.Any(ci => ci.InstructorId == instructorId))
+                return true;
+
+            var courseInstructor = new CourseInstructor
+            {
+                InstructorId = instructorId,
+                CourseId = course.CourseId
+            };
+
+            _context.courseInstructors.Add(courseInstructor);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

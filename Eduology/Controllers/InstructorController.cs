@@ -3,6 +3,7 @@ using Eduology.Application.Services.Interface;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
+using Eduology.Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -93,6 +94,20 @@ namespace Eduology.Controllers
             }
 
             return Ok(new { message = "Instructor deleted successfully" });
+        }
+        [HttpPost("RegisterToCourse")]
+        public async Task<IActionResult> RegisterToCourse([FromBody] RegisterToCourseDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var success = await _instructorService.RegisterToCourseAsync(model.InstructorId, model.CourseCode);
+            if (success)
+                return Ok("Instructor added to the course successfully.");
+            else
+                return BadRequest("Failed to add instructor to the course.");
         }
     }
 }

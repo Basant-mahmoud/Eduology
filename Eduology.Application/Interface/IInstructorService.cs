@@ -15,5 +15,6 @@ namespace Eduology.Application.Interface
         Task<UserDto> GetInstructorByUserNameAsync(string userName);
         Task<bool> DeleteInstructorAsync(string id);
         Task<bool> UpdateInstructorAsync(string id, UserDto updateInstructorDto);
+        Task<bool> RegisterToCourseAsync(string instructorId, string courseCode);
     }
 }

@@ -87,16 +87,7 @@ namespace Eduology.Controllers
         }
 
 
-        [HttpPost("add-instructor-to-course")]
-        public async Task<IActionResult> AddInstructorToCourse(string instructorId, string courseCode)
-        {
-            var success = await _courseService.AddInstructorToCourseAsync(instructorId, courseCode);
-
-            if (success)
-                return Ok("Instructor added to the course successfully.");
-            else
-                return BadRequest("Failed to add instructor to the course.");
-        }
+        
 
     }
 }

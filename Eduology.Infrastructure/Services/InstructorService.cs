@@ -2,6 +2,7 @@
 using Eduology.Application.Services.Interface;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
+using Eduology.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,6 +80,13 @@ namespace Eduology.Infrastructure.Services_class
             }
 
             return await _instructorRepository.UpdateInstructorAsync(id, updateInstructorDto);
+        }
+        public async Task<bool> RegisterToCourseAsync(string instructorId, string courseCode)
+        {
+            var instructor = await _instructorRepository.RegisterToCourseAsync(instructorId, courseCode);
+            if (instructor == null || instructor == false)
+                return false;
+            return instructor;
         }
     }
 }
