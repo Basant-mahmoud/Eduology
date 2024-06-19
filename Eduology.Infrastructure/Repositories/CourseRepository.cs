@@ -20,22 +20,24 @@ namespace Eduology.Infrastructure.Repositories
         {
             _context = context;
         }
-        public async Task<Course> CreateAsync(CourseDto courseDto)
+        public async Task<Course> CreateAsync(Course course)
         {
-            var course = new Course
+            // Check if the organization exists
+            if (!await OrganizationExistsAsync(course.OrganizationID))
             {
-                CourseId = Guid.NewGuid().ToString(),
-                CourseCode = courseDto.CourseCode,
-                Name = courseDto.Name,
-                Year = courseDto.Year,
-            };
+                throw new KeyNotFoundException("Organization not found."); // Handle this case according to your application's error handling strategy
+                //return false;
+            }
 
             await _context.Courses.AddAsync(course);
             await _context.SaveChangesAsync();
             return course;
-
         }
 
+        public async Task<bool> ExistsByCourseCodeAsync(string courseCode)
+        {
+            return await _context.Courses.AnyAsync(c => c.CourseCode == courseCode);
+        }
         public async Task<Course> DeleteAsync(string id)
         {
             var course = await _context.Courses.FindAsync(id);
@@ -117,6 +119,12 @@ namespace Eduology.Infrastructure.Repositories
                 students = course.StudentCourses.Select(sc => sc.Student.Name).ToList()
             };
         }
-       
+
+        public async Task<bool> OrganizationExistsAsync(int organizationId)
+        {
+            return await _context.Organizations.AnyAsync(o => o.OrganizationID == organizationId);
+        }
+
+        
     }
 }

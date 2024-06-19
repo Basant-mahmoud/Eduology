@@ -10,7 +10,7 @@ namespace Eduology.Application.Interface
 {
     public interface ICourseService
     {
-        Task<Course> CreateAsync(CourseDto course);
+        Task<Course> CreateAsync(CourseCreationDto courseDto);
         Task<bool> DeleteAsync(String id);
         Task<CourseDetailsDto> GetByIdAsync(String id);
         Task<CourseDetailsDto> GetByNameAsync(string name);

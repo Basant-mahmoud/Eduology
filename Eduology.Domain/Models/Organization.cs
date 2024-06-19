@@ -11,6 +11,7 @@ namespace Eduology.Domain.Models
     {
         [Key]
         public int OrganizationID { get; set; }
+
         [Required]
         [MaxLength(100)]
         public string Name { get; set; }
@@ -21,7 +22,9 @@ namespace Eduology.Domain.Models
         public string Email { get; set; }
         public int AddressId { get; set; }
         public virtual Address Address { get; set; }
-        public string AdminId { get; set; }
-        public virtual ApplicationUser Admin {  get; set; }
+        public ICollection<Course> Courses { get; set; }
+        public ICollection<ApplicationUser> Users { get; set; }
+
+
     }
 }
