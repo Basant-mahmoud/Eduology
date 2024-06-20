@@ -1,6 +1,7 @@
 ﻿using Eduology.Application.Services.Interface;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
+using Eduology.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,13 @@ namespace Eduology.Infrastructure.Services
                 return false;
             }
             return success;
+        }
+        public async Task<bool> RegisterToCourseAsync(string studentId, string courseCode)
+        {
+            var student = await _studentRepository.RegisterToCourseAsync(studentId, courseCode);
+            if (student == null || student == false)
+                return false;
+            return student;
         }
     }
 }
