@@ -10,7 +10,7 @@ namespace Eduology.Controllers
     public class AssignmentController : Controller
     {
         private readonly IAsignmentServices _asignmentServices;
-        AssignmentController(IAsignmentServices asignmentServices)
+        public AssignmentController(IAsignmentServices asignmentServices)
         {
             _asignmentServices = asignmentServices;
         }
