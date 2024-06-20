@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Type = Eduology.Domain.Models.Type;
+using Microsoft.EntityFrameworkCore;
 namespace Eduology.Infrastructure.Repositories
 {
     public class MaterialRepository: IMaterialRepository
@@ -20,7 +22,7 @@ namespace Eduology.Infrastructure.Repositories
             var course = await _context.Courses.FindAsync(material.CourseId);
             if (course == null)
             {
-                
+                Console.Error.WriteLine($"course repo  not exist");
                 return false; 
             }
 
@@ -39,5 +41,26 @@ namespace Eduology.Infrastructure.Repositories
 
             return true;
         }
+
+        public async Task<(bool Success, bool Exists, Type Type)> AddTypeAsync(Type type)
+        {
+            var existingType = await _context.MaterialTypes
+                .FirstOrDefaultAsync(t => t.Name.ToLower() == type.Name.ToLower());
+
+            if (existingType != null)
+            {
+                return (false, true, null);
+            }
+
+            _context.MaterialTypes.Add(type);
+            await _context.SaveChangesAsync();
+            return (true, false, type);
+        }
+        public async Task<Type> GetTypeByNameAsync(string typeName)
+        {
+            return await _context.MaterialTypes
+                .FirstOrDefaultAsync(t => t.Name.ToLower() == typeName.ToLower());
+        }
     }
+
 }

@@ -15,21 +15,43 @@ namespace Eduology.Controllers
         {
             _materialService = materialService;
         }
-        [HttpPost("AddMatrial")]
-        public async Task<IActionResult> AddMatrial([FromBody] MaterialDto matrial)
+        [HttpPost("AddMaterial")]
+        public async Task<IActionResult> AddMaterial([FromBody] MaterialDto materialDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var success = await _materialService.AddMaterialAsync(matrial);
+            var success = await _materialService.AddMaterialAsync(materialDto);
             if (!success)
             {
                 return BadRequest(new { message = "Failed to add material." });
             }
 
             return Ok(new { message = "Material added successfully." });
+        }
+
+        [HttpPost("AddType")]
+        public async Task<IActionResult> AddType([FromBody] MaterialType type)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var (success, exists, createdType) = await _materialService.AddTypeAsync(type);
+            if (exists)
+            {
+                return BadRequest(new { message = "Module already exists." });
+            }
+
+            if (!success)
+            {
+                return BadRequest(new { message = "Failed to add module." });
+            }
+
+            return Ok(new { message = "Module added successfully.", createdType });
         }
     }
     
