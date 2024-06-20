@@ -10,20 +10,22 @@ namespace Eduology.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Add the Password column to the Organizations table
             migrationBuilder.AddColumn<string>(
-            name: "ConfirmPassword",
-            table: "Organizations",
-            type: "nvarchar(max)",
-            nullable: false,
-            defaultValue: "");
+                name: "Password",
+                table: "Organizations",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            // Remove the Password column from the Organizations table
             migrationBuilder.DropColumn(
-            name: "ConfirmPassword",
-            table: "Organizations");
+                name: "Password",
+                table: "Organizations");
         }
     }
 }

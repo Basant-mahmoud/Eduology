@@ -19,13 +19,12 @@ namespace Eduology.Controllers
         }
 
         // POST: api/announcements/{courseId}/create
-        [HttpPost("create/{courseId}")]
+        [HttpPost("Create/{courseId}")]
         public async Task<ActionResult<AnnouncementDto>> PostAnnouncement(string courseId, string instructorId,AnnouncementDto announcementDto)
         {
             var createdAnnouncement = await _announcementService.CreateAsync(announcementDto, courseId, instructorId);
             return CreatedAtAction(nameof(GetAnnouncement), new { id = createdAnnouncement.Id }, createdAnnouncement);
         }
-
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncements()
         {
@@ -59,6 +58,22 @@ namespace Eduology.Controllers
 
             await _announcementService.DeleteAsync(id);
             return Ok(new { message = "Announcement deleted successfully." });
+        }
+        [HttpGet("Course/{courseId}")]
+        public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncementsByCourseId(string courseId)
+        {
+            var announcements = await _announcementService.GetAnnouncementsByCourseIdAsync(courseId);
+            return Ok(announcements);
+        }
+        [HttpGet("Course/{courseId}/Announcement/{announcementId}")]
+        public async Task<ActionResult<AnnouncementDto>> GetAnnouncementByIdAndCourseId(string courseId, int announcementId)
+        {
+            var announcement = await _announcementService.GetAnnouncementByIdAndCourseIdAsync(courseId, announcementId);
+            if (announcement == null)
+            {
+                return NotFound();
+            }
+            return Ok(announcement);
         }
     }
 }

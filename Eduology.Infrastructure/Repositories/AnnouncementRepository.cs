@@ -45,6 +45,17 @@ namespace Eduology.Infrastructure.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<IEnumerable<Announcement>> GetByCourseIdAsync(string courseId)
+        {
+            return await _context.Announcements
+                .Where(a => a.CourseId == courseId)
+                .ToListAsync();
+        }
+        public async Task<Announcement> GetAnnouncementByIdAndCourseIdAsync(string courseId, int announcementId)
+        {
+            return await _context.Announcements
+                                 .FirstOrDefaultAsync(a => a.CourseId == courseId && a.AnnouncementId == announcementId);
+        }
     }
 }
 

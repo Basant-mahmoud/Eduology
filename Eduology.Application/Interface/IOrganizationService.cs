@@ -10,8 +10,8 @@ namespace Eduology.Application.Interface
 {
     public interface IOrganizationService
     {
-        Task<IEnumerable<OrganizationDto>> GetAllOrganizationsAsync();
-        Task<OrganizationDto> GetOrganizationByIdAsync(int id);
+        Task<List<OrganizationDetailsDto>> GetAllOrganizationsAsync();
+        Task<OrganizationDetailsDto> GetOrganizationByIdAsync(int id);
         Task<OrganizationDto> CreateOrganizationAsync(OrganizationDto organizationDto);
         Task<bool> DeleteOrganizationAsync(int id);
     }

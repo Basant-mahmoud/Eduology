@@ -2,6 +2,7 @@
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,29 +12,41 @@ namespace Eduology.Infrastructure.Services
     public class OrganizationService : IOrganizationService
     {
         private readonly IOrganizationRepository _organizationRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public OrganizationService(IOrganizationRepository organizationRepository)
+        public OrganizationService(IOrganizationRepository organizationRepository,UserManager<ApplicationUser> userManager)
         {
             _organizationRepository = organizationRepository;
+            _userManager = userManager;
         }
 
-        public async Task<IEnumerable<OrganizationDto>> GetAllOrganizationsAsync()
+        public async Task<List<OrganizationDetailsDto>> GetAllOrganizationsAsync()
         {
             var organizations = await _organizationRepository.GetAllAsync();
             if (organizations == null)
-                return Enumerable.Empty<OrganizationDto>();
+                return null;
+            var organizationDtos = new List<OrganizationDetailsDto>();
+            foreach (var organization in organizations)
+            {
+                var organizationDto = await MapToOrganizationDtoAsync(organization);
+                if (organizationDto != null)
+                {
+                    organizationDtos.Add(organizationDto);
+                }
+            }
 
-            return organizations.Select(org => MapToOrganizationDto(org));
+            return organizationDtos;
         }
 
-        public async Task<OrganizationDto> GetOrganizationByIdAsync(int id)
+        public async Task<OrganizationDetailsDto> GetOrganizationByIdAsync(int id)
         {
             var organization = await _organizationRepository.GetByIdAsync(id);
             if (organization == null)
             {
                 return null;
             }
-            return MapToOrganizationDto(organization);
+            var _organziation= MapToOrganizationDtoAsync(organization);
+            return await _organziation;
         }
 
         public async Task<OrganizationDto> CreateOrganizationAsync(OrganizationDto organizationDto)
@@ -56,7 +69,16 @@ namespace Eduology.Infrastructure.Services
             await _organizationRepository.AddAsync(organization);
 
             var createdOrganization = await _organizationRepository.GetByIdAsync(organization.OrganizationID);
-            return MapToOrganizationDto(createdOrganization);
+            if (createdOrganization == null)
+                return null;
+            return new OrganizationDto
+            {
+                Name = organization.Name,
+                Phone = organization.Phone,
+                Email = organization.Email,
+                Password = organization.Password,
+                ConfirmPassword = organization.ConfirmPassword,
+            };
         }
         public async Task<bool> DeleteOrganizationAsync(int id)
         {
@@ -70,20 +92,32 @@ namespace Eduology.Infrastructure.Services
             return true;
         }
 
-        private OrganizationDto MapToOrganizationDto(Organization organization)
+        private async Task<OrganizationDetailsDto> MapToOrganizationDtoAsync(Organization organization)
         {
             if (organization == null)
                 return null;
-
-            return new OrganizationDto
+            var adminUsers = new List<ApplicationUser>();
+            var studentUsers = new List<ApplicationUser>();
+            var instructorUsers = new List<ApplicationUser>();
+            foreach (var user in organization.Users)
             {
-                Name = organization.Name,
-                Phone = organization.Phone,
-                Email = organization.Email,
-                Password = organization.Password,
-                ConfirmPassword = organization.ConfirmPassword,
-                Courses = organization.Courses.ToList(),
-                Users = organization.Users.ToList()
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Contains("Admin"))
+                    adminUsers.Add(user);
+                else if(roles.Contains("Student"))
+                    studentUsers.Add(user);
+                else if (roles.Contains("Instructor"))
+                    instructorUsers.Add(user);
+
+            }
+            return new OrganizationDetailsDto
+            {
+               OrganizationID = organization.OrganizationID,
+               admins = adminUsers,
+               instructors = instructorUsers,
+               students = studentUsers,
+               Courses = (List<Course>)organization.Courses,
+               
             };
         }
     }

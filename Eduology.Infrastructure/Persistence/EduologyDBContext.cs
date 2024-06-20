@@ -23,6 +23,8 @@ namespace Eduology.Infrastructure.Persistence
         public DbSet<Domain.Models.Type> MaterialTypes { get; set; } // Add this line
         public DbSet<Announcement> Announcements { get; set; } // Add this line
         public DbSet<Assignment> Assignments { get; set; }
+        public DbSet<AssignmentFile> AssignmentFiles { get; set; }
+
         public DbSet<Submission> submissions { get; set; }
         public DbSet<Domain.Models.File> Files { get; set; }
         public DbSet<Organization> Organizations { get; set; }
@@ -112,9 +114,7 @@ namespace Eduology.Infrastructure.Persistence
             .HasForeignKey(u => u.OrganizationId)
             .OnDelete(DeleteBehavior.Cascade);
 
-            // Ignore ConfirmPassword in the Organization entity
-           modelBuilder.Entity<Organization>()
-             .Ignore(o => o.ConfirmPassword);
+
             // Configure one-to-many relationship between Material and File
             modelBuilder.Entity<Material>()
                 .HasMany(m => m.Files)
