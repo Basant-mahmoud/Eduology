@@ -137,5 +137,32 @@ namespace Eduology.Infrastructure.Repositories
 
             return true;
         }
+
+        public async Task<List<CourseUserDto>> GetAllCourseToSpecificInstructorAsync(string InstructorId)
+        {
+            var instructor = await _context.Users.FindAsync(InstructorId);
+            if (instructor == null)
+            {
+                return null; 
+            }
+
+            var courseInstructors = await _context.courseInstructors
+                .Where(ci => ci.InstructorId == InstructorId)
+                .Include(ci => ci.course) 
+                .Select(ci => ci.course)
+                .ToListAsync();
+
+            var courseDtos = courseInstructors.Select(course => new CourseUserDto
+            {
+                InstructorName = instructor.Name,
+                CourseName = course.Name,
+                CourseDescription = course.Description,
+                year = course.Year 
+            }).ToList();
+
+            return courseDtos;
+        }
+
+       
     }
 }

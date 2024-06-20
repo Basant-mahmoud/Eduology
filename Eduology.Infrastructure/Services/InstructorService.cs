@@ -3,6 +3,7 @@ using Eduology.Application.Services.Interface;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Infrastructure.Repositories;
+using NuGet.Protocol.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,5 +89,32 @@ namespace Eduology.Infrastructure.Services_class
                 return false;
             return instructor;
         }
+
+        public async Task<List<CourseUserDto>> GetAllCourseToSpecificInstructorAsync(string InstructorId)
+        {
+            var instructor = await _instructorRepository.GetInstructorByIdAsync(InstructorId);
+            if (instructor == null)
+            {
+                return null;
+                throw new KeyNotFoundException("Instructor not found.");
+            }
+
+            var courses = await _instructorRepository.GetAllCourseToSpecificInstructorAsync(InstructorId);
+            if (courses == null || !courses.Any())
+            {
+                return new List<CourseUserDto>(); 
+            }
+
+            var courseDtos = courses.Select(course => new CourseUserDto
+            {
+                InstructorName = instructor.Name,
+                CourseName = course.CourseName,
+                CourseDescription = course.CourseDescription,
+                year = course.year
+            }).ToList();
+
+            return courseDtos;
+        }
+
     }
 }
