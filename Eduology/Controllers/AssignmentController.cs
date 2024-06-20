@@ -1,4 +1,5 @@
 ﻿using Eduology.Application.Interface;
+using Eduology.Domain.DTO;
 using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
@@ -15,7 +16,7 @@ namespace Eduology.Controllers
             _asignmentServices = asignmentServices;
         }
         [HttpPost("Create")]
-        public async Task<ActionResult> Create([FromBody] Assignment assignment)
+        public async Task<ActionResult> Create([FromBody] AssignmentDto assignment)
         {
             if (!ModelState.IsValid)
             {
@@ -23,7 +24,7 @@ namespace Eduology.Controllers
             }
             var _assignment = await _asignmentServices.CreateAsync(assignment);
 
-            return CreatedAtAction(nameof(GetById), new { id = _assignment.CourseId }, assignment);
+            return CreatedAtAction(nameof(GetById), new { id = _assignment.CourseId }, _assignment);
         }
         [HttpGet("GetById")]
         public async Task<ActionResult> GetById(int id)
@@ -56,7 +57,7 @@ namespace Eduology.Controllers
             return Ok(new { Message = "Assignment deleted Successfully" });
         }
         [HttpPut("Update")]
-        public async Task<ActionResult> Udate(int id,Assignment assignment)
+        public async Task<ActionResult> Udate(int id,AssignmentDto assignment)
         {
             var _assignment = await _asignmentServices.UpdateAsync(id,assignment);
             if (_assignment == null)
@@ -64,6 +65,14 @@ namespace Eduology.Controllers
                 return BadRequest(ModelState);
             }
             return Ok(new { Message = "Assignment Updated Successfully" });
+        }
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            var assignemts = await _asignmentServices.GetAllAsync();
+            if(assignemts == null)
+                return BadRequest(ModelState);
+            return Ok(assignemts);
         }
 
     }

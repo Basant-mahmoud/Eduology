@@ -224,7 +224,7 @@ namespace Eduology.Infrastructure.Migrations
                     b.HasIndex("AssignmentId")
                         .IsUnique();
 
-                    b.ToTable("AssignmentFile");
+                    b.ToTable("AssignmentFiles");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.Course", b =>
