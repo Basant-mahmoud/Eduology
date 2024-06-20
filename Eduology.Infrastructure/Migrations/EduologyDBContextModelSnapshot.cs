@@ -284,7 +284,7 @@ namespace Eduology.Infrastructure.Migrations
                     b.Property<string>("FileId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("MaterialId")
+                    b.Property<int>("MaterialId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -670,7 +670,8 @@ namespace Eduology.Infrastructure.Migrations
                     b.HasOne("Eduology.Domain.Models.Material", "Material")
                         .WithMany("Files")
                         .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Material");
                 });

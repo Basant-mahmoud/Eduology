@@ -112,9 +112,7 @@ namespace Eduology.Infrastructure.Persistence
             .HasForeignKey(u => u.OrganizationId)
             .OnDelete(DeleteBehavior.Cascade);
 
-            // Ignore ConfirmPassword in the Organization entity
-           modelBuilder.Entity<Organization>()
-             .Ignore(o => o.ConfirmPassword);
+
             // Configure one-to-many relationship between Material and File
             modelBuilder.Entity<Material>()
                 .HasMany(m => m.Files)

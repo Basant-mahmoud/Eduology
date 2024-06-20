@@ -27,6 +27,7 @@ namespace Eduology.Domain.Models
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+        [NotMapped]
         [Required]
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Password and confirmation password do not match.")]
