@@ -84,5 +84,24 @@ namespace Eduology.Infrastructure.Services
             var (success, exists, createdType) = await _matrialRepository.AddTypeAsync(type);
             return (success, exists, createdType);
         }
+        public async Task<List<MaterialDto>> GetAllMaterialsAsync()
+        {
+            var materials = await _matrialRepository.GetAllMaterialsAsync();
+
+            var materialDtos = materials.Select(m => new MaterialDto
+            {
+                Title = m.Title,
+                MaterialType = m.MaterialType?.Name, // Assuming MaterialType is nullable
+                InstructorId = m.InstructorId,
+                CourseId = m.CourseId,
+                FileURLs = m.Files.Select(f => new FileDto
+                {
+                    URL = f.URL,
+                    Title = f.Title
+                }).ToList()
+            }).ToList();
+
+            return materialDtos;
+        }
     }
 }

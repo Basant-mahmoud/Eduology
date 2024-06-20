@@ -61,6 +61,13 @@ namespace Eduology.Infrastructure.Repositories
             return await _context.MaterialTypes
                 .FirstOrDefaultAsync(t => t.Name.ToLower() == typeName.ToLower());
         }
+        public async Task<List<Material>> GetAllMaterialsAsync()
+        {
+            return await _context.Materials
+                .Include(m => m.MaterialType)
+                .Include(m => m.Files)
+                .ToListAsync();
+        }
     }
 
 }

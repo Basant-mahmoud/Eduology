@@ -13,5 +13,6 @@ namespace Eduology.Domain.Interfaces
         Task<bool> AddMateriaCourseAsync(Material material);
         Task<(bool Success, bool Exists, Type Type)> AddTypeAsync(Type type);
         Task<Type> GetTypeByNameAsync(string typeName);
+        Task<List<Material>> GetAllMaterialsAsync();
     }
 }

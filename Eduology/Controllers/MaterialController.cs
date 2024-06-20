@@ -1,5 +1,6 @@
 ﻿using Eduology.Application.Interface;
 using Eduology.Domain.DTO;
+using Eduology.Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -52,6 +53,18 @@ namespace Eduology.Controllers
             }
 
             return Ok(new { message = "Module added successfully.", createdType });
+        }
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            var materials = await _materialService.GetAllMaterialsAsync();
+
+            if (materials == null || !materials.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(materials);
         }
     }
     
