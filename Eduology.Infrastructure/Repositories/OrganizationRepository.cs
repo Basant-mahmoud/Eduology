@@ -46,5 +46,9 @@ namespace Eduology.Infrastructure.Repositories
         {
             return await _context.Organizations.AnyAsync(e => e.OrganizationID == id);
         }
+        public async Task<Organization> GetByEmailAsync(string email)
+        {
+            return await _context.Organizations.FirstOrDefaultAsync(o => o.Email == email);
+        }
     }
 }
