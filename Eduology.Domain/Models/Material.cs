@@ -16,6 +16,6 @@ namespace Eduology.Domain.Models
         public virtual Course Course { get; set; } // Navigation property
         public string InstructorId { get; set; }
         public virtual ApplicationUser Instructor { get; set; }
-
+        public virtual ICollection<File> Files { get; set; }
     }
 }

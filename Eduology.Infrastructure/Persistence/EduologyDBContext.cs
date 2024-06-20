@@ -110,6 +110,12 @@ namespace Eduology.Infrastructure.Persistence
             .WithOne(u => u.organization)
             .HasForeignKey(u => u.OrganizationId)
             .OnDelete(DeleteBehavior.Cascade);
+            // Configure one-to-many relationship between Material and File
+            modelBuilder.Entity<Material>()
+                .HasMany(m => m.Files)
+                .WithOne(f => f.Material)
+                .HasForeignKey(f => f.MaterialId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
 
