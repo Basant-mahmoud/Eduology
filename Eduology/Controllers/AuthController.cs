@@ -21,22 +21,30 @@ namespace Eduology.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterModel model)
         {
+            // Validate email format
             if (!ValidationHelper.IsValidEmail(model.Email))
             {
-                ModelState.AddModelError("", "Invalid email format");
+                ModelState.AddModelError("Email", "Invalid email format");
                 return BadRequest(ModelState);
             }
 
+            // Validate model state
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            // Call the register method of AuthService
             var result = await _authService.RegisterAsync(model);
 
+            // Handle authentication result
             if (!result.IsAuthenticated)
-                return BadRequest(result.Message);
+            {
+                ModelState.AddModelError("RegistrationError", result.Message);
+                return BadRequest(ModelState);
+            }
 
             return Ok(result);
         }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] LoginModel model)

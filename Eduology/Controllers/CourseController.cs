@@ -86,8 +86,23 @@ namespace Eduology.Controllers
            return Ok(new { message = "Course deleted successfully" });
         }
 
+        [HttpPost("AddMatrial")]
+        public async Task<IActionResult> AddMatrial([FromBody] MaterialDto matrial)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        
+            var updated = await _courseService.AddMateriaCourseAsync(matrial);
+            if (updated == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new { message = "Matrial Add successfully" });
+        }
+
 
     }
 }

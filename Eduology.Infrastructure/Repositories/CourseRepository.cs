@@ -125,6 +125,24 @@ namespace Eduology.Infrastructure.Repositories
             return await _context.Organizations.AnyAsync(o => o.OrganizationID == organizationId);
         }
 
-        
+        public async Task<bool> AddMateriaCourseAsync( Material material)
+        {
+            var course = await _context.Courses.FindAsync(material.CourseId);
+            if (course == null)
+                return false;
+
+            // Check if the material type exists and assign it
+            var materialType = await _context.MaterialTypes.FirstOrDefaultAsync(t => t.Name == material.MaterialType.Name);
+            if (materialType == null)
+            { 
+                return false;
+            }
+            course.Materials ??= new List<Material>();
+            course.Materials.Add(material);
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }   
     }
 }

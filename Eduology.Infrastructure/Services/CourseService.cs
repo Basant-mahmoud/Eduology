@@ -27,7 +27,7 @@ namespace Eduology.Infrastructure.Services
             do
             {
                 courseCode = GenerateCourseCode();
-            } while (await _courseRepository.ExistsByCourseCodeAsync( courseCode));
+            } while (await _courseRepository.ExistsByCourseCodeAsync(courseCode));
 
             var course = new Course
             {
@@ -35,7 +35,7 @@ namespace Eduology.Infrastructure.Services
                 Name = courseDto.Name,
                 CourseCode = courseCode,
                 Year = courseDto.Year,
-               OrganizationID = courseDto.OrganizationId // Assuming OrganizationID is part of CourseCreationDto
+                OrganizationID = courseDto.OrganizationId 
 
             };
 
@@ -90,5 +90,24 @@ namespace Eduology.Infrastructure.Services
             return course;
         }
 
+        public async Task<bool> AddMateriaCourseAsync(MaterialDto materialDto)
+        {
+            var course = await _courseRepository.GetByIdAsync(materialDto.courseId);
+            if (course == null)
+                return false;
+
+            var material = new Material
+            {
+                Title = materialDto.Title,
+                URL = materialDto.URL,
+                InstructorId = materialDto.InstructorId,
+                MaterialType = new Domain.Models.Type { Name = materialDto.MatrialType } // Assuming you want to create a new Type if it doesn't exist
+            };
+
+            var success = await _courseRepository.AddMateriaCourseAsync(material);
+            return success;
+        }
+
+       
     }
 }
