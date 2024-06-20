@@ -18,6 +18,7 @@ using Eduology.Application.Interface;
 using Microsoft.IdentityModel.Tokens;
 using Eduology.Application.Services.Helper;
 using Eduology.Infrastructure.Services_class;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace Eduology
 {
@@ -43,6 +44,7 @@ namespace Eduology
                         .AllowCredentials());
             });
 
+            /////////////////
             // Add services to the container.
             builder.Services.Configure<JWT>(Configuration.GetSection("JWT"));
 
@@ -70,6 +72,8 @@ namespace Eduology
             builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
             builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 
+            builder.Services.AddScoped<IMaterialService, MaterialService>();
+            builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
             // Configure JWT authentication
             builder.Services.AddAuthentication(options =>
             {

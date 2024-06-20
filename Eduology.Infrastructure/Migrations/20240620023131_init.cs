@@ -279,7 +279,7 @@ namespace Eduology.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Deadline = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     InstructorId = table.Column<string>(type: "nvarchar(450)", nullable: false)
@@ -332,7 +332,6 @@ namespace Eduology.Infrastructure.Migrations
                     MaterialId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    URL = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TypeId = table.Column<int>(type: "int", nullable: false),
                     CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     InstructorId = table.Column<string>(type: "nvarchar(450)", nullable: false)
@@ -385,6 +384,27 @@ namespace Eduology.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AssignmentFile",
+                columns: table => new
+                {
+                    AssignmentFileId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    URL = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AssignmentId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AssignmentFile", x => x.AssignmentFileId);
+                    table.ForeignKey(
+                        name: "FK_AssignmentFile_Assignments_AssignmentId",
+                        column: x => x.AssignmentId,
+                        principalTable: "Assignments",
+                        principalColumn: "AssignmentId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "submissions",
                 columns: table => new
                 {
@@ -420,24 +440,16 @@ namespace Eduology.Infrastructure.Migrations
                     FileId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     URL = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AssignmentId = table.Column<int>(type: "int", nullable: false),
-                    MaterialId = table.Column<int>(type: "int", nullable: false)
+                    MaterialId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Files", x => x.FileId);
                     table.ForeignKey(
-                        name: "FK_Files_Assignments_AssignmentId",
-                        column: x => x.AssignmentId,
-                        principalTable: "Assignments",
-                        principalColumn: "AssignmentId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Files_Materials_MaterialId",
                         column: x => x.MaterialId,
                         principalTable: "Materials",
-                        principalColumn: "MaterialId",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "MaterialId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -495,6 +507,12 @@ namespace Eduology.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AssignmentFile_AssignmentId",
+                table: "AssignmentFile",
+                column: "AssignmentId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Assignments_CourseId",
                 table: "Assignments",
                 column: "CourseId");
@@ -524,12 +542,6 @@ namespace Eduology.Infrastructure.Migrations
                 name: "IX_Courses_OrganizationID",
                 table: "Courses",
                 column: "OrganizationID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Files_AssignmentId",
-                table: "Files",
-                column: "AssignmentId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Files_MaterialId",
@@ -592,6 +604,9 @@ namespace Eduology.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "AssignmentFile");
 
             migrationBuilder.DropTable(
                 name: "courseInstructors");

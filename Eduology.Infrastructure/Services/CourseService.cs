@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Eduology.Infrastructure.Repositories;
+using Type = Eduology.Domain.Models.Type;
 namespace Eduology.Infrastructure.Services
 {
 
@@ -90,24 +91,6 @@ namespace Eduology.Infrastructure.Services
             return course;
         }
 
-        public async Task<bool> AddMateriaCourseAsync(MaterialDto materialDto)
-        {
-            var course = await _courseRepository.GetByIdAsync(materialDto.courseId);
-            if (course == null)
-                return false;
-
-            var material = new Material
-            {
-                Title = materialDto.Title,
-                URL = materialDto.URL,
-                InstructorId = materialDto.InstructorId,
-                MaterialType = new Domain.Models.Type { Name = materialDto.MatrialType } // Assuming you want to create a new Type if it doesn't exist
-            };
-
-            var success = await _courseRepository.AddMateriaCourseAsync(material);
-            return success;
-        }
-
-       
+        
     }
 }

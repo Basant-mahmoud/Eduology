@@ -19,15 +19,15 @@ namespace Eduology.Infrastructure.Services
             _announcementRepository = announcementRepository;
         }
 
-        public async Task<AnnouncementDto> CreateAsync(AnnouncementDto announcementDto)
+        public async Task<AnnouncementDto> CreateAsync(AnnouncementDto announcementDto, string courseId,string instructorId)
         {
             var announcement = new Announcement
             {
                 Title = announcementDto.Title,
                 Content = announcementDto.Content,
                 CreatedAT = DateTime.UtcNow,
-                CourseId = announcementDto.CourseId,
-                InstructorId = announcementDto.InstructorId
+                CourseId = courseId,
+                InstructorId = instructorId
             };
 
             var createdAnnouncement = await _announcementRepository.AddAsync(announcement);
@@ -61,9 +61,7 @@ namespace Eduology.Infrastructure.Services
                 Id = announcement.AnnouncementId,
                 Title = announcement.Title,
                 Content = announcement.Content,
-                CreatedAt = announcement.CreatedAT,
-                CourseId = announcement.CourseId,
-                InstructorId = announcement.InstructorId
+                CreatedAT = announcement.CreatedAT
             };
         }
     }

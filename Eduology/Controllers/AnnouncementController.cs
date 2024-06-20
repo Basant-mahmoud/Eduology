@@ -18,11 +18,11 @@ namespace Eduology.Controllers
             _announcementService = announcementService;
         }
 
-        // POST: api/announcements/create
-        [HttpPost("create")]
-        public async Task<ActionResult<AnnouncementDto>> PostAnnouncement(AnnouncementDto announcementDto)
+        // POST: api/announcements/{courseId}/create
+        [HttpPost("create/{courseId}")]
+        public async Task<ActionResult<AnnouncementDto>> PostAnnouncement(string courseId, string instructorId,AnnouncementDto announcementDto)
         {
-            var createdAnnouncement = await _announcementService.CreateAsync(announcementDto);
+            var createdAnnouncement = await _announcementService.CreateAsync(announcementDto, courseId, instructorId);
             return CreatedAtAction(nameof(GetAnnouncement), new { id = createdAnnouncement.Id }, createdAnnouncement);
         }
 

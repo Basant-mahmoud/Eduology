@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace Eduology.Domain.DTO
 {
-    public class AnnouncementDto
+    public class FileDto
     {
+        public string URL { get; set; }
         public string Title { get; set; }
-        public string Content { get; set; }
-        public DateTime CreatedAT { get; set; }
-        public int Id { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace Eduology.Application.Interface
     {
         Task<IEnumerable<AnnouncementDto>> GetAllAsync();
         Task<AnnouncementDto> GetByIdAsync(int id);
-        Task<AnnouncementDto> CreateAsync(AnnouncementDto announcementDto);
+        Task<AnnouncementDto> CreateAsync(AnnouncementDto announcementDto, string courseId, string instructorId);
         Task DeleteAsync(int id);
     }
 }

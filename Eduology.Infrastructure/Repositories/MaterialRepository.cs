@@ -1,0 +1,66 @@
+﻿using Eduology.Domain.Interfaces;
+using Eduology.Domain.Models;
+using Eduology.Infrastructure.Persistence;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Type = Eduology.Domain.Models.Type;
+using Microsoft.EntityFrameworkCore;
+namespace Eduology.Infrastructure.Repositories
+{
+    public class MaterialRepository: IMaterialRepository
+    {
+        private readonly EduologyDBContext _context;
+        public MaterialRepository(EduologyDBContext context)
+        {
+            _context = context;
+        }
+         public async Task<bool> AddMateriaCourseAsync(Material material)
+        {
+            var course = await _context.Courses.FindAsync(material.CourseId);
+            if (course == null)
+            {
+                Console.Error.WriteLine($"course repo  not exist");
+                return false; 
+            }
+
+            course.Materials ??= new List<Material>();
+            course.Materials.Add(material);
+
+            if (material.Files != null && material.Files.Count > 0)
+            {
+                foreach (var file in material.Files)
+                {
+                    _context.Files.Add(file);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<(bool Success, bool Exists, Type Type)> AddTypeAsync(Type type)
+        {
+            var existingType = await _context.MaterialTypes
+                .FirstOrDefaultAsync(t => t.Name.ToLower() == type.Name.ToLower());
+
+            if (existingType != null)
+            {
+                return (false, true, null);
+            }
+
+            _context.MaterialTypes.Add(type);
+            await _context.SaveChangesAsync();
+            return (true, false, type);
+        }
+        public async Task<Type> GetTypeByNameAsync(string typeName)
+        {
+            return await _context.MaterialTypes
+                .FirstOrDefaultAsync(t => t.Name.ToLower() == typeName.ToLower());
+        }
+    }
+
+}

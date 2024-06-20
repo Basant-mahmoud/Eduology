@@ -1,4 +1,4 @@
-﻿﻿using Eduology.Domain.Models;
+﻿using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.Internal;
@@ -16,7 +16,7 @@ using Eduology.Domain.DTO;
 
 namespace Eduology.Infrastructure.Persistence
 {
-    public class EduologyDBContext: IdentityDbContext<ApplicationUser>
+    public class EduologyDBContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Course> Courses { get; set; }
         public DbSet<Material> Materials { get; set; } // Add this line
@@ -98,12 +98,12 @@ namespace Eduology.Infrastructure.Persistence
            .WithOne(c => c.Organization)
            .HasForeignKey(c => c.OrganizationID)
            .OnDelete(DeleteBehavior.Cascade);
-            
+
             // Configure one-to-one relationship between assignment and file
             modelBuilder.Entity<Assignment>()
               .HasOne(a => a.File)
               .WithOne(f => f.Assignment)
-              .HasForeignKey< File>(f => f.AssignmentId)
+              .HasForeignKey<AssignmentFile>(f => f.AssignmentId)
               .OnDelete(DeleteBehavior.Cascade);
             // One-to-many relationship between ApplicationUser and Organization
             modelBuilder.Entity<Organization>()
@@ -115,6 +115,12 @@ namespace Eduology.Infrastructure.Persistence
             // Ignore ConfirmPassword in the Organization entity
            modelBuilder.Entity<Organization>()
              .Ignore(o => o.ConfirmPassword);
+            // Configure one-to-many relationship between Material and File
+            modelBuilder.Entity<Material>()
+                .HasMany(m => m.Files)
+                .WithOne(f => f.Material)
+                .HasForeignKey(f => f.MaterialId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
 
