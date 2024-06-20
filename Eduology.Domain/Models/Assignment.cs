@@ -14,7 +14,7 @@ namespace Eduology.Domain.Models
         public DateTime? CreatedDate { get; set; }
         public DateTime Deadline { get; set; }
         public ICollection<Submission>? Submissions { get; set; }
-        public File File { get; set; }
+        public AssignmentFile File { get; set; }
         public String CourseId { get; set; } // Foreign key
         public Course? Course { get; set; } // Navigation property
         public string InstructorId { get; set; } // Foreign key

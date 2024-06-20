@@ -15,7 +15,7 @@ namespace Eduology.Controllers
             _asignmentServices = asignmentServices;
         }
         [HttpPost("Create")]
-        public async Task<ActionResult> Create(Assignment assignment)
+        public async Task<ActionResult> Create([FromBody] Assignment assignment)
         {
             if (!ModelState.IsValid)
             {

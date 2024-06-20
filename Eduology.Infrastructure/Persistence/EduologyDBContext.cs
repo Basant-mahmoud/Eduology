@@ -102,7 +102,7 @@ namespace Eduology.Infrastructure.Persistence
             modelBuilder.Entity<Assignment>()
               .HasOne(a => a.File)
               .WithOne(f => f.Assignment)
-              .HasForeignKey< File>(f => f.AssignmentId)
+              .HasForeignKey<AssignmentFile>(f => f.AssignmentId)
               .OnDelete(DeleteBehavior.Cascade);
             // One-to-many relationship between ApplicationUser and Organization
             modelBuilder.Entity<Organization>()

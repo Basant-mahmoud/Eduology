@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace Eduology.Domain.Models
 {
-    public class File
+    public class AssignmentFile
     {
-        public string FileId { get; set; }
+        public int AssignmentFileId { get; set; }
         public string URL { get; set; }
         public string Title { get; set; }
-        public int? MaterialId { get; set; } // Foreign key
-        public Material? Material { get; set; } // Navigation property
-
+        public Assignment Assignment { get; set; }
+        public int AssignmentId { get; set; }
     }
 }

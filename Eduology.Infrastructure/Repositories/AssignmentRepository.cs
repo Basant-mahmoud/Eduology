@@ -22,8 +22,6 @@ namespace Eduology.Infrastructure.Repositories
         }
         public async Task<Assignment> CreateAsync(Assignment assignment)
         {
-            File _file = new File();
-            _context.Files.Add(_file);
             var _assignment = new Assignment
             {
                 CourseId = assignment.CourseId,
@@ -31,13 +29,11 @@ namespace Eduology.Infrastructure.Repositories
                 InstructorId = assignment.InstructorId,
                 Deadline = assignment.Deadline,
                 Description = assignment.Description,
-                File = _file
+                
             };
-            _assignment.File.URL = assignment.File.URL;
-            _assignment.File.Title = assignment.File.Title;
             var __assignment = await _context.Assignments.AddAsync(_assignment);
             await _context.SaveChangesAsync();
-            return __assignment.Entity;
+            return assignment;
         }
         public async Task<Assignment> GetByIdAsync(int id)
         {

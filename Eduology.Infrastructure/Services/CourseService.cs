@@ -99,7 +99,6 @@ namespace Eduology.Infrastructure.Services
             var material = new Material
             {
                 Title = materialDto.Title,
-                URL = materialDto.URL,
                 InstructorId = materialDto.InstructorId,
                 MaterialType = new Domain.Models.Type { Name = materialDto.MatrialType } // Assuming you want to create a new Type if it doesn't exist
             };
