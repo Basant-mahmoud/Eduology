@@ -69,6 +69,36 @@ namespace Eduology.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> RegisterToCourseAsync(string studentId, string courseCode)
+        {
+            var student = await _context.Users.FindAsync(studentId);
+            if (student == null)
+            {
+                return false;
+            }
+            var course = await _context.Courses
+                .Include(c => c.StudentCourses)
+                .FirstOrDefaultAsync(c => c.CourseCode == courseCode);
+            if (course == null)
+            {
+                return false;
+            }
+            // Check if the student is already assigned to the course
+            if (course.StudentCourses.Any(ci => ci.StudentId == studentId))
+            {
+                return true;
+            }
+            var courseStudent = new StudentCourse
+            {
+                StudentId = studentId,
+                CourseId = course.CourseId
+            };
+
+            _context.StudentCourses.Add(courseStudent);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
         private async Task<UserDto> MapUserToDtoAsync(ApplicationUser user)
         {
             if (user == null)

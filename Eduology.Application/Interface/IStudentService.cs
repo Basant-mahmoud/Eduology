@@ -13,5 +13,6 @@ namespace Eduology.Application.Services.Interface
         Task<IEnumerable<UserDto>> GetAllStudentsAsync();
         Task<bool> UpdateStudentAsync(string studentId, UserDto userDto);
         Task<bool> DeleteStudentAsync(string studentId);
+        Task<bool> RegisterToCourseAsync(string studentId, string courseCode);
     }
 }

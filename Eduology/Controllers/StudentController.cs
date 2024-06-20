@@ -15,7 +15,7 @@ namespace Eduology.Controllers
         {
             _StudentService = studentService;
         }
-        [HttpGet("GetAllStudents")]
+        [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetStudents()
         {
             var Students = await _StudentService.GetAllStudentsAsync();
@@ -29,7 +29,7 @@ namespace Eduology.Controllers
             }
           
         }
-        [HttpGet("GetStudentbyId/{studentId}")]
+        [HttpGet("GetById/{studentId}")]
         public async Task<ActionResult<UserDto>> GetStudentById(string studentId)
         {
             var student = await _StudentService.GetStudentByIdAsync(studentId);
@@ -39,7 +39,7 @@ namespace Eduology.Controllers
             }
             return Ok(student);
         }
-        [HttpPut("UpdateStudent/{studentId}")]
+        [HttpPut("Update/{studentId}")]
         public async Task<IActionResult> UpdateStudentAsync(string studentId, [FromBody] UserDto studentDto)
         {
             if (!ModelState.IsValid)
@@ -56,7 +56,7 @@ namespace Eduology.Controllers
             return Ok(new { message = "Student updated successfully" });
         }
 
-        [HttpDelete("deleteStudent/{studentId}")]
+        [HttpDelete("delete/{studentId}")]
         public async Task<IActionResult> DeleteStudentAsync(string studentId)
         {
             var student = await _StudentService.DeleteStudentAsync(studentId);
@@ -66,6 +66,20 @@ namespace Eduology.Controllers
             }
 
             return Ok(new { message = "Student deleted successfully" });
+        }
+        [HttpPost("RegisterToCourse")]
+        public async Task<IActionResult> RegisterToCourse([FromBody] RegisterStudentToCourseDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var success = await _StudentService.RegisterToCourseAsync(model.StudentId, model.CourseCode);
+            if (success)
+                return Ok("Student added to the course successfully.");
+            else
+                return BadRequest("Failed to add student to the course.");
         }
     } 
 }

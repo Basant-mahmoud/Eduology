@@ -96,7 +96,7 @@ namespace Eduology.Controllers
             return Ok(new { message = "Instructor deleted successfully" });
         }
         [HttpPost("RegisterToCourse")]
-        public async Task<IActionResult> RegisterToCourse([FromBody] RegisterToCourseDto model)
+        public async Task<IActionResult> RegisterToCourse([FromBody] RegisterInstructorToCourseDto model)
         {
             if (!ModelState.IsValid)
             {
