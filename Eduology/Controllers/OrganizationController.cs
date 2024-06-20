@@ -18,8 +18,8 @@ namespace Eduology.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult<OrganizationDto>> PostOrganization(OrganizationDto organizationDto)
         {
-            await _organizationService.CreateOrganizationAsync(organizationDto);
-            return CreatedAtAction(nameof(GetOrganization), new { id = organizationDto.OrganizationID }, organizationDto);
+            var creatOrganization = await _organizationService.CreateOrganizationAsync(organizationDto);
+            return CreatedAtAction(nameof(GetOrganization), new { id = creatOrganization.OrganizationID }, creatOrganization);
         }
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<OrganizationDto>>> GetOrganizations()
@@ -47,7 +47,7 @@ namespace Eduology.Controllers
             }
 
             await _organizationService.DeleteOrganizationAsync(id);
-            return NoContent();
+            return Ok("Organization deleted successfully.");
         }
     }
 }

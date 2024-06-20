@@ -26,10 +26,12 @@ namespace Eduology.Infrastructure.Repositories
         {
             return await _context.Organizations.FindAsync(id);
         }
-        public async Task AddAsync(Organization organization)
+        public async Task<Organization> AddAsync(Organization organization)
         {
             await _context.Organizations.AddAsync(organization);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); 
+
+            return organization; 
         }
         public async Task DeleteAsync(int id)
         {

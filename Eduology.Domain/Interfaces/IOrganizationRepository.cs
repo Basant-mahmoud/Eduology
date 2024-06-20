@@ -11,7 +11,7 @@ namespace Eduology.Domain.Interfaces
     {
         Task<IEnumerable<Organization>> GetAllAsync();
         Task<Organization> GetByIdAsync(int id);
-        Task AddAsync(Organization organization);
+        Task<Organization> AddAsync(Organization organization);
         Task DeleteAsync(int id);
         Task<bool> ExistsAsync(int id);
     }

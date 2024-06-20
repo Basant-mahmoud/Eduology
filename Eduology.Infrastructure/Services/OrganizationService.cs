@@ -62,6 +62,7 @@ namespace Eduology.Infrastructure.Services
                 Name = organizationDto.Name,
                 Phone = organizationDto.Phone,
                 Email = organizationDto.Email,
+                AddressId = organizationDto.AddressId,
                 Password = organizationDto.Password,
                 ConfirmPassword = organizationDto.ConfirmPassword
             };
@@ -73,9 +74,11 @@ namespace Eduology.Infrastructure.Services
                 return null;
             return new OrganizationDto
             {
+                OrganizationID = organization.OrganizationID,
                 Name = organization.Name,
                 Phone = organization.Phone,
                 Email = organization.Email,
+                AddressId = organizationDto.AddressId,
                 Password = organization.Password,
                 ConfirmPassword = organization.ConfirmPassword,
             };
@@ -96,29 +99,41 @@ namespace Eduology.Infrastructure.Services
         {
             if (organization == null)
                 return null;
+
             var adminUsers = new List<ApplicationUser>();
             var studentUsers = new List<ApplicationUser>();
             var instructorUsers = new List<ApplicationUser>();
-            foreach (var user in organization.Users)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                if (roles.Contains("Admin"))
-                    adminUsers.Add(user);
-                else if(roles.Contains("Student"))
-                    studentUsers.Add(user);
-                else if (roles.Contains("Instructor"))
-                    instructorUsers.Add(user);
 
+            // Ensure users are loaded
+            if (organization.Users != null)
+            {
+                foreach (var user in organization.Users)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    if (roles.Contains("Admin"))
+                        adminUsers.Add(user);
+                    else if (roles.Contains("Student"))
+                        studentUsers.Add(user);
+                    else if (roles.Contains("Instructor"))
+                        instructorUsers.Add(user);
+                }
             }
+
+            var courses = new List<Course>();
+            if (organization.Courses != null)
+            {
+                courses.AddRange(organization.Courses);
+            }
+
             return new OrganizationDetailsDto
             {
-               OrganizationID = organization.OrganizationID,
-               admins = adminUsers,
-               instructors = instructorUsers,
-               students = studentUsers,
-               Courses = (List<Course>)organization.Courses,
-               
+                OrganizationID = organization.OrganizationID,
+                admins = adminUsers,
+                instructors = instructorUsers,
+                students = studentUsers,
+                Courses = courses,
             };
         }
+
     }
 }
