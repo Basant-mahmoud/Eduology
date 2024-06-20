@@ -94,13 +94,13 @@ namespace Eduology.Controllers
                 return BadRequest(ModelState);
             }
 
-            var updated = await _courseService.AddMateriaCourseAsync(matrial);
-            if (updated == null)
+            var success = await _courseService.AddMaterialAsync(matrial);
+            if (!success)
             {
-                return NotFound();
+                return BadRequest(new { message = "Failed to add material." });
             }
 
-            return Ok(new { message = "Matrial Add successfully" });
+            return Ok(new { message = "Material added successfully." });
         }
 
 

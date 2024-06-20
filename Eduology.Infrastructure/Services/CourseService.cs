@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Eduology.Infrastructure.Repositories;
+using Type = Eduology.Domain.Models.Type;
 namespace Eduology.Infrastructure.Services
 {
 
@@ -90,24 +91,38 @@ namespace Eduology.Infrastructure.Services
             return course;
         }
 
-        public async Task<bool> AddMateriaCourseAsync(MaterialDto materialDto)
+        public async Task<bool> AddMaterialAsync(MaterialDto MaterialDto)
         {
-            var course = await _courseRepository.GetByIdAsync(materialDto.courseId);
-            if (course == null)
-                return false;
-
             var material = new Material
             {
-                Title = materialDto.Title,
-                URL = materialDto.URL,
-                InstructorId = materialDto.InstructorId,
-                MaterialType = new Domain.Models.Type { Name = materialDto.MatrialType } // Assuming you want to create a new Type if it doesn't exist
+                Title = MaterialDto.Title,
+                URL = MaterialDto.URL,
+                InstructorId = MaterialDto.InstructorId,
+                CourseId = MaterialDto.CourseId,
+                MaterialType = new Type { Name = MaterialDto.MaterialType }
             };
 
+            // Add files to the material if provided
+            if (MaterialDto.FileURLs != null && MaterialDto.FileURLs.Count > 0)
+            {
+                material.Files = new List<Domain.Models.File>();
+                foreach (var fileUrl in MaterialDto.FileURLs)
+                {
+                    var file = new Domain.Models.File
+                    {
+                        FileId= Guid.NewGuid().ToString(),
+                        URL = fileUrl,
+                        Title = $"File for {MaterialDto.Title}", // Example: Setting a title for the file
+                        MaterialId = material.MaterialId
+                    };
+                    material.Files.Add(file);
+                }
+            }
+
+            // Call repository method to add material
             var success = await _courseRepository.AddMateriaCourseAsync(material);
+
             return success;
         }
-
-       
     }
 }
