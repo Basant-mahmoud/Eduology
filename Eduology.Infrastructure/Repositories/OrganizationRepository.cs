@@ -26,10 +26,12 @@ namespace Eduology.Infrastructure.Repositories
         {
             return await _context.Organizations.FindAsync(id);
         }
-        public async Task AddAsync(Organization organization)
+        public async Task<Organization> AddAsync(Organization organization)
         {
             await _context.Organizations.AddAsync(organization);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); 
+
+            return organization; 
         }
         public async Task DeleteAsync(int id)
         {
@@ -43,6 +45,10 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<bool> ExistsAsync(int id)
         {
             return await _context.Organizations.AnyAsync(e => e.OrganizationID == id);
+        }
+        public async Task<Organization> GetByEmailAsync(string email)
+        {
+            return await _context.Organizations.FirstOrDefaultAsync(o => o.Email == email);
         }
     }
 }

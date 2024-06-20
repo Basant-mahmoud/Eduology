@@ -11,7 +11,7 @@ namespace Eduology.Controllers
     public class AssignmentController : Controller
     {
         private readonly IAsignmentServices _asignmentServices;
-        AssignmentController(IAsignmentServices asignmentServices)
+        public AssignmentController(IAsignmentServices asignmentServices)
         {
             _asignmentServices = asignmentServices;
         }
@@ -26,7 +26,7 @@ namespace Eduology.Controllers
 
             return CreatedAtAction(nameof(GetById), new { id = _assignment.CourseId }, _assignment);
         }
-        [HttpGet("GetById")]
+        [HttpGet("GetById/{id}")]
         public async Task<ActionResult> GetById(int id)
         {
             var _assignment = await _asignmentServices.GetByIdAsync(id);
@@ -36,7 +36,7 @@ namespace Eduology.Controllers
             }
             return Ok(_assignment);
         }
-        [HttpGet("GetByName")]
+        [HttpGet("GetByName/{name}")]
         public async Task<ActionResult> GetByNmae(String name)
         {
             var _assignment = await _asignmentServices.GetByNameAsync(name);
@@ -46,7 +46,7 @@ namespace Eduology.Controllers
             }
             return Ok(_assignment);
         }
-        [HttpDelete("Delete")]
+        [HttpDelete("Delete/{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             var _assignment = await _asignmentServices.DeleteAsync(id);
@@ -56,7 +56,7 @@ namespace Eduology.Controllers
             }
             return Ok(new { Message = "Assignment deleted Successfully" });
         }
-        [HttpPut("Update")]
+        [HttpPut("Update/{id}")]
         public async Task<ActionResult> Udate(int id,AssignmentDto assignment)
         {
             var _assignment = await _asignmentServices.UpdateAsync(id,assignment);
