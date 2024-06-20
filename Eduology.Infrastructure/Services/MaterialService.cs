@@ -121,5 +121,35 @@ namespace Eduology.Infrastructure.Services
             var typesWithFiles = await _matrialRepository.ModuleTypesWithFilesAsync(courseId);
             return typesWithFiles;
         }
+        public async Task<bool> DeleteFileAsync(string fileId, string courseId, string materialType)
+        {
+            
+                // Check if the course exists
+                var course = await _courseRepository.GetByIdAsync(courseId);
+                var material = await _matrialRepository.GetTypeByNameAsync(materialType.ToLower());
+
+                if (course == null || material == null)
+                {
+                    return false; // Course or material doesn't exist
+                }
+
+                // Delegate deletion to repository method
+                var success = await _matrialRepository.DeleteFileAsync(fileId, courseId, materialType);
+                return success;
+            
+        }
+        public async Task<bool> DeleteModule( string Module)
+        {
+
+            var material = await _matrialRepository.GetTypeByNameAsync(Module.ToLower());
+
+            if ( material == null)
+            {
+                return false; 
+            }
+            var success = await _matrialRepository.DeleteModuleAsync(Module);
+            return success;
+
+        }
     }
 }
