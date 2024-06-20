@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 using Eduology.Application.Services.Helper;
 using Eduology.Application.Services.Interface;
 using Eduology.Application.Interface;
+using Microsoft.EntityFrameworkCore;
+using Eduology.Infrastructure.Persistence;
+
 namespace Eduology.Application.Services
 {
     public class AuthService : IAuthService
@@ -19,20 +22,36 @@ namespace Eduology.Application.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWT _jwt;
+        private readonly EduologyDBContext _context;
 
-        public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt)
+        public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt, EduologyDBContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _jwt = jwt.Value;
+            _context = context;
         }
 
         public async Task<AuthModel> RegisterAsync(RegisterModel model)
         {
-            if (await _userManager.FindByEmailAsync(model.Email) is not null)
+            // Check if the OrganizationId is provided and valid
+            if (model.OrganizationId > 0)
+            {
+                var organizationExists = await _context.Organizations
+                    .AnyAsync(o => o.OrganizationID == model.OrganizationId);
+
+                if (!organizationExists)
+                {
+                    return new AuthModel { Message = "Invalid OrganizationId provided." };
+                }
+            }
+
+            // Check if the email is already registered
+            if (await _userManager.FindByEmailAsync(model.Email) != null)
                 return new AuthModel { Message = "Email is already registered!" };
 
-            if (await _userManager.FindByNameAsync(model.Username) is not null)
+            // Check if the username is already registered
+            if (await _userManager.FindByNameAsync(model.Username) != null)
                 return new AuthModel { Message = "Username is already registered!" };
 
             var user = new ApplicationUser
@@ -40,17 +59,14 @@ namespace Eduology.Application.Services
                 UserName = model.Username,
                 Email = model.Email,
                 Name = model.Name,
+                OrganizationId = model.OrganizationId // Assign the OrganizationId
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
             {
-                var errors = string.Empty;
-
-                foreach (var error in result.Errors)
-                    errors += $"{error.Description},";
-
+                var errors = string.Join(",", result.Errors.Select(e => e.Description));
                 return new AuthModel { Message = errors };
             }
 
@@ -58,6 +74,7 @@ namespace Eduology.Application.Services
             {
                 await _userManager.AddToRoleAsync(user, model.Role);
             }
+
             var jwtSecurityToken = await CreateJwtToken(user);
 
             return new AuthModel
@@ -74,10 +91,9 @@ namespace Eduology.Application.Services
         public async Task<AuthModel> LoginAsync(LoginModel model)
         {
             var authModel = new AuthModel();
-
             var user = await _userManager.FindByEmailAsync(model.Email);
 
-            if (user is null || !await _userManager.CheckPasswordAsync(user, model.Password))
+            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 authModel.Message = "Email or Password is incorrect!";
                 return authModel;
@@ -100,7 +116,7 @@ namespace Eduology.Application.Services
         {
             var user = await _userManager.FindByIdAsync(model.UserId);
 
-            if (user is null || !await _roleManager.RoleExistsAsync(model.Role))
+            if (user == null || !await _roleManager.RoleExistsAsync(model.Role))
                 return "Invalid user ID or Role";
 
             if (await _userManager.IsInRoleAsync(user, model.Role))
@@ -108,7 +124,7 @@ namespace Eduology.Application.Services
 
             var result = await _userManager.AddToRoleAsync(user, model.Role);
 
-            return result.Succeeded ? string.Empty : "Sonething went wrong";
+            return result.Succeeded ? string.Empty : "Something went wrong";
         }
 
         private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
