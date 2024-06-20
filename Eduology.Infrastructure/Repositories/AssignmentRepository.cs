@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using File = Eduology.Domain.Models.File;
 
 namespace Eduology.Infrastructure.Repositories
 {
@@ -21,10 +22,22 @@ namespace Eduology.Infrastructure.Repositories
         }
         public async Task<Assignment> CreateAsync(Assignment assignment)
         {
-            assignment.CreatedDate = DateTime.Now;
-            var _assignment = await _context.Assignments.AddAsync(assignment);
+            File _file = new File();
+            _context.Files.Add(_file);
+            var _assignment = new Assignment
+            {
+                CourseId = assignment.CourseId,
+                CreatedDate = DateTime.Now,
+                InstructorId = assignment.InstructorId,
+                Deadline = assignment.Deadline,
+                Description = assignment.Description,
+                File = _file
+            };
+            _assignment.File.URL = assignment.File.URL;
+            _assignment.File.Title = assignment.File.Title;
+            var __assignment = await _context.Assignments.AddAsync(_assignment);
             await _context.SaveChangesAsync();
-            return _assignment.Entity;
+            return __assignment.Entity;
         }
         public async Task<Assignment> GetByIdAsync(int id)
         {
