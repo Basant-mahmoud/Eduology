@@ -19,13 +19,14 @@ namespace Eduology.Infrastructure.Repositories
         {
             var course = await _context.Courses.FindAsync(material.CourseId);
             if (course == null)
-                return false;
+            {
+                
+                return false; 
+            }
 
-            // Add material to course
             course.Materials ??= new List<Material>();
             course.Materials.Add(material);
 
-            // Add files to the context if any
             if (material.Files != null && material.Files.Count > 0)
             {
                 foreach (var file in material.Files)
@@ -34,7 +35,6 @@ namespace Eduology.Infrastructure.Repositories
                 }
             }
 
-            // Save changes to the database
             await _context.SaveChangesAsync();
 
             return true;

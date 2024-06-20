@@ -14,11 +14,11 @@ namespace Eduology.Domain.DTO
             public string MaterialType { get; set; }
             public string InstructorId { get; set; }
             public string CourseId { get; set; }
-            public List<string> FileURLs { get; set; } // List of file URLs
+            public List<FileDto> FileURLs { get; set; } // List of file URLs
 
             public MaterialDto()
             {
-                FileURLs = new List<string>();
+                FileURLs = new List<FileDto>();
             }
         }
     

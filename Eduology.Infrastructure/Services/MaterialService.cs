@@ -2,11 +2,14 @@
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
+using Eduology.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using File = Eduology.Domain.Models.File;
+using Type = Eduology.Domain.Models.Type;
 
 namespace Eduology.Infrastructure.Services
 {
@@ -19,31 +22,30 @@ namespace Eduology.Infrastructure.Services
         {
             _matrialRepository = matrialRepository;
         }
-        public async Task<bool> AddMaterialAsync(MaterialDto MaterialDto)
+        public async Task<bool> AddMaterialAsync(MaterialDto materialDto)
         {
             var material = new Material
             {
-                Title = MaterialDto.Title,
-                //URL = MaterialDto.URL,
-                InstructorId = MaterialDto.InstructorId,
-                CourseId = MaterialDto.CourseId,
-                MaterialType = new Domain.Models.Type { Name = MaterialDto.MaterialType }
+                Title = materialDto.Title,
+                InstructorId = materialDto.InstructorId,
+                CourseId = materialDto.CourseId,
+                MaterialType = new Type { Name = materialDto.MaterialType },
+                Files = new List<File>() // Initialize list of files
             };
 
             // Add files to the material if provided
-            if (MaterialDto.FileURLs != null && MaterialDto.FileURLs.Count > 0)
+            if (materialDto.FileURLs != null && materialDto.FileURLs.Count > 0)
             {
-                // material.Files = new List<Domain.Models.File>();
-                foreach (var fileUrl in MaterialDto.FileURLs)
+                foreach (var fileDto in materialDto.FileURLs)
                 {
-                    var file = new Domain.Models.File
+                    var file = new File
                     {
                         FileId = Guid.NewGuid().ToString(),
-                        URL = fileUrl,
-                        Title = $"File for {MaterialDto.Title}", // Example: Setting a title for the file
+                        URL = fileDto.URL,
+                        Title = $"File for {fileDto.Title}",
                         MaterialId = material.MaterialId
                     };
-                    // material.Files.Add(file);
+                    material.Files.Add(file);
                 }
             }
 

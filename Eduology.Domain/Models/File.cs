@@ -11,8 +11,8 @@ namespace Eduology.Domain.Models
         public string FileId { get; set; }
         public string URL { get; set; }
         public string Title { get; set; }
-        public int? MaterialId { get; set; } // Foreign key
-        public Material? Material { get; set; } // Navigation property
+        public int MaterialId { get; set; } // Foreign key
+        public Material Material { get; set; } // Navigation property
 
     }
 }
