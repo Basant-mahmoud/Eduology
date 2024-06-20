@@ -12,6 +12,7 @@ using System.Xml;
 using Eduology.Domain.Models;
 using Eduology.Domain.Models;
 using File = Eduology.Domain.Models.File;
+using Eduology.Domain.DTO;
 
 namespace Eduology.Infrastructure.Persistence
 {
@@ -110,6 +111,10 @@ namespace Eduology.Infrastructure.Persistence
             .WithOne(u => u.organization)
             .HasForeignKey(u => u.OrganizationId)
             .OnDelete(DeleteBehavior.Cascade);
+
+            // Ignore ConfirmPassword in the Organization entity
+           modelBuilder.Entity<Organization>()
+             .Ignore(o => o.ConfirmPassword);
         }
 
 
