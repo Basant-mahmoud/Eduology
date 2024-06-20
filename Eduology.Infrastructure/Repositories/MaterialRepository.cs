@@ -90,6 +90,37 @@ namespace Eduology.Infrastructure.Repositories
 
             return typesWithFiles;
         }
+        public async Task<bool> DeleteFileAsync(string fileId, string courseId, string materialType)
+        {
+            var file = await _context.Files
+                .Include(f => f.Material)
+                .ThenInclude(m => m.MaterialType)
+                .FirstOrDefaultAsync(f => f.FileId == fileId && f.Material.CourseId == courseId && f.Material.MaterialType.Name.ToLower() == materialType.ToLower());
+
+            if (file == null)
+            {
+                return false; 
+            }
+
+            _context.Files.Remove(file);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> DeleteModuleAsync(string materialType)
+        {
+            var module = await _context.MaterialTypes
+                .FirstOrDefaultAsync(mt => mt.Name.ToLower() == materialType.ToLower());
+
+            if (module == null)
+            {
+                return false;
+            }
+
+            _context.MaterialTypes.Remove(module);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
     }
     }
 

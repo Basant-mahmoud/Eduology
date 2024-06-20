@@ -78,5 +78,29 @@ namespace Eduology.Controllers
 
             return Ok(typesWithFiles);
         }
+        [HttpDelete("DeleteFile")]
+        public async Task<IActionResult> DeleteFile([FromBody] DeleteFileDto file)
+        {
+            var response = await _materialService.DeleteFileAsync(file.fileId,file.courseId,file.materialType);
+
+            if (response == null)
+            {
+                return BadRequest(new { message = "Failed to delete file or file does not exist." });
+            }
+
+             return Ok(new { message = "File deleted successfully." });
+        }
+        [HttpDelete("DeleteModule/{moduleName}")]
+        public async Task<IActionResult> DeleteModule(string moduleName)
+        {
+            var response = await _materialService.DeleteModule(moduleName);
+
+            if (response == null)
+            {
+                return BadRequest(new { message = "Failed to delete Module or Module does not exist." });
+            }
+
+            return Ok(new { message = "Module deleted successfully." });
+        }
     }
 }
