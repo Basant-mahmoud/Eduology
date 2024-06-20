@@ -25,7 +25,6 @@ namespace Eduology.Controllers
             var createdAnnouncement = await _announcementService.CreateAsync(announcementDto, courseId, instructorId);
             return CreatedAtAction(nameof(GetAnnouncement), new { id = createdAnnouncement.Id }, createdAnnouncement);
         }
-
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncements()
         {
@@ -59,6 +58,22 @@ namespace Eduology.Controllers
 
             await _announcementService.DeleteAsync(id);
             return Ok(new { message = "Announcement deleted successfully." });
+        }
+        [HttpGet("course/{courseId}")]
+        public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncementsByCourseId(string courseId)
+        {
+            var announcements = await _announcementService.GetAnnouncementsByCourseIdAsync(courseId);
+            return Ok(announcements);
+        }
+        [HttpGet("course/{courseId}/announcement/{announcementId}")]
+        public async Task<ActionResult<AnnouncementDto>> GetAnnouncementByIdAndCourseId(string courseId, int announcementId)
+        {
+            var announcement = await _announcementService.GetAnnouncementByIdAndCourseIdAsync(courseId, announcementId);
+            if (announcement == null)
+            {
+                return NotFound();
+            }
+            return Ok(announcement);
         }
     }
 }

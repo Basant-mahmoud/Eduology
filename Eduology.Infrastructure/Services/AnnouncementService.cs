@@ -33,7 +33,6 @@ namespace Eduology.Infrastructure.Services
             var createdAnnouncement = await _announcementRepository.AddAsync(announcement);
             return ConvertToDto(createdAnnouncement);
         }
-
         public async Task<IEnumerable<AnnouncementDto>> GetAllAsync()
         {
             var announcements = await _announcementRepository.GetAllAsync();
@@ -50,7 +49,18 @@ namespace Eduology.Infrastructure.Services
         {
             await _announcementRepository.DeleteAsync(id);
         }
+        public async Task<IEnumerable<AnnouncementDto>> GetAnnouncementsByCourseIdAsync(string courseId)
+        {
+            var announcements = await _announcementRepository.GetByCourseIdAsync(courseId);
+            return announcements.Select(ConvertToDto);
+        }
 
+        public async Task<AnnouncementDto> GetAnnouncementByIdAndCourseIdAsync(string courseId, int announcementId)
+        {
+            var announcements = await _announcementRepository.GetByCourseIdAsync(courseId);
+            var announcement = announcements.FirstOrDefault(a => a.AnnouncementId == announcementId);
+            return ConvertToDto(announcement);
+        }
         private AnnouncementDto ConvertToDto(Announcement announcement)
         {
             if (announcement == null)
