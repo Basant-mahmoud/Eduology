@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Type = Eduology.Domain.Models.Type;
 using Microsoft.EntityFrameworkCore;
+using Eduology.Domain.DTO;
 namespace Eduology.Infrastructure.Repositories
 {
     public class MaterialRepository: IMaterialRepository
@@ -61,13 +62,35 @@ namespace Eduology.Infrastructure.Repositories
             return await _context.MaterialTypes
                 .FirstOrDefaultAsync(t => t.Name.ToLower() == typeName.ToLower());
         }
-        public async Task<List<Material>> GetAllMaterialsAsync()
+        public async Task<List<Material>> GetAllMaterialsAsync(string courseId)
         {
             return await _context.Materials
                 .Include(m => m.MaterialType)
                 .Include(m => m.Files)
+                .Where(m => m.CourseId == courseId)
                 .ToListAsync();
         }
+
+        public async Task<List<ModuleWithFilesDto>> ModuleTypesWithFilesAsync(string courseId)
+        {
+            var typesWithFiles = await _context.Materials
+                .Where(m => m.CourseId == courseId)
+                .Include(m => m.MaterialType)
+                .Select(m => new ModuleWithFilesDto
+                {
+                    TypeName = m.MaterialType.Name,
+                    Files = m.Files.Select(f => new FileDtoWithId
+                    {
+                        FileId = f.FileId,
+                        URL = f.URL,
+                        Title = f.Title
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return typesWithFiles;
+        }
+    }
     }
 
-}
+

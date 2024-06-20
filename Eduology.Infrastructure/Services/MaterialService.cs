@@ -32,7 +32,7 @@ namespace Eduology.Infrastructure.Services
             if (existingType == null)
             {
                 Console.Error.WriteLine($"Type not exist");
-                return false; // Material type doesn't exist
+                return false; 
             }
 
             // Check if the course exists
@@ -40,9 +40,9 @@ namespace Eduology.Infrastructure.Services
             if (course == null)
             {
                 Console.Error.WriteLine($"course not exist");
-                return false; // Course doesn't exist
+                return false; 
             }
-
+            
             var material = new Material
             {
                 Title = materialDto.Title,
@@ -84,9 +84,15 @@ namespace Eduology.Infrastructure.Services
             var (success, exists, createdType) = await _matrialRepository.AddTypeAsync(type);
             return (success, exists, createdType);
         }
-        public async Task<List<MaterialDto>> GetAllMaterialsAsync()
+        public async Task<List<MaterialDto>> GetAllMaterialsAsync(string courseId)
         {
-            var materials = await _matrialRepository.GetAllMaterialsAsync();
+            var existing= await _courseRepository.GetByIdAsync(courseId);
+            if (existing == null)
+            {
+                Console.Error.WriteLine($"Type not exist");
+                return new List<MaterialDto>();
+            }
+            var materials = await _matrialRepository.GetAllMaterialsAsync(courseId);
 
             var materialDtos = materials.Select(m => new MaterialDto
             {
@@ -102,6 +108,18 @@ namespace Eduology.Infrastructure.Services
             }).ToList();
 
             return materialDtos;
+        }
+
+        public async Task<List<ModuleWithFilesDto>> GetModulesWithFilesAsync(string courseId)
+        {
+            var courseExists = await _courseRepository.GetByIdAsync(courseId);
+            if (courseExists == null)
+            {
+                return new List<ModuleWithFilesDto>();
+            }
+
+            var typesWithFiles = await _matrialRepository.ModuleTypesWithFilesAsync(courseId);
+            return typesWithFiles;
         }
     }
 }

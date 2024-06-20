@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Eduology.Domain.DTO
 {
-    public class FileDto
+    public class ModuleWithFilesDto
     {
-        
-        public string URL { get; set; }
-        public string Title { get; set; }
+   
+        public string TypeName { get; set; }
+        public List<FileDtoWithId> Files { get; set; }
     }
 }

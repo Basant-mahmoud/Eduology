@@ -1,4 +1,5 @@
-﻿using Eduology.Domain.Models;
+﻿using Eduology.Domain.DTO;
+using Eduology.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace Eduology.Domain.Interfaces
         Task<bool> AddMateriaCourseAsync(Material material);
         Task<(bool Success, bool Exists, Type Type)> AddTypeAsync(Type type);
         Task<Type> GetTypeByNameAsync(string typeName);
-        Task<List<Material>> GetAllMaterialsAsync();
+        Task<List<Material>> GetAllMaterialsAsync(string courseId);
+        Task<List<ModuleWithFilesDto>> ModuleTypesWithFilesAsync(string courseId);
     }
 }

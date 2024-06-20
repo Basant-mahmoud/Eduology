@@ -12,6 +12,7 @@ namespace Eduology.Application.Interface
     {
         Task<bool> AddMaterialAsync(MaterialDto MaterialDto);
         Task<(bool Success, bool Exists, Eduology.Domain.Models.Type Type)> AddTypeAsync(MaterialType materialType);
-        Task<List<MaterialDto>> GetAllMaterialsAsync();
+        Task<List<MaterialDto>> GetAllMaterialsAsync(string courseId);
+        Task<List<ModuleWithFilesDto>> GetModulesWithFilesAsync(string courseId);
     }
 }

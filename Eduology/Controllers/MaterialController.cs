@@ -54,10 +54,10 @@ namespace Eduology.Controllers
 
             return Ok(new { message = "Module added successfully.", createdType });
         }
-        [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("GetAllMaterial/{courseId}")]
+        public async Task<IActionResult> GetAllMaterial(string courseId)
         {
-            var materials = await _materialService.GetAllMaterialsAsync();
+            var materials = await _materialService.GetAllMaterialsAsync(courseId);
 
             if (materials == null || !materials.Any())
             {
@@ -66,6 +66,17 @@ namespace Eduology.Controllers
 
             return Ok(materials);
         }
+        [HttpGet("ModuleWithFiles/{courseId}")]
+        public async Task<IActionResult> AllModuleWithFilesByCourseId(string courseId)
+        {
+            var typesWithFiles = await _materialService.GetModulesWithFilesAsync(courseId);
+
+            if (typesWithFiles == null || !typesWithFiles.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(typesWithFiles);
+        }
     }
-    
 }
