@@ -356,7 +356,7 @@ namespace Eduology.Infrastructure.Migrations
                         column: x => x.TypeId,
                         principalTable: "MaterialTypes",
                         principalColumn: "TypeId",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

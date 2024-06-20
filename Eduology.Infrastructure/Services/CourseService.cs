@@ -96,7 +96,7 @@ namespace Eduology.Infrastructure.Services
             var material = new Material
             {
                 Title = MaterialDto.Title,
-                URL = MaterialDto.URL,
+                //URL = MaterialDto.URL,
                 InstructorId = MaterialDto.InstructorId,
                 CourseId = MaterialDto.CourseId,
                 MaterialType = new Type { Name = MaterialDto.MaterialType }
@@ -105,7 +105,7 @@ namespace Eduology.Infrastructure.Services
             // Add files to the material if provided
             if (MaterialDto.FileURLs != null && MaterialDto.FileURLs.Count > 0)
             {
-                material.Files = new List<Domain.Models.File>();
+               // material.Files = new List<Domain.Models.File>();
                 foreach (var fileUrl in MaterialDto.FileURLs)
                 {
                     var file = new Domain.Models.File
@@ -115,7 +115,7 @@ namespace Eduology.Infrastructure.Services
                         Title = $"File for {MaterialDto.Title}", // Example: Setting a title for the file
                         MaterialId = material.MaterialId
                     };
-                    material.Files.Add(file);
+                   // material.Files.Add(file);
                 }
             }
 
