@@ -105,40 +105,60 @@ namespace Eduology.Infrastructure.Services
             return true;
         }
 
-        private async Task<OrganizationDetailsDto> MapToOrganizationDetailsDtoAsync(Organization organization)
+    private async Task<OrganizationDetailsDto> MapToOrganizationDetailsDtoAsync(Organization organization)
+    {
+        if (organization == null)
+            return null;
+
+        var adminUsers = new List<UserDto>();
+        var studentUsers = new List<UserDto>();
+        var instructorUsers = new List<UserDto>();
+
+        if (organization.Users != null)
         {
-            if (organization == null)
-                return null;
-
-            var adminUsers = new List<ApplicationUser>();
-            var studentUsers = new List<ApplicationUser>();
-            var instructorUsers = new List<ApplicationUser>();
-
-            // Ensure users are loaded
-            if (organization.Users != null)
+            foreach (var user in organization.Users)
             {
-                foreach (var user in organization.Users)
+                var roles = await _userManager.GetRolesAsync(user);
+                var userDto = new UserDto
                 {
-                    var roles = await _userManager.GetRolesAsync(user);
-                    if (roles.Contains("Admin"))
-                        adminUsers.Add(user);
-                    else if (roles.Contains("Student"))
-                        studentUsers.Add(user);
-                    else if (roles.Contains("Instructor"))
-                        instructorUsers.Add(user);
-                }
+                    Id = user.Id,
+                    Name = user.Name, 
+                    UserName = user.UserName,
+                    Email = user.Email
+                };
+
+                if (roles.Contains("Admin"))
+                    adminUsers.Add(userDto);
+                else if (roles.Contains("Student"))
+                    studentUsers.Add(userDto);
+                else if (roles.Contains("Instructor"))
+                    instructorUsers.Add(userDto);
             }
-
-            var courses = organization.Courses?.ToList() ?? new List<Course>();
-
-            return new OrganizationDetailsDto
-            {
-                OrganizationID = organization.OrganizationID,
-                admins = adminUsers,
-                instructors = instructorUsers,
-                students = studentUsers,
-                Courses = courses,
-            };
         }
+
+        var coursesDto = new List<CourseDto>();
+        if (organization.Courses != null)
+        {
+            foreach (var course in organization.Courses)
+            {
+                var courseDto = new CourseDto
+                {
+                    Name = course.Name,
+                    CourseCode = course.CourseCode,
+                    Year = course.Year
+                };
+                coursesDto.Add(courseDto);
+            }
+        }
+
+        return new OrganizationDetailsDto
+        {
+            OrganizationID = organization.OrganizationID,
+            admins = adminUsers,
+            instructors = instructorUsers,
+            students = studentUsers,
+            Courses = coursesDto,
+        };
     }
+}
 }

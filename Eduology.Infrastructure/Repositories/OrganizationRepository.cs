@@ -24,7 +24,11 @@ namespace Eduology.Infrastructure.Repositories
         }
         public async Task<Organization> GetByIdAsync(int id)
         {
-            return await _context.Organizations.FindAsync(id);
+            var organization = await _context.Organizations
+                   .Include(o => o.Courses)
+                   .Include(o => o.Users)
+                   .FirstOrDefaultAsync(o => o.OrganizationID == id);
+            return organization;
         }
         public async Task<Organization> AddAsync(Organization organization)
         {

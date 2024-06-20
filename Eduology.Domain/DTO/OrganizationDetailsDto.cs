@@ -10,10 +10,10 @@ namespace Eduology.Domain.DTO
     public class OrganizationDetailsDto
     {
         public int OrganizationID { get; set; }
-        public List<Course> Courses { get; set; }
-        public List<ApplicationUser> students { get; set; }
-        public List<ApplicationUser> instructors { get; set; }
-        public List<ApplicationUser> admins { get; set; }
+        public List<CourseDto> Courses { get; set; }
+        public List<UserDto> students { get; set; }
+        public List<UserDto> instructors { get; set; }
+        public List<UserDto> admins { get; set; }
 
     }
 }
