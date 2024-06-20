@@ -11,7 +11,7 @@ namespace Eduology.Domain.Models
         public int AssignmentFileId { get; set; }
         public string URL { get; set; }
         public string Title { get; set; }
-        public Assignment Assignment { get; set; }
+        public virtual Assignment Assignment { get; set; }
         public int AssignmentId { get; set; }
     }
 }
