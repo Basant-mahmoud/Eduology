@@ -13,8 +13,8 @@ namespace Eduology.Domain.Models
         public string Title { get; set; }
         public int AssignmentId { get; set; } // Foreign key
         public Assignment Assignment { get; set; } // Navigation property
-        public int MaterialId { get; set; } // Foreign key
-        public Material Material { get; set; } // Navigation property
+        public int? MaterialId { get; set; } // Foreign key
+        public Material? Material { get; set; } // Navigation property
 
     }
 }
