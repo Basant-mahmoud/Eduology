@@ -47,6 +47,11 @@ namespace Eduology.Infrastructure.Services
             {
                 throw new ArgumentException("Module cannot be null.");
             }
+            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(materialDto.InstructorId, materialDto.CourseId);
+            if (!isInstructorAssigned)
+            {
+                throw new ArgumentException($"Instructor with ID '{materialDto.InstructorId}' is not assigned to course '{materialDto.CourseId}'.");
+            }
             var existingType = await _matrialRepository.GetTypeByNameAsync(materialDto.MaterialType.ToLower());
             if (existingType == null)
             {
