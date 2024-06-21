@@ -154,7 +154,7 @@ namespace Eduology.Infrastructure.Repositories
 
             var courseDtos = courseInstructors.Select(course => new CourseUserDto
             {
-                InstructorName = instructor.Name,
+                Name = instructor.Name,
                 CourseName = course.Name,
                 CourseDescription = course.Description,
                 year = course.Year 

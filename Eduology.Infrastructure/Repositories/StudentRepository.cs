@@ -99,6 +99,30 @@ namespace Eduology.Infrastructure.Repositories
 
             return true;
         }
+        public async Task<List<CourseUserDto>> GetAllCourseToSpecificStudentAsync(string StudentId)
+        {
+            var student = await _context.Users.FindAsync(StudentId);
+            if (student == null)
+            {
+                return null;
+            }
+
+            var courseStudents = await _context.StudentCourses
+                .Where(ci => ci.StudentId == StudentId)
+                .Include(ci => ci.Course)
+                .Select(ci => ci.Course)
+                .ToListAsync();
+
+            var courseDtos = courseStudents.Select(course => new CourseUserDto
+            {
+                Name = student.Name,
+                CourseName = course.Name,
+                CourseDescription = course.Description,
+                year = course.Year
+            }).ToList();
+
+            return courseDtos;
+        }
         private async Task<UserDto> MapUserToDtoAsync(ApplicationUser user)
         {
             if (user == null)

@@ -61,5 +61,34 @@ namespace Eduology.Infrastructure.Services
                 return false;
             return student;
         }
+        public async Task<List<CourseUserDto>> GetAllCourseToSpecificStudentAsync(string studentId)
+        {
+            if (string.IsNullOrEmpty(studentId))
+            {
+                throw new ArgumentException("Student ID cannot be null or empty.");
+            }
+
+            var student = await _studentRepository.GetStudentByIdAsync(studentId);
+            if (student == null)
+            {
+                throw new KeyNotFoundException("Student not found.");
+            }
+
+            var courses = await _studentRepository.GetAllCourseToSpecificStudentAsync(studentId);
+            if (courses == null || !courses.Any())
+            {
+                return new List<CourseUserDto>();
+            }
+
+            var courseDtos = courses.Select(course => new CourseUserDto
+            {
+                Name = student.Name,
+                CourseName = course.CourseName,
+                CourseDescription = course.CourseDescription,
+                year = course.year
+            }).ToList();
+
+            return courseDtos;
+        }
     }
 }

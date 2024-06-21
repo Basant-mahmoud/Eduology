@@ -84,7 +84,6 @@ namespace Eduology.Infrastructure.Services
 
             return new OrganizationDto
             {
-                OrganizationID = organization.OrganizationID,
                 Name = organization.Name,
                 Phone = organization.Phone,
                 Email = organization.Email,

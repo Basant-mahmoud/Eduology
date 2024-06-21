@@ -50,7 +50,7 @@ namespace Eduology.Controllers
                 ModelState.AddModelError("Faild", "Email is already exist.");
                 return BadRequest(ModelState);
             }
-            return CreatedAtAction(nameof(GetOrganization), new { id = createdOrganization.OrganizationID }, createdOrganization);
+            return Created("", createdOrganization);
         }
 
         [HttpGet("GetAll")]
