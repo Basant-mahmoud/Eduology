@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using File = Eduology.Domain.Models.File;
 using Type = Eduology.Domain.Models.Type;
-using type = Eduology.Domain.Models.Type;
 namespace Eduology.Infrastructure.Services
 {
     public class MaterialService: IMaterialService
@@ -19,11 +18,13 @@ namespace Eduology.Infrastructure.Services
         private readonly IMaterialRepository _matrialRepository;
 
         private readonly ICourseRepository _courseRepository;
+        private readonly IModuleRepository _ModuleRepository;
 
-        public MaterialService(IMaterialRepository matrialRepository, ICourseRepository courseRepository)
+        public MaterialService(IMaterialRepository matrialRepository, ICourseRepository courseRepository, IModuleRepository moduleRepository)
         {
             _matrialRepository = matrialRepository;
             _courseRepository = courseRepository;
+            _ModuleRepository = moduleRepository;
         }
         public async Task<bool> AddMaterialAsync(MaterialDto materialDto)
         {
@@ -47,12 +48,13 @@ namespace Eduology.Infrastructure.Services
             {
                 throw new ArgumentException("Module cannot be null.");
             }
+            //instructor should be in course to add matrial
             var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(materialDto.InstructorId, materialDto.CourseId);
             if (!isInstructorAssigned)
             {
                 throw new ArgumentException($"Instructor with ID '{materialDto.InstructorId}' is not assigned to course '{materialDto.CourseId}'.");
             }
-            var existingType = await _matrialRepository.GetTypeByNameAsync(materialDto.MaterialType.ToLower());
+            var existingType = await _ModuleRepository.GetTypeByNameAsync(materialDto.MaterialType.ToLower());
             if (existingType == null)
             {
                 throw new ArgumentException("Module cannot be null.");
@@ -94,25 +96,7 @@ namespace Eduology.Infrastructure.Services
             return success;
         }
 
-        public async Task<(bool Success, bool Exists, Domain.Models.Type Type)> AddTypeAsync(MaterialType materialType)
-        {
-            if (materialType == null)
-            {
-                throw new ArgumentException("Module cannot be null.");
-            }
-
-            if (string.IsNullOrEmpty(materialType.Name))
-            {
-                throw new ArgumentException("Module name cannot be null or empty.");
-            }
-            var type = new Domain.Models.Type
-            {
-                Name = materialType.Name.ToLower(),
-            };
-
-            var (success, exists, createdType) = await _matrialRepository.AddTypeAsync(type);
-            return (success, exists, createdType);
-        }
+      
         public async Task<List<MaterialDto>> GetAllMaterialsAsync(string courseId)
         {
             if(courseId == null)
@@ -145,22 +129,7 @@ namespace Eduology.Infrastructure.Services
             return materialDtos;
         }
 
-        public async Task<List<ModuleWithFilesDto>> GetModulesWithFilesAsync(string courseId)
-        {
-            if (courseId == null)
-            {
-                throw new ArgumentException("Course ID cannot be null or empty.");
-            }
-            var courseExists = await _courseRepository.GetByIdAsync(courseId);
-            if (courseExists == null)
-            {
-                return new List<ModuleWithFilesDto>();
-                throw new ArgumentException("Course Not Exist");
-            }
-
-            var typesWithFiles = await _matrialRepository.ModuleTypesWithFilesAsync(courseId);
-            return typesWithFiles;
-        }
+       
         public async Task<bool> DeleteFileAsync(string fileId, string courseId, string materialType)
         {
 
@@ -179,7 +148,7 @@ namespace Eduology.Infrastructure.Services
                 throw new ArgumentException("Material type cannot be null or empty.");
             }
             var course = await _courseRepository.GetByIdAsync(courseId);
-                var material = await _matrialRepository.GetTypeByNameAsync(materialType.ToLower());
+                var material = await _ModuleRepository.GetTypeByNameAsync(materialType.ToLower());
 
                 if (course == null || material == null)
                 {
@@ -189,22 +158,6 @@ namespace Eduology.Infrastructure.Services
                 return success;
             
         }
-        public async Task<bool> DeleteModule( string Module)
-        {
-            if (string.IsNullOrEmpty(Module))
-            {
-                throw new ArgumentException("Module cannot be null or empty.");
-            }
-
-            var material = await _matrialRepository.GetTypeByNameAsync(Module.ToLower());
-
-            if ( material == null)
-            {
-                return false; 
-            }
-            var success = await _matrialRepository.DeleteModuleAsync(Module);
-            return success;
-
-        }
+        
     }
 }
