@@ -26,12 +26,15 @@ namespace Eduology.Infrastructure.Services
         {
             if (materialType == null)
             {
-                throw new ArgumentException("Module cannot be null.");
+                //throw new ArgumentException("Module cannot be null.");
+               return (false, false, null);
+               
             }
 
             if (string.IsNullOrEmpty(materialType.Name))
             {
-                throw new ArgumentException("Module name cannot be null or empty.");
+                // throw new ArgumentException("Module name cannot be null or empty.");
+                return (false, false, null);
             }
             var type = new Domain.Models.Type
             {

@@ -27,7 +27,7 @@ namespace Eduology.Controllers
             var success = await _materialService.AddMaterialAsync(materialDto);
             if (!success)
             {
-                return BadRequest(new { message = "Failed to add material." });
+                return NotFound(new { message = "Failed to add material." });
             }
 
             return Ok(new { message = "Material added successfully." });
@@ -41,7 +41,7 @@ namespace Eduology.Controllers
 
             if (materials == null || !materials.Any())
             {
-                return NoContent();
+                return NotFound(new { message = "No martials found." });
             }
 
             return Ok(materials);
@@ -54,7 +54,7 @@ namespace Eduology.Controllers
 
             if (response == null)
             {
-                return BadRequest(new { message = "Failed to delete file or file does not exist." });
+                return NotFound(new { message = "Failed to delete file or file does not exist." });
             }
 
              return Ok(new { message = "File deleted successfully." });

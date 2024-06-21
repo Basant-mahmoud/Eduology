@@ -35,7 +35,7 @@ namespace Eduology.Infrastructure.Services
         {
             if (string.IsNullOrEmpty(userDto.Name) || string.IsNullOrEmpty(userDto.UserName) || string.IsNullOrEmpty(userDto.Email))
             {
-                throw new ArgumentException("Update data is invalid.");
+                return false;
             }
 
             var success = await _studentRepository.UpdateStudentAsync(studentId, userDto);
@@ -65,13 +65,13 @@ namespace Eduology.Infrastructure.Services
         {
             if (string.IsNullOrEmpty(studentId))
             {
-                throw new ArgumentException("Student ID cannot be null or empty.");
+                return null;
             }
 
             var student = await _studentRepository.GetStudentByIdAsync(studentId);
             if (student == null)
             {
-                throw new KeyNotFoundException("Student not found.");
+                return null;
             }
 
             var courses = await _studentRepository.GetAllCourseToSpecificStudentAsync(studentId);

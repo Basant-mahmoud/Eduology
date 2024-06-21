@@ -4,6 +4,7 @@ using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace Eduology.Controllers
 {
@@ -34,7 +35,7 @@ namespace Eduology.Controllers
             var announcements = await _announcementService.GetAllAsync();
             if (announcements == null || !announcements.Any())
             {
-                return NotFound("No announcements found.");
+                return NotFound(new { message = "No announcements found." });
             }
             return Ok(announcements);
         }
@@ -45,7 +46,7 @@ namespace Eduology.Controllers
             var announcement = await _announcementService.GetByIdAsync(id);
             if (announcement == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Announcement with id {id} not found." });
             }
             return Ok(announcement);
         }
@@ -74,7 +75,7 @@ namespace Eduology.Controllers
             var announcement = await _announcementService.GetAnnouncementByIdAndCourseIdAsync(courseId, announcementId);
             if (announcement == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Announcement id {announcementId} or course id  {courseId} not found." });
             }
             return Ok(announcement);
         }
@@ -84,7 +85,7 @@ namespace Eduology.Controllers
             var announcement = await _announcementService.GetAllAnnouncementsForStudentAsync(studentid);
             if (announcement == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"student id {studentid} not found" });
             }
             return Ok(announcement);
         }

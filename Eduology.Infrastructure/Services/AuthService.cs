@@ -79,6 +79,7 @@ namespace Eduology.Application.Services
 
             return new AuthModel
             {
+                OrganizationId=model.OrganizationId,
                 Email = user.Email,
                 ExpiresOn = jwtSecurityToken.ValidTo,
                 IsAuthenticated = true,
@@ -98,19 +99,38 @@ namespace Eduology.Application.Services
                 authModel.Message = "Email or Password is incorrect!";
                 return authModel;
             }
-
             var jwtSecurityToken = await CreateJwtToken(user);
             var rolesList = await _userManager.GetRolesAsync(user);
 
+            // Write the token to a string
+            var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+
+            // Set the token in the authModel
+            authModel.Token = token;
             authModel.IsAuthenticated = true;
-            authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             authModel.Email = user.Email;
             authModel.Username = user.UserName;
             authModel.ExpiresOn = jwtSecurityToken.ValidTo;
             authModel.Roles = rolesList.ToList();
+            // Extract OrganizationId from the token claims
+            var jwtHandler = new JwtSecurityTokenHandler();
+            var readToken = jwtHandler.ReadJwtToken(token); // Use the token string
+            var organizationIdClaim = readToken.Claims.FirstOrDefault(c => c.Type == "organizationId");
+            authModel.OrganizationId = user.OrganizationId;
+            if (organizationIdClaim != null)
+            {
+                authModel.OrganizationId = Convert.ToInt32(organizationIdClaim.Value);
+            }
+            else
+            {
+                // Handle case where organizationId claim is missing (optional)
+                authModel.Message = "OrganizationId not found in token.";
+                // You can choose to return or handle this scenario as per your application logic
+            }
 
             return authModel;
         }
+
 
         public async Task<string> AddRoleAsync(AddRoleModel model)
         {

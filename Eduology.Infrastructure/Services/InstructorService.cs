@@ -131,7 +131,7 @@ namespace Eduology.Infrastructure.Services
                 var instructor = await _instructorRepository.GetInstructorByIdAsync(id);
                 if (instructor == null)
                 {
-                    return false; // Returning false instead of throwing exception to indicate that the instructor was not found.
+                    return false; 
                 }
 
                 return await _instructorRepository.UpdateInstructorAsync(id, updateInstructorDto);

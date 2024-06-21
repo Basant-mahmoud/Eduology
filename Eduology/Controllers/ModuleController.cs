@@ -26,15 +26,15 @@ namespace Eduology.Controllers
             var (success, exists, createdType) = await _ModuleService.AddModuleAsync(type);
             if (exists)
             {
-                return BadRequest(new { message = "Module already exists." });
+                return NotFound(new { message = "Module already exists." });
             }
 
             if (!success)
             {
-                return BadRequest(new { message = "Failed to add module." });
+                return NotFound(new { message = $"Failed to add {type} module." });
             }
 
-            return Ok(new { message = "Module added successfully.", createdType });
+            return Ok(new { message = "Module added successfully."});
         }
         [HttpGet("ModuleWithFiles/{courseId}")]
         public async Task<IActionResult> AllModuleWithFilesByCourseId(string courseId)
@@ -43,7 +43,7 @@ namespace Eduology.Controllers
 
             if (typesWithFiles == null || !typesWithFiles.Any())
             {
-                return NoContent();
+                return NotFound(new { message = "course id not found or no module found " });
             }
 
             return Ok(typesWithFiles);
@@ -55,7 +55,7 @@ namespace Eduology.Controllers
 
             if (response == null)
             {
-                return BadRequest(new { message = "Failed to delete Module or Module does not exist." });
+                return NotFound(new { message = "Failed to delete Module or Module does not exist." });
             }
 
             return Ok(new { message = "Module deleted successfully." });

@@ -151,7 +151,7 @@ namespace Eduology.Infrastructure.Services
 
                 if (course == null || material == null)
                 {
-                    return false; // Course or material doesn't exist
+                    return false; 
                 }
                 var success = await _matrialRepository.DeleteMatrialAsync(fileId, courseId, materialType);
                 return success;

@@ -35,7 +35,7 @@ namespace Eduology.Controllers
             var student = await _StudentService.GetStudentByIdAsync(studentId);
             if (student == null)
             {
-                return NotFound();
+                 return NotFound(new { message = $"Student id{studentId} exists." });
             }
             return Ok(student);
         }
@@ -50,7 +50,7 @@ namespace Eduology.Controllers
             var updated = await _StudentService.UpdateStudentAsync(studentId, studentDto);
             if (!updated)
             {
-                return NotFound();
+                return NotFound(new { message = $"Failed to update student with id {studentId} ." });
             }
 
             return Ok(new { message = "Student updated successfully" });
@@ -62,7 +62,7 @@ namespace Eduology.Controllers
             var student = await _StudentService.DeleteStudentAsync(studentId);
             if (!student)
             {
-                return NotFound(); 
+                return NotFound(new { message = $"Student id{studentId} Not exists." });
             }
 
             return Ok(new { message = "Student deleted successfully" });
@@ -79,7 +79,7 @@ namespace Eduology.Controllers
             if (success)
                 return Ok("Student added to the course successfully.");
             else
-                return BadRequest("Failed to add student to the course.");
+                return NotFound("Failed to add student to the course.");
         }
         [HttpGet("AllCoursetoStudent/{studentId}")]
         public async Task<ActionResult<CourseUserDto>> AllCoursetoInstructor(string studentId)
@@ -87,7 +87,7 @@ namespace Eduology.Controllers
             var student = await _StudentService.GetAllCourseToSpecificStudentAsync(studentId);
             if (student == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Student id{studentId} not exists." });
             }
 
             return Ok(student);

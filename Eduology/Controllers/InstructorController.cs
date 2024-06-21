@@ -31,7 +31,7 @@ namespace Eduology.Controllers
             }
             else
             {
-                return Ok(instructors); // Return list of instructors as Ok result
+                return Ok(instructors); 
             }
         }
 
@@ -41,7 +41,7 @@ namespace Eduology.Controllers
             var instructor = await _instructorService.GetInstructorByIdAsync(id);
             if (instructor == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Instructor id {id} not found" });
             }
 
             return Ok(instructor);
@@ -53,7 +53,7 @@ namespace Eduology.Controllers
             var instructor = await _instructorService.GetInstructorByNameAsync(name);
             if (instructor == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Instructor name {name} not found" });
             }
 
             return Ok(instructor);
@@ -65,7 +65,7 @@ namespace Eduology.Controllers
             var instructor = await _instructorService.GetInstructorByUserNameAsync(username);
             if (instructor == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Instructor user name {username} not found" });
             }
 
             return Ok(instructor);
@@ -77,7 +77,7 @@ namespace Eduology.Controllers
             var result = await _instructorService.UpdateInstructorAsync(id, updateInstructorDto);
             if (!result)
             {
-                return NotFound();
+                return NotFound(new { message = $"Instructor Id {id} not found" });
             }
 
             var updatedInstructor = await _instructorService.GetInstructorByIdAsync(id);
@@ -90,7 +90,7 @@ namespace Eduology.Controllers
             var result = await _instructorService.DeleteInstructorAsync(id);
             if (!result)
             {
-                return NotFound();
+                return NotFound(new { message = $"Instructor Id {id} not found" });
             }
 
             return Ok(new { message = "Instructor deleted successfully" });
@@ -115,7 +115,7 @@ namespace Eduology.Controllers
             var instructor = await _instructorService.GetAllCourseToSpecificInstructorAsync(instructorid);
             if (instructor == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Instructor Id {instructorid} not found" });
             }
 
             return Ok(instructor);
