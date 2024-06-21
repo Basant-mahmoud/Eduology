@@ -30,42 +30,41 @@ namespace Eduology.Infrastructure.Services
         {
             if (materialDto == null)
             {
-                throw new ArgumentException("Material not found or cannot be null.");
+                return false;
             }
             if (materialDto.CourseId == null)
             {
-                throw new ArgumentException("Course ID not found or cannot be null.");
+                return false;
             }
             if (materialDto.InstructorId == null)
             {
-                throw new ArgumentException("Instructor ID not found or cannot be null .");
+                return false;
             }
             if (materialDto.FileURLs == null)
             {
-                throw new ArgumentException("File URLs not found or cannot be null.");
+                return false;
             }
             if (materialDto.MaterialType == null)
             {
-                throw new ArgumentException("Module not found or cannot be null.");
+                return false;
             }
             //instructor should be in course to add matrial
             var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(materialDto.InstructorId, materialDto.CourseId);
             if (!isInstructorAssigned)
             {
-                throw new ArgumentException($"Instructor with ID '{materialDto.InstructorId}' is not assigned to course '{materialDto.CourseId}'.");
+                return false;
             }
             var existingType = await _ModuleRepository.GetModuleByNameAsync(materialDto.MaterialType.ToLower());
             if (existingType == null)
             {
-                throw new ArgumentException("Module cannot be null.");
-                Console.Error.WriteLine($"Type not exist");
+             
                 return false; 
             }
             var course = await _courseRepository.GetByIdAsync(materialDto.CourseId);
             if (course == null)
             {
                 return false;
-                throw new ArgumentException(" Course Not Esxist be null.");
+               
             }
             
             var material = new Material
@@ -101,14 +100,14 @@ namespace Eduology.Infrastructure.Services
         {
             if(courseId == null)
             {
-                throw new ArgumentException("Course ID cannot be null or empty.");
+                return null;
             }
             var existing= await _courseRepository.GetByIdAsync(courseId);
             if (existing == null)
             {
                 Console.Error.WriteLine($"Type not exist");
                 return new List<MaterialDto>();
-                throw new ArgumentException("Course Not Exist");
+               
               
             }
             var materials = await _matrialRepository.GetAllMaterialsAsync(courseId);
@@ -135,17 +134,17 @@ namespace Eduology.Infrastructure.Services
 
             if (string.IsNullOrEmpty(fileId))
             {
-                throw new ArgumentException("File ID cannot be null or empty.");
+                return false;   
             }
 
             if (string.IsNullOrEmpty(courseId))
             {
-                throw new ArgumentException("Course ID cannot be null or empty.");
+                return false;
             }
 
             if (string.IsNullOrEmpty(materialType))
             {
-                throw new ArgumentException("Material type cannot be null or empty.");
+                return false;
             }
             var course = await _courseRepository.GetByIdAsync(courseId);
                 var material = await _ModuleRepository.GetModuleByNameAsync(materialType.ToLower());

@@ -45,13 +45,13 @@ namespace Eduology.Infrastructure.Services
         {
             if (courseId == null)
             {
-                throw new ArgumentException("Course ID cannot be null or empty.");
+                 return null;
             }
             var courseExists = await _courseRepository.GetByIdAsync(courseId);
             if (courseExists == null)
             {
                 return new List<ModuleWithFilesDto>();
-                throw new ArgumentException("Course Not Exist");
+                
             }
 
             var typesWithFiles = await _ModuleRepository.GetAllModulesAsync(courseId);
@@ -61,7 +61,7 @@ namespace Eduology.Infrastructure.Services
         {
             if (string.IsNullOrEmpty(Module))
             {
-                throw new ArgumentException("Module cannot be null or empty.");
+                return false;
             }
 
             var material = await _ModuleRepository.GetModuleByNameAsync(Module.ToLower());
