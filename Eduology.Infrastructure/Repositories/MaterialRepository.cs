@@ -43,25 +43,6 @@ namespace Eduology.Infrastructure.Repositories
             return true;
         }
 
-        public async Task<(bool Success, bool Exists, Type Type)> AddTypeAsync(Type type)
-        {
-            var existingType = await _context.MaterialTypes
-                .FirstOrDefaultAsync(t => t.Name.ToLower() == type.Name.ToLower());
-
-            if (existingType != null)
-            {
-                return (false, true, null);
-            }
-
-            _context.MaterialTypes.Add(type);
-            await _context.SaveChangesAsync();
-            return (true, false, type);
-        }
-        public async Task<Type> GetTypeByNameAsync(string typeName)
-        {
-            return await _context.MaterialTypes
-                .FirstOrDefaultAsync(t => t.Name.ToLower() == typeName.ToLower());
-        }
         public async Task<List<Material>> GetAllMaterialsAsync(string courseId)
         {
             return await _context.Materials
@@ -71,25 +52,7 @@ namespace Eduology.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<ModuleWithFilesDto>> ModuleTypesWithFilesAsync(string courseId)
-        {
-            var typesWithFiles = await _context.Materials
-                .Where(m => m.CourseId == courseId)
-                .Include(m => m.MaterialType)
-                .Select(m => new ModuleWithFilesDto
-                {
-                    TypeName = m.MaterialType.Name,
-                    Files = m.Files.Select(f => new FileDtoWithId
-                    {
-                        FileId = f.FileId,
-                        URL = f.URL,
-                        Title = f.Title
-                    }).ToList()
-                })
-                .ToListAsync();
-
-            return typesWithFiles;
-        }
+       
         public async Task<bool> DeleteFileAsync(string fileId, string courseId, string materialType)
         {
             var file = await _context.Files
@@ -106,20 +69,7 @@ namespace Eduology.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> DeleteModuleAsync(string materialType)
-        {
-            var module = await _context.MaterialTypes
-                .FirstOrDefaultAsync(mt => mt.Name.ToLower() == materialType.ToLower());
-
-            if (module == null)
-            {
-                return false;
-            }
-
-            _context.MaterialTypes.Remove(module);
-            await _context.SaveChangesAsync();
-            return true;
-        }
+        
 
     }
     }
