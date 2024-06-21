@@ -10,16 +10,19 @@ using Eduology.Domain.Models;
 using Eduology.Infrastructure.Repositories;
 using Eduology.Domain.DTO;
 using Eduology.Application.Interface;
+using Microsoft.EntityFrameworkCore;
 namespace Eduology.Infrastructure.Services
 {
     public class AssignmentServices : IAsignmentServices
     {
         private readonly IAssignmentRepository _asignmentRepository;
         private readonly IInstructorService _instructorService;
+        private readonly ICourseService _courseService; 
         public AssignmentServices(IAssignmentRepository asignmentRepository,IInstructorService instructorService,ICourseService courseService)
         {
             _asignmentRepository = asignmentRepository;
             _instructorService = instructorService;
+            _courseService = courseService;
         }
 
         public async Task<AssignmentDto> CreateAsync(AssignmentDto assignment)
@@ -78,6 +81,15 @@ namespace Eduology.Infrastructure.Services
             var _assignment = await _asignmentRepository.UpdateAsync(id,assignment);
             if (_assignment == null)
                 return null;
+            if (_instructorService.GetInstructorByIdAsync(assignment.InstructorId).ToString() == null)
+            {
+                throw new ArgumentException("Invalid InstructorId.");
+            }
+            var course =  _courseService.GetByIdAsync(assignment.CourseId);
+            if (course == null)
+            {
+                throw new ArgumentException("Invalid CourseId.");
+            }
             return _assignment;
         }
         public async Task<List<AssignmentDto>> GetAllAsync()
