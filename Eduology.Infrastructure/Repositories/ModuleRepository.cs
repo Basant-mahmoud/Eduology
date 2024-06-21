@@ -19,7 +19,7 @@ namespace Eduology.Infrastructure.Repositories
         {
             _context = context;
         }
-        public async Task<(bool Success, bool Exists, Type Type)> AddTypeAsync(Type type)
+        public async Task<(bool Success, bool Exists, Type Type)> AddModuleAsync(Type type)
         {
             var existingType = await _context.MaterialTypes
                 .FirstOrDefaultAsync(t => t.Name.ToLower() == type.Name.ToLower());
@@ -34,7 +34,7 @@ namespace Eduology.Infrastructure.Repositories
             return (true, false, type);
         }
 
-        public async Task<Type> GetTypeByNameAsync(string typeName)
+        public async Task<Type> GetModuleByNameAsync(string typeName)
         {
             return await _context.MaterialTypes
                 .FirstOrDefaultAsync(t => t.Name.ToLower() == typeName.ToLower());
@@ -55,7 +55,7 @@ namespace Eduology.Infrastructure.Repositories
             return true;
         }
         /////////
-        public async Task<List<ModuleWithFilesDto>> ModuleTypesWithFilesAsync(string courseId)
+        public async Task<List<ModuleWithFilesDto>> GetAllModulesAsync(string courseId)
         {
             var typesWithFiles = await _context.Materials
                 .Where(m => m.CourseId == courseId)
@@ -74,12 +74,5 @@ namespace Eduology.Infrastructure.Repositories
 
             return typesWithFiles;
         }
-
-        public Task<(bool Success, bool Exists, System.Type Type)> AddTypeAsync(System.Type type)
-        {
-            throw new NotImplementedException();
-        }
-
-      
     }
 }

@@ -15,5 +15,7 @@ namespace Eduology.Domain.Interfaces
         Task DeleteAsync(int id);
         Task<IEnumerable<Announcement>> GetByCourseIdAsync(string courseId);
         Task<Announcement> GetAnnouncementByIdAndCourseIdAsync(string courseId, int announcementId);
+        Task<IEnumerable<Announcement>> GetAllAnnouncementsForStudentAsync(string studentId);
+
     }
 }

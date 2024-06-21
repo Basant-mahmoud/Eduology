@@ -15,5 +15,6 @@ namespace Eduology.Domain.Interfaces
         Task<bool> UpdateStudentAsync(string studentId, UserDto userDto);
         Task<bool> DeleteStudentAsync(string studentId);
         Task<bool> RegisterToCourseAsync(string studentId, string courseCode);
+        Task<List<CourseUserDto>> GetAllCourseToSpecificStudentAsync(string StudentId);
     }
 }

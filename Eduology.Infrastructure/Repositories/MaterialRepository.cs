@@ -18,7 +18,7 @@ namespace Eduology.Infrastructure.Repositories
         {
             _context = context;
         }
-         public async Task<bool> AddMateriaCourseAsync(Material material)
+         public async Task<bool> AddMaterialAsync(Material material)
         {
             var course = await _context.Courses.FindAsync(material.CourseId);
             if (course == null)
@@ -53,7 +53,7 @@ namespace Eduology.Infrastructure.Repositories
         }
 
        
-        public async Task<bool> DeleteFileAsync(string fileId, string courseId, string materialType)
+        public async Task<bool> DeleteMatrialAsync(string fileId, string courseId, string materialType)
         {
             var file = await _context.Files
                 .Include(f => f.Material)

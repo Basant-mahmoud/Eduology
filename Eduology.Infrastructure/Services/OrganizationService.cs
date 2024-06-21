@@ -25,7 +25,7 @@ namespace Eduology.Infrastructure.Services
         {
             var organizations = await _organizationRepository.GetAllAsync();
             if (organizations == null || !organizations.Any())
-                return new List<OrganizationDetailsDto>(); // Return empty list if no organizations found
+                return new List<OrganizationDetailsDto>(); 
 
             var organizationDtos = new List<OrganizationDetailsDto>();
             foreach (var organization in organizations)
