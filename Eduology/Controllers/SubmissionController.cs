@@ -45,5 +45,25 @@ namespace Eduology.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpDelete("DeleteSubmission")]
+        public async Task<IActionResult> DeleteSubmission([FromBody] DeleteSubmissionDto deleteSubmissionDto)
+        {
+            if (deleteSubmissionDto == null)
+                return BadRequest("Submission data is null.");
+
+            try
+            {
+                var deletesubmission = await _submissionService.DeleteAsync(deleteSubmissionDto);
+                return Ok(deleteSubmissionDto);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

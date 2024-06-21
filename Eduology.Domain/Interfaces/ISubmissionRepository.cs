@@ -10,7 +10,7 @@ namespace Eduology.Domain.Interfaces
     public interface ISubmissionRepository
     {
         public Task<SubmissionDto> CreateAsync(SubmissionDto submission);
-        public Task<bool> DeleteAsync(int id);
+        public Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deletesubmision);
         public Task<SubmissionDto> GetByIdAsync(int id);
     }
 }

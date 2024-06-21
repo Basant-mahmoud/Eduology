@@ -42,9 +42,33 @@ namespace Eduology.Infrastructure.Services
             }
             return await _submissionRepository.CreateAsync(submission);
         }
-        public Task<bool> DeleteAsync(int id)
+        public async Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deletesubmission)
         {
-            throw new NotImplementedException();
+            var assigment = await _assignmentService.GetByIdAsync(deletesubmission.AssigmentId);
+            var submission= await _submissionRepository.GetByIdAsync(deletesubmission.SubmissionId);
+
+            if (assigment == null)
+            {
+                throw new ArgumentException("Invalid assignment ID.");
+
+            }
+            if (submission == null)
+            {
+                throw new ArgumentException("Invalid Submmision ID.");
+
+            }
+            if (assigment.Deadline < DateTime.Now)
+            {
+                throw new InvalidOperationException("Cant delete submmision.");
+            }
+            if (_studentService.GetStudentByIdAsync(deletesubmission.StudentId) == null)
+            {
+                throw new ArgumentException("Invalid student ID.");
+            }
+          
+
+            return await _submissionRepository.DeleteAsync(deletesubmission);
+
         }
 
         public async Task<SubmissionDto> GetByIdAsync(int id)

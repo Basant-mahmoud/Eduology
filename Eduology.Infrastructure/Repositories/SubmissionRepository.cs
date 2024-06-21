@@ -41,11 +41,6 @@ namespace Eduology.Infrastructure.Repositories
             };
         }
 
-        public Task<bool> DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<SubmissionDto> GetByIdAsync(int id)
         {
             var submission = await Context.submissions.FindAsync(id);
@@ -58,6 +53,17 @@ namespace Eduology.Infrastructure.Repositories
                 SubmissionId = submission.SubmissionId,
                 URL = submission.URL
             };
+        }
+        public async Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deleteSubmissionDto)
+        {
+            var submission = await Context.submissions.FindAsync(deleteSubmissionDto.SubmissionId);
+            if (submission == null)
+                return null;
+
+            Context.submissions.Remove(submission);
+            await Context.SaveChangesAsync();
+
+            return deleteSubmissionDto;
         }
     }
 }
