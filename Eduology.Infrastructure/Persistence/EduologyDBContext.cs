@@ -28,7 +28,6 @@ namespace Eduology.Infrastructure.Persistence
         public DbSet<Submission> submissions { get; set; }
         public DbSet<Domain.Models.File> Files { get; set; }
         public DbSet<Organization> Organizations { get; set; }
-        public DbSet<Address> Addresses { get; set; }
         public DbSet<CourseInstructor> courseInstructors { get; set; }
         public DbSet<StudentCourse> StudentCourses { get; set; }
 
@@ -36,17 +35,6 @@ namespace Eduology.Infrastructure.Persistence
         { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
-            // organization is one to one with address
-            modelBuilder.Entity<Organization>()
-            .HasOne(o => o.Address)
-            .WithMany()
-            .HasForeignKey(o => o.AddressId);
-            modelBuilder.Entity<Course>()
-            .HasIndex(e => e.CourseCode)
-            .IsUnique();
-
             base.OnModelCreating(modelBuilder);
             // Many-to-Many relationship between Students and Courses
             modelBuilder.Entity<StudentCourse>()

@@ -32,8 +32,6 @@ namespace Eduology.Domain.Models
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
-        public int? AddressId { get; set; }
-        public virtual Address Address { get; set; }
         public ICollection<Course> Courses { get; set; }
         public ICollection<ApplicationUser> Users { get; set; }
 

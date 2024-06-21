@@ -12,21 +12,6 @@ namespace Eduology.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Addresses",
-                columns: table => new
-                {
-                    AddressId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Street = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Country = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Addresses", x => x.AddressId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -62,17 +47,11 @@ namespace Eduology.Infrastructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    AddressId = table.Column<int>(type: "int", nullable: false)
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Organizations", x => x.OrganizationID);
-                    table.ForeignKey(
-                        name: "FK_Organizations_Addresses_AddressId",
-                        column: x => x.AddressId,
-                        principalTable: "Addresses",
-                        principalColumn: "AddressId",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -220,7 +199,7 @@ namespace Eduology.Infrastructure.Migrations
                 {
                     CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CourseCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CourseCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Year = table.Column<int>(type: "int", nullable: false),
                     OrganizationID = table.Column<int>(type: "int", nullable: false),
@@ -384,7 +363,7 @@ namespace Eduology.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AssignmentFile",
+                name: "AssignmentFiles",
                 columns: table => new
                 {
                     AssignmentFileId = table.Column<int>(type: "int", nullable: false)
@@ -395,9 +374,9 @@ namespace Eduology.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AssignmentFile", x => x.AssignmentFileId);
+                    table.PrimaryKey("PK_AssignmentFiles", x => x.AssignmentFileId);
                     table.ForeignKey(
-                        name: "FK_AssignmentFile_Assignments_AssignmentId",
+                        name: "FK_AssignmentFiles_Assignments_AssignmentId",
                         column: x => x.AssignmentId,
                         principalTable: "Assignments",
                         principalColumn: "AssignmentId",
@@ -440,7 +419,7 @@ namespace Eduology.Infrastructure.Migrations
                     FileId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     URL = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MaterialId = table.Column<int>(type: "int", nullable: true)
+                    MaterialId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -449,7 +428,8 @@ namespace Eduology.Infrastructure.Migrations
                         name: "FK_Files_Materials_MaterialId",
                         column: x => x.MaterialId,
                         principalTable: "Materials",
-                        principalColumn: "MaterialId");
+                        principalColumn: "MaterialId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -507,8 +487,8 @@ namespace Eduology.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AssignmentFile_AssignmentId",
-                table: "AssignmentFile",
+                name: "IX_AssignmentFiles_AssignmentId",
+                table: "AssignmentFiles",
                 column: "AssignmentId",
                 unique: true);
 
@@ -531,12 +511,6 @@ namespace Eduology.Infrastructure.Migrations
                 name: "IX_Courses_ApplicationUserId",
                 table: "Courses",
                 column: "ApplicationUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Courses_CourseCode",
-                table: "Courses",
-                column: "CourseCode",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Courses_OrganizationID",
@@ -562,11 +536,6 @@ namespace Eduology.Infrastructure.Migrations
                 name: "IX_Materials_TypeId",
                 table: "Materials",
                 column: "TypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Organizations_AddressId",
-                table: "Organizations",
-                column: "AddressId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudentCourses_CourseId",
@@ -606,7 +575,7 @@ namespace Eduology.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "AssignmentFile");
+                name: "AssignmentFiles");
 
             migrationBuilder.DropTable(
                 name: "courseInstructors");
@@ -640,9 +609,6 @@ namespace Eduology.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Organizations");
-
-            migrationBuilder.DropTable(
-                name: "Addresses");
         }
     }
 }

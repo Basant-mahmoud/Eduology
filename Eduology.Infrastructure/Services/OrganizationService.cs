@@ -76,7 +76,6 @@ namespace Eduology.Infrastructure.Services
                 Name = organizationDto.Name,
                 Phone = organizationDto.Phone,
                 Email = organizationDto.Email,
-                AddressId = organizationDto.AddressId,
                 Password = organizationDto.Password,
                 ConfirmPassword = organizationDto.ConfirmPassword
             };
@@ -89,7 +88,6 @@ namespace Eduology.Infrastructure.Services
                 Name = organization.Name,
                 Phone = organization.Phone,
                 Email = organization.Email,
-                AddressId = organization.AddressId ?? 0,
                 Password = organization.Password,
                 ConfirmPassword = organization.ConfirmPassword,
             };
