@@ -12,7 +12,7 @@ namespace Eduology.Application.Interface
     {
         Task<List<OrganizationDetailsDto>> GetAllOrganizationsAsync();
         Task<OrganizationDetailsDto> GetOrganizationByIdAsync(int id);
-        Task<OrganizationDto> CreateOrganizationAsync(OrganizationDto organizationDto);
+        Task<OrganizationDto> CreateOrganizationAsync(CreateOrganizationDto createOrganizationDto);
         Task<bool> DeleteOrganizationAsync(int id);
     }
 }

@@ -17,24 +17,31 @@ namespace Eduology.Infrastructure.Services
     {
         private readonly IAnnouncementRepository _announcementRepository;
         private readonly IStudentRepository _studentRepository;
+        private readonly ICourseRepository _courseRepository;
         private readonly UserManager<ApplicationUser> _userManager;
-        public AnnouncementService(IAnnouncementRepository announcementRepository, IStudentRepository studentRepository, UserManager<ApplicationUser> userManager)
+        public AnnouncementService(IAnnouncementRepository announcementRepository, IStudentRepository studentRepository, UserManager<ApplicationUser> userManager, ICourseRepository courseRepository)
         {
             _announcementRepository = announcementRepository;
             _studentRepository = studentRepository;
             _userManager = userManager;
+            _courseRepository = courseRepository;
+
 
         }
 
-        public async Task<AnnouncementDto> CreateAsync(AnnouncementDto announcementDto)
+        public async Task<AnnouncementDto> CreateAsync(CreateAnnoncementDto createannouncementDto)
         {
-            var instructor = await _userManager.FindByIdAsync(announcementDto.InstructorId);
+            var instructor = await _userManager.FindByIdAsync(createannouncementDto.InstructorId);
+            var isjointocourse=await _courseRepository.IsInstructorAssignedToCourse(createannouncementDto.InstructorId, createannouncementDto.CourseId);
             if (instructor == null)
             {
                 return null;
             }
-
-             var courseExists = await _announcementRepository.CourseExistsAsync(announcementDto.CourseId);
+            if (isjointocourse == null)
+            {
+                return null;
+            }
+             var courseExists = await _announcementRepository.CourseExistsAsync(createannouncementDto.CourseId);
             if (!courseExists)
             {
                 return null;
@@ -42,13 +49,12 @@ namespace Eduology.Infrastructure.Services
 
             var announcement = new Announcement
             {
-                Title = announcementDto.Title,
-                Content = announcementDto.Content,
-                CreatedAT = DateTime.UtcNow,
-                CourseId = announcementDto.CourseId,
-                InstructorId = announcementDto.InstructorId
+                Title = createannouncementDto.Title,
+                Content = createannouncementDto.Content,
+                CreatedAT = createannouncementDto.CreatedAt ,
+                CourseId = createannouncementDto.CourseId,
+                InstructorId = createannouncementDto.InstructorId
             };
-
             var createdAnnouncement = await _announcementRepository.AddAsync(announcement);
             return ConvertToDto(createdAnnouncement);
         }
@@ -93,12 +99,12 @@ namespace Eduology.Infrastructure.Services
         {
             if (string.IsNullOrEmpty(studentid))
             {
-                throw new ArgumentException("Student ID not found or cannot be null .");
+                return null;
             }
             var isjoin= await _studentRepository.GetStudentByIdAsync(studentid);
             if (isjoin == null)
             {
-                throw new ArgumentException("Student ID not exist");
+                return null;
             }
             var announcements = await _announcementRepository.GetAllAnnouncementsForStudentAsync(studentid);
             if (announcements == null || !announcements.Any())
