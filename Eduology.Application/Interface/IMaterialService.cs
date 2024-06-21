@@ -12,7 +12,7 @@ namespace Eduology.Application.Interface
     {
         Task<bool> AddMaterialAsync(MaterialDto MaterialDto);
         Task<List<MaterialDto>> GetAllMaterialsAsync(string courseId);
-        Task<bool> DeleteFileAsync(string fileId, string courseId, string materialType);
+        Task<bool> DeleteMatrialAsync(string fileId, string courseId, string materialType);
       
     }
 }

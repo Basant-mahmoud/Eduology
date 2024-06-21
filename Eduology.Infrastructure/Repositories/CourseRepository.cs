@@ -124,7 +124,7 @@ namespace Eduology.Infrastructure.Repositories
         {
             return await _context.Organizations.AnyAsync(o => o.OrganizationID == organizationId);
         }
-        ///
+        
         public async Task<bool> IsInstructorAssignedToCourse(string instructorId, string courseId)
         {
             var courseInstructor = await _context.courseInstructors

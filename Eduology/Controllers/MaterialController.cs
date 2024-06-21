@@ -50,7 +50,7 @@ namespace Eduology.Controllers
         [HttpDelete("DeleteFile")]
         public async Task<IActionResult> DeleteFile([FromBody] DeleteFileDto file)
         {
-            var response = await _materialService.DeleteFileAsync(file.fileId,file.courseId,file.materialType);
+            var response = await _materialService.DeleteMatrialAsync(file.fileId,file.courseId,file.materialType);
 
             if (response == null)
             {
