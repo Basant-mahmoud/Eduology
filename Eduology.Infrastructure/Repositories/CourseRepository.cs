@@ -132,6 +132,13 @@ namespace Eduology.Infrastructure.Repositories
 
             return courseInstructor != null;
         }
+        public async Task<bool> IsstudentAssignedToCourse(string StudentId, string courseId)
+        {
+            var courseInstructor = await _context.StudentCourses
+                .FirstOrDefaultAsync(ci => ci.StudentId == StudentId && ci.CourseId == courseId);
+
+            return courseInstructor != null;
+        }
 
     }
 
