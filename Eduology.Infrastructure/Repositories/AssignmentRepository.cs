@@ -28,6 +28,11 @@ namespace Eduology.Infrastructure.Repositories
             {
                 throw new ArgumentNullException(nameof(assignmentDto));
             }
+            var instructorExists = await _context.Users.AnyAsync(u => u.Id == assignmentDto.InstructorId);
+            if (!instructorExists)
+            {
+                throw new ArgumentException("Invalid InstructorId");
+            }
             var assignment = new Assignment
             {
                 Title = assignmentDto.Title,
@@ -86,20 +91,39 @@ namespace Eduology.Infrastructure.Repositories
         }
         public async Task<Assignment> UpdateAsync(int id, AssignmentDto assignment)
         {
-            var _assignment = await _context.Assignments.FindAsync(id);
-            if (assignment == null)
+            var _assignment = await _context.Assignments
+                .Include(a => a.File) 
+                .FirstOrDefaultAsync(a => a.AssignmentId == id);
+ 
+            if (_assignment == null)
+            {
                 return null;
+            }
             _assignment.InstructorId = assignment.InstructorId;
             _assignment.Description = assignment.Description;
-            _assignment.File = new AssignmentFile
-            {
-                Title = assignment.AssignmentFile.Title,
-                URL = assignment.AssignmentFile.URL,
-            };
             _assignment.Deadline = assignment.Deadline;
             _assignment.CourseId = assignment.CourseId;
+            _assignment.InstructorId = assignment.InstructorId;
+
+            if (_assignment.File != null)
+            {
+                _assignment.File.Title = assignment.AssignmentFile.Title;
+                _assignment.File.URL = assignment.AssignmentFile.URL;
+            }
+            else
+            {
+                _assignment.File = new AssignmentFile
+                {
+                    Title = assignment.AssignmentFile.Title,
+                    URL = assignment.AssignmentFile.URL,
+                    AssignmentId = _assignment.AssignmentId,
+                };
+            }
+            _context.Assignments.Update(_assignment);
+            await _context.SaveChangesAsync();
             return _assignment;
         }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var assignment = await _context.Assignments.FindAsync(id);
