@@ -18,33 +18,33 @@ namespace Eduology.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<ActionResult<OrganizationDto>> PostOrganization(OrganizationDto organizationDto)
+        public async Task<ActionResult<OrganizationDto>> PostOrganization(CreateOrganizationDto createrOrganizationDto)
         {
-            if (!ValidationHelper.IsValidEmail(organizationDto.Email))
+            if (!ValidationHelper.IsValidEmail(createrOrganizationDto.Email))
             {
                 ModelState.AddModelError("Email", "Invalid email format");
                 return BadRequest(ModelState);
             }
             // Validate phone number
-            if (!ValidationHelper.IsValidPhoneNumber(organizationDto.Phone))
+            if (!ValidationHelper.IsValidPhoneNumber(createrOrganizationDto.Phone))
             {
                 ModelState.AddModelError("Phone", "Invalid phone number format");
                 return BadRequest(ModelState);
             }
 
             // Validate password
-            if (!ValidationHelper.IsValidPassword(organizationDto.Password))
+            if (!ValidationHelper.IsValidPassword(createrOrganizationDto.Password))
             {
                 ModelState.AddModelError("Password", "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.");
                 return BadRequest(ModelState);
             }
             // Check if password and confirm password match
-            if (organizationDto.Password != organizationDto.ConfirmPassword)
+            if (createrOrganizationDto.Password != createrOrganizationDto.ConfirmPassword)
             {
                 ModelState.AddModelError("ConfirmPassword", "Password and confirm password do not match");
                 return BadRequest(ModelState);
             }
-            var createdOrganization = await _organizationService.CreateOrganizationAsync(organizationDto);
+            var createdOrganization = await _organizationService.CreateOrganizationAsync(createrOrganizationDto);
             if (createdOrganization == null)
             {
                 ModelState.AddModelError("Faild", "Email is already exist.");

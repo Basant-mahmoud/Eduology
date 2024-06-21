@@ -49,41 +49,42 @@ namespace Eduology.Infrastructure.Services
             return await MapToOrganizationDetailsDtoAsync(organization);
         }
 
-        public async Task<OrganizationDto> CreateOrganizationAsync(OrganizationDto organizationDto)
+        public async Task<OrganizationDto> CreateOrganizationAsync(CreateOrganizationDto createOrganizationDto)
         {
             // Check if the email is already registered as a user
-            var existingUser = await _userManager.FindByEmailAsync(organizationDto.Email);
+            var existingUser = await _userManager.FindByEmailAsync(createOrganizationDto.Email);
             if (existingUser != null)
             {
-                throw new InvalidOperationException("Email is already registered as a user!");
+                return null;
             }
 
             // Check if the organization already exists
-            var existingOrganization = await _organizationRepository.GetByEmailAsync(organizationDto.Email);
+            var existingOrganization = await _organizationRepository.GetByEmailAsync(createOrganizationDto.Email);
             if (existingOrganization != null)
             {
                 return null;
             }
 
             // Validate password and confirm password
-            if (organizationDto.Password != organizationDto.ConfirmPassword)
+            if (createOrganizationDto.Password != createOrganizationDto.ConfirmPassword)
             {
                 throw new InvalidOperationException("Password and confirm password do not match!");
             }
 
             var organization = new Organization
             {
-                Name = organizationDto.Name,
-                Phone = organizationDto.Phone,
-                Email = organizationDto.Email,
-                Password = organizationDto.Password,
-                ConfirmPassword = organizationDto.ConfirmPassword
+                Name = createOrganizationDto.Name,
+                Phone = createOrganizationDto.Phone,
+                Email = createOrganizationDto.Email,
+                Password = createOrganizationDto.Password,
+                ConfirmPassword = createOrganizationDto.ConfirmPassword
             };
 
             await _organizationRepository.AddAsync(organization);
 
             return new OrganizationDto
             {
+                OrganizationId = organization.OrganizationID,
                 Name = organization.Name,
                 Phone = organization.Phone,
                 Email = organization.Email,
