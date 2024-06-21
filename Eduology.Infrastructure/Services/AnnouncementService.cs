@@ -100,7 +100,7 @@ namespace Eduology.Infrastructure.Services
         }
        public async Task<IEnumerable<AllAnnoncemetDto>> GetAllAnnouncementsForStudentAsync(string studentid)
         {
-            if (!string.IsNullOrEmpty(studentid))
+            if (string.IsNullOrEmpty(studentid))
             {
                 throw new ArgumentException("Student ID not found or cannot be null .");
             }
