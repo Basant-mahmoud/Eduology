@@ -2,6 +2,8 @@
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
+using Eduology.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +16,12 @@ namespace Eduology.Infrastructure.Services
     {
         private readonly IAnnouncementRepository _announcementRepository;
         private readonly IStudentRepository _studentRepository;
-        public AnnouncementService(IAnnouncementRepository announcementRepository, IStudentRepository _studentRepository)
+        private readonly EduologyDBContext _context;
+        public AnnouncementService(IAnnouncementRepository announcementRepository, IStudentRepository studentRepository)
         {
             _announcementRepository = announcementRepository;
-            _studentRepository = _studentRepository;
+            _studentRepository = studentRepository;
+           
         }
 
         public async Task<AnnouncementDto> CreateAsync(AnnouncementDto announcementDto)
@@ -83,7 +87,7 @@ namespace Eduology.Infrastructure.Services
             {
                 throw new ArgumentException("Student ID not found or cannot be null .");
             }
-            var isjoin= _studentRepository.GetStudentByIdAsync(studentid);
+            var isjoin= await _studentRepository.GetStudentByIdAsync(studentid);
             if (isjoin == null)
             {
                 throw new ArgumentException("Student ID not exist");
