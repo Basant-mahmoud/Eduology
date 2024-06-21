@@ -42,11 +42,16 @@ namespace Eduology.Infrastructure.Services
             }
             return await _submissionRepository.CreateAsync(submission);
         }
+        /// basant 
         public async Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deletesubmission)
         {
             var assigment = await _assignmentService.GetByIdAsync(deletesubmission.AssigmentId);
             var submission= await _submissionRepository.GetByIdAsync(deletesubmission.SubmissionId);
-
+            var student = await _studentService.GetStudentByIdAsync(deletesubmission.StudentId);
+            if (student == null)
+            {
+                throw new ArgumentException("student ID not exist .");
+            }
             if (assigment == null)
             {
                 throw new ArgumentException("Invalid assignment ID.");
