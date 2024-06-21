@@ -63,6 +63,7 @@ namespace Eduology
             builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
             builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
             builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+            builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
             // Register services
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IInstructorService, InstructorService>();
@@ -71,6 +72,7 @@ namespace Eduology
             builder.Services.AddScoped<IAsignmentServices, AssignmentServices>();
             builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
             builder.Services.AddScoped<IOrganizationService, OrganizationService>();
+            builder.Services.AddScoped<ISubmissionService, SubmissionService>();
 
             builder.Services.AddScoped<IMaterialService, MaterialService>();
             builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
