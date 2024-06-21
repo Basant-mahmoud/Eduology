@@ -2,14 +2,12 @@
 using Eduology.Application.Services.Interface;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
-using Eduology.Infrastructure.Repositories;
-using NuGet.Protocol.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Eduology.Infrastructure.Services_class
+namespace Eduology.Infrastructure.Services
 {
     public class InstructorService : IInstructorService
     {
@@ -22,99 +20,217 @@ namespace Eduology.Infrastructure.Services_class
 
         public async Task<IEnumerable<UserDto>> GetAllInstructorsAsync()
         {
-            var instructors = await _instructorRepository.GetAllInstructorsAsync();
-            return instructors;
+            try
+            {
+                var instructors = await _instructorRepository.GetAllInstructorsAsync();
+                if (instructors == null || !instructors.Any())
+                {
+                    return new List<UserDto>();
+                }
+                return instructors;
+            }
+            catch (Exception ex)
+            {
+                
+                throw new ApplicationException("An error occurred while fetching the instructors.", ex);
+            }
         }
 
         public async Task<UserDto> GetInstructorByIdAsync(string id)
         {
-            var instructor = await _instructorRepository.GetInstructorByIdAsync(id);
-            if (instructor == null)
+            try
             {
-                throw new KeyNotFoundException("Instructor not found.");
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("Instructor ID cannot be null or empty.");
+                }
+
+                var instructor = await _instructorRepository.GetInstructorByIdAsync(id);
+                if (instructor == null)
+                {
+                    throw new KeyNotFoundException("Instructor not found.");
+                }
+
+                return instructor;
             }
-            return instructor;
+            catch (Exception ex)
+            { 
+                throw new ApplicationException("An error occurred while fetching the instructor by ID.", ex);
+            }
         }
 
         public async Task<UserDto> GetInstructorByNameAsync(string name)
         {
-            var instructor = await _instructorRepository.GetInstructorByNameAsync(name);
-            if (instructor == null)
+            try
             {
-                throw new KeyNotFoundException("Instructor not found.");
+                if (string.IsNullOrEmpty(name))
+                {
+                    throw new ArgumentException("Instructor name cannot be null or empty.");
+                }
+
+                var instructor = await _instructorRepository.GetInstructorByNameAsync(name);
+                if (instructor == null)
+                {
+                    throw new KeyNotFoundException("Instructor not found.");
+                }
+
+                return instructor;
             }
-            return instructor;
+            catch (Exception ex)
+            {
+               
+                throw new ApplicationException("An error occurred while fetching the instructor by name.", ex);
+            }
         }
 
         public async Task<UserDto> GetInstructorByUserNameAsync(string userName)
         {
-            var instructor = await _instructorRepository.GetInstructorByUserNameAsync(userName);
-            if (instructor == null)
+            try
             {
-                throw new KeyNotFoundException("Instructor not found.");
+                if (string.IsNullOrEmpty(userName))
+                {
+                    throw new ArgumentException("Instructor username cannot be null or empty.");
+                }
+
+                var instructor = await _instructorRepository.GetInstructorByUserNameAsync(userName);
+                if (instructor == null)
+                {
+                    throw new KeyNotFoundException("Instructor not found.");
+                }
+
+                return instructor;
             }
-            return instructor;
+            catch (Exception ex)
+            {
+               
+                throw new ApplicationException("An error occurred while fetching the instructor by username.", ex);
+            }
         }
 
         public async Task<bool> DeleteInstructorAsync(string id)
         {
-            var instructor = await _instructorRepository.GetInstructorByIdAsync(id);
-            if (instructor == null)
+            try
             {
-                throw new KeyNotFoundException("Instructor not found.");
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("Instructor ID cannot be null or empty.");
+                }
+
+                var instructor = await _instructorRepository.GetInstructorByIdAsync(id);
+                if (instructor == null)
+                {
+                    throw new KeyNotFoundException("Instructor not found.");
+                }
+
+                return await _instructorRepository.DeleteInstructorAsync(id);
             }
-            return await _instructorRepository.DeleteInstructorAsync(id);
+            catch (Exception ex)
+            {
+                
+                throw new ApplicationException("An error occurred while deleting the instructor.", ex);
+            }
         }
 
         public async Task<bool> UpdateInstructorAsync(string id, UserDto updateInstructorDto)
         {
-            var instructor = await _instructorRepository.GetInstructorByIdAsync(id);
-            if (instructor == null)
+            try
             {
-                //throw new KeyNotFoundException("Instructor not found.");
-                return false;
-            }
+                if (string.IsNullOrEmpty(id))
+                {
+                    throw new ArgumentException("Instructor ID cannot be null or empty.");
+                }
 
-            if (string.IsNullOrEmpty(updateInstructorDto.Name) || string.IsNullOrEmpty(updateInstructorDto.UserName) || string.IsNullOrEmpty(updateInstructorDto.Email))
+                if (updateInstructorDto == null)
+                {
+                    throw new ArgumentException("Update data cannot be null.");
+                }
+
+                if (string.IsNullOrEmpty(updateInstructorDto.Name) || string.IsNullOrEmpty(updateInstructorDto.UserName) || string.IsNullOrEmpty(updateInstructorDto.Email))
+                {
+                    throw new ArgumentException("Update data is invalid. Name, UserName, and Email cannot be null or empty.");
+                }
+
+                var instructor = await _instructorRepository.GetInstructorByIdAsync(id);
+                if (instructor == null)
+                {
+                    return false; // Returning false instead of throwing exception to indicate that the instructor was not found.
+                }
+
+                return await _instructorRepository.UpdateInstructorAsync(id, updateInstructorDto);
+            }
+            catch (Exception ex)
             {
-                throw new ArgumentException("Update data is invalid.");
+                
+                throw new ApplicationException("An error occurred while updating the instructor.", ex);
             }
-
-            return await _instructorRepository.UpdateInstructorAsync(id, updateInstructorDto);
         }
+
         public async Task<bool> RegisterToCourseAsync(string instructorId, string courseCode)
         {
-            var instructor = await _instructorRepository.RegisterToCourseAsync(instructorId, courseCode);
-            if (instructor == null || instructor == false)
-                return false;
-            return instructor;
+            try
+            {
+                if (string.IsNullOrEmpty(instructorId) || string.IsNullOrEmpty(courseCode))
+                {
+                    throw new ArgumentException("Instructor ID and Course Code cannot be null or empty.");
+                }
+
+                var instructorExists = await _instructorRepository.GetInstructorByIdAsync(instructorId);
+                if (instructorExists == null)
+                {
+                    throw new KeyNotFoundException("Instructor not found.");
+                }
+
+                var success = await _instructorRepository.RegisterToCourseAsync(instructorId, courseCode);
+                if (!success)
+                {
+                    throw new InvalidOperationException("Failed to register instructor to course.");
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                
+                throw new ApplicationException("An error occurred while registering the instructor to the course.", ex);
+            }
         }
 
-        public async Task<List<CourseUserDto>> GetAllCourseToSpecificInstructorAsync(string InstructorId)
+        public async Task<List<CourseUserDto>> GetAllCourseToSpecificInstructorAsync(string instructorId)
         {
-            var instructor = await _instructorRepository.GetInstructorByIdAsync(InstructorId);
-            if (instructor == null)
+            try
             {
-                return null;
-                throw new KeyNotFoundException("Instructor not found.");
+                if (string.IsNullOrEmpty(instructorId))
+                {
+                    throw new ArgumentException("Instructor ID cannot be null or empty.");
+                }
+
+                var instructor = await _instructorRepository.GetInstructorByIdAsync(instructorId);
+                if (instructor == null)
+                {
+                    throw new KeyNotFoundException("Instructor not found.");
+                }
+
+                var courses = await _instructorRepository.GetAllCourseToSpecificInstructorAsync(instructorId);
+                if (courses == null || !courses.Any())
+                {
+                    return new List<CourseUserDto>();
+                }
+
+                var courseDtos = courses.Select(course => new CourseUserDto
+                {
+                    InstructorName = instructor.Name,
+                    CourseName = course.CourseName,
+                    CourseDescription = course.CourseDescription,
+                    year = course.year
+                }).ToList();
+
+                return courseDtos;
             }
-
-            var courses = await _instructorRepository.GetAllCourseToSpecificInstructorAsync(InstructorId);
-            if (courses == null || !courses.Any())
+            catch (Exception ex)
             {
-                return new List<CourseUserDto>(); 
+                
+                throw new ApplicationException("An error occurred while fetching courses for the instructor.", ex);
             }
-
-            var courseDtos = courses.Select(course => new CourseUserDto
-            {
-                InstructorName = instructor.Name,
-                CourseName = course.CourseName,
-                CourseDescription = course.CourseDescription,
-                year = course.year
-            }).ToList();
-
-            return courseDtos;
         }
-
     }
 }

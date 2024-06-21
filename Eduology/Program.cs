@@ -17,7 +17,6 @@ using Eduology.Infrastructure.Services;
 using Eduology.Application.Interface;
 using Microsoft.IdentityModel.Tokens;
 using Eduology.Application.Services.Helper;
-using Eduology.Infrastructure.Services_class;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace Eduology
