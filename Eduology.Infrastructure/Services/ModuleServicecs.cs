@@ -22,7 +22,7 @@ namespace Eduology.Infrastructure.Services
             _courseRepository = courseRepository;
             _ModuleRepository = moduleRepository;
         }
-        public async Task<(bool Success, bool Exists, Domain.Models.Type Type)> AddTypeAsync(MaterialType materialType)
+        public async Task<(bool Success, bool Exists, Domain.Models.Type Type)> AddModuleAsync(MaterialType materialType)
         {
             if (materialType == null)
             {
@@ -38,10 +38,10 @@ namespace Eduology.Infrastructure.Services
                 Name = materialType.Name.ToLower(),
             };
 
-            var (success, exists, createdType) = await _ModuleRepository.AddTypeAsync(type);
+            var (success, exists, createdType) = await _ModuleRepository.AddModuleAsync(type);
             return (success, exists, createdType);
         }
-        public async Task<List<ModuleWithFilesDto>> GetModulesWithFilesAsync(string courseId)
+        public async Task<List<ModuleWithFilesDto>> GetAllModulesAsync(string courseId)
         {
             if (courseId == null)
             {
@@ -54,7 +54,7 @@ namespace Eduology.Infrastructure.Services
                 throw new ArgumentException("Course Not Exist");
             }
 
-            var typesWithFiles = await _ModuleRepository.ModuleTypesWithFilesAsync(courseId);
+            var typesWithFiles = await _ModuleRepository.GetAllModulesAsync(courseId);
             return typesWithFiles;
         }
         public async Task<bool> DeleteModule(string Module)
@@ -64,7 +64,7 @@ namespace Eduology.Infrastructure.Services
                 throw new ArgumentException("Module cannot be null or empty.");
             }
 
-            var material = await _ModuleRepository.GetTypeByNameAsync(Module.ToLower());
+            var material = await _ModuleRepository.GetModuleByNameAsync(Module.ToLower());
 
             if (material == null)
             {

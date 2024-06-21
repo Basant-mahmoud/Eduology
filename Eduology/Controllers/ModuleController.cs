@@ -23,7 +23,7 @@ namespace Eduology.Controllers
                 return BadRequest(ModelState);
             }
 
-            var (success, exists, createdType) = await _ModuleService.AddTypeAsync(type);
+            var (success, exists, createdType) = await _ModuleService.AddModuleAsync(type);
             if (exists)
             {
                 return BadRequest(new { message = "Module already exists." });
@@ -39,7 +39,7 @@ namespace Eduology.Controllers
         [HttpGet("ModuleWithFiles/{courseId}")]
         public async Task<IActionResult> AllModuleWithFilesByCourseId(string courseId)
         {
-            var typesWithFiles = await _ModuleService.GetModulesWithFilesAsync(courseId);
+            var typesWithFiles = await _ModuleService.GetAllModulesAsync(courseId);
 
             if (typesWithFiles == null || !typesWithFiles.Any())
             {
