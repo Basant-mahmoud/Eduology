@@ -17,10 +17,13 @@ namespace Eduology.Infrastructure.Services
     {
         private readonly IAnnouncementRepository _announcementRepository;
         private readonly IStudentRepository _studentRepository;
-        public AnnouncementService(IAnnouncementRepository announcementRepository, IStudentRepository _studentRepository)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public AnnouncementService(IAnnouncementRepository announcementRepository, IStudentRepository studentRepository, UserManager<ApplicationUser> userManager)
         {
             _announcementRepository = announcementRepository;
-            _studentRepository = _studentRepository;
+            _studentRepository = studentRepository;
+            _userManager = userManager;
+
         }
 
         public async Task<AnnouncementDto> CreateAsync(AnnouncementDto announcementDto)
