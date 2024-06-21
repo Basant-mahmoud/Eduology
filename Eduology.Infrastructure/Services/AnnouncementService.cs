@@ -85,21 +85,6 @@ namespace Eduology.Infrastructure.Services
             return ConvertToDto(announcement);
         }
 
-        private AnnouncementDto ConvertToDto(Announcement announcement)
-        {
-            if (announcement == null)
-                return null;
-
-            return new AnnouncementDto
-            {
-                Id = announcement.AnnouncementId,
-                Title = announcement.Title,
-                Content = announcement.Content,
-                CreatedAt = announcement.CreatedAT,
-                CourseId = announcement.CourseId,
-                InstructorId = announcement.InstructorId
-            };
-        }
        public async Task<IEnumerable<AllAnnoncemetDto>> GetAllAnnouncementsForStudentAsync(string studentid)
         {
             if (string.IsNullOrEmpty(studentid))
@@ -123,10 +108,21 @@ namespace Eduology.Infrastructure.Services
                 Content = a.Content,
                 CreatedAT = a.CreatedAT
             }).ToList();
-
-
         }
+        private AnnouncementDto ConvertToDto(Announcement announcement)
+        {
+            if (announcement == null)
+                return null;
 
-        
+            return new AnnouncementDto
+            {
+                Id = announcement.AnnouncementId,
+                Title = announcement.Title,
+                Content = announcement.Content,
+                CreatedAt = announcement.CreatedAT,
+                CourseId = announcement.CourseId,
+                InstructorId = announcement.InstructorId
+            };
+        }
     }
 }
