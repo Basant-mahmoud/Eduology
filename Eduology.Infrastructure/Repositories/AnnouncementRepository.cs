@@ -56,6 +56,17 @@ namespace Eduology.Infrastructure.Repositories
             return await _context.Announcements
                                  .FirstOrDefaultAsync(a => a.CourseId == courseId && a.AnnouncementId == announcementId);
         }
+        
+            public async Task<IEnumerable<Announcement>> GetAllAnnouncementsForStudentAsync(string studentId)
+            {
+                return await _context.Announcements
+                    .Where(a => a.Course.StudentCourses.Any(sc => sc.StudentId == studentId))
+                    .Include(a => a.Course)
+                    .Include(a => a.Instructor)
+                    .ToListAsync();
+            }
+        
+
     }
 }
 

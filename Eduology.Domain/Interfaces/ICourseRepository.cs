@@ -19,6 +19,6 @@ namespace Eduology.Domain.Interfaces
         Task<IEnumerable<CourseDetailsDto>> GetAllAsync();
         Task<Course> UpdateAsync(String id, CourseDto course);
         Task<bool> IsInstructorAssignedToCourse(string instructorId, string courseId);
-
+        Task<bool> IStudentAssignedToCourse(string instructorId, string courseId);
     }
 }

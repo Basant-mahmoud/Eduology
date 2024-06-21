@@ -13,10 +13,11 @@ namespace Eduology.Infrastructure.Services
     public class AnnouncementService : IAnnouncementService
     {
         private readonly IAnnouncementRepository _announcementRepository;
-
-        public AnnouncementService(IAnnouncementRepository announcementRepository)
+        private readonly IStudentRepository _studentRepository;
+        public AnnouncementService(IAnnouncementRepository announcementRepository, IStudentRepository _studentRepository)
         {
             _announcementRepository = announcementRepository;
+            _studentRepository = _studentRepository;
         }
 
         public async Task<AnnouncementDto> CreateAsync(AnnouncementDto announcementDto)
@@ -76,5 +77,33 @@ namespace Eduology.Infrastructure.Services
                 InstructorId = announcement.InstructorId
             };
         }
+       public async Task<IEnumerable<AllAnnoncemetDto>> GetAllAnnouncementsForStudentAsync(string studentid)
+        {
+            if (!string.IsNullOrEmpty(studentid))
+            {
+                throw new ArgumentException("Student ID not found or cannot be null .");
+            }
+            var isjoin= _studentRepository.GetStudentByIdAsync(studentid);
+            if (isjoin == null)
+            {
+                throw new ArgumentException("Student ID not exist");
+            }
+            var announcements = await _announcementRepository.GetAllAnnouncementsForStudentAsync(studentid);
+            if (announcements == null || !announcements.Any())
+            {
+                return new List<AllAnnoncemetDto>();
+            }
+            return announcements.Select(a => new AllAnnoncemetDto
+            {
+                coursename = a.Course.Name,
+                instructorname = a.Instructor.Name, 
+                Content = a.Content,
+                CreatedAT = a.CreatedAT
+            }).ToList();
+
+
+        }
+
+        
     }
 }
