@@ -11,5 +11,6 @@ namespace Eduology.Domain.DTO
         public string Name { get; set; }
         public string CourseCode { get; set; }
         public int Year { get; set; }
+        public string InstructorId { get; set; }
     }
 }

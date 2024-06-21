@@ -25,10 +25,8 @@ namespace Eduology.Infrastructure.Repositories
             // Check if the organization exists
             if (!await OrganizationExistsAsync(course.OrganizationID))
             {
-                throw new KeyNotFoundException("Organization not found."); // Handle this case according to your application's error handling strategy
-                //return false;
+                throw new KeyNotFoundException("Organization not found."); 
             }
-
             await _context.Courses.AddAsync(course);
             await _context.SaveChangesAsync();
             return course;
@@ -51,10 +49,10 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<IEnumerable<CourseDetailsDto>> GetAllAsync()
         {
             var courses = await _context.Courses
-                .Include(c => c.CourseInstructors)
-                    .ThenInclude(ci => ci.Instructor)
+                .Include( c => c.CourseInstructors)
+                .ThenInclude(ci => ci.Instructor)
                 .Include(c => c.StudentCourses)
-                    .ThenInclude(sc => sc.Student)
+                .ThenInclude(sc => sc.Student)
                 .ToListAsync();
             if (courses == null || courses.Count == 0)
                 return null;
@@ -132,7 +130,7 @@ namespace Eduology.Infrastructure.Repositories
 
             return courseInstructor != null;
         }
-        public async Task<bool> IsstudentAssignedToCourse(string StudentId, string courseId)
+        public async Task<bool> IStudentAssignedToCourse(string StudentId, string courseId)
         {
             var courseInstructor = await _context.StudentCourses
                 .FirstOrDefaultAsync(ci => ci.StudentId == StudentId && ci.CourseId == courseId);

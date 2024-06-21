@@ -97,9 +97,15 @@ namespace Eduology
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
                 };
             });
-
-            // Add controllers and Swagger
-            builder.Services.AddControllers();
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("InstructorPolicy", policy => policy.RequireRole("Instructor"));
+                options.AddPolicy("StudentPolicy", policy => policy.RequireRole("Student"));
+            });
+        
+        // Add controllers and Swagger
+        builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 

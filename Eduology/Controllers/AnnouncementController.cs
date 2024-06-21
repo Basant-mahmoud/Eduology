@@ -78,5 +78,15 @@ namespace Eduology.Controllers
             }
             return Ok(announcement);
         }
+        [HttpGet("GetAllStudentAnnouncement/{studentid}")]
+        public async Task<ActionResult<IEnumerable<AllAnnoncemetDto>>> GetAllStudentAnnouncement(string studentid)
+        {
+            var announcement = await _announcementService.GetAllAnnouncementsForStudentAsync(studentid);
+            if (announcement == null)
+            {
+                return NotFound();
+            }
+            return Ok(announcement);
+        }
     }
 }

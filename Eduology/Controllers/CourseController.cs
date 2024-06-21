@@ -4,6 +4,7 @@ using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
 using Eduology.Infrastructure.Repositories;
 using Eduology.Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +20,7 @@ namespace Eduology.Controllers
         {
             _courseService = courseService;
         }
-
+        //[Authorize(Roles = "Admin")]
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CourseCreationDto course)
         {
@@ -31,7 +32,6 @@ namespace Eduology.Controllers
             var createdCourse = await _courseService.CreateAsync(course);
             return CreatedAtAction(nameof(GetCourseById), new { id = createdCourse.CourseId }, createdCourse);
         }
-
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetCourseById(String id)
         {
@@ -42,6 +42,7 @@ namespace Eduology.Controllers
             }
             return Ok(course);
         }
+
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
@@ -60,6 +61,7 @@ namespace Eduology.Controllers
                 return NotFound();
             return Ok(course);
         }
+        //[Authorize(Roles = "Instructor")]
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> UpdateAsync(String id,[FromBody] CourseDto courseDto)
         {
@@ -76,7 +78,7 @@ namespace Eduology.Controllers
 
             return Ok(new { message = "Course updated successfully" });
         }
-
+        //[Authorize(Roles = "Admin")]
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(string id)
         {

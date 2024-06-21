@@ -14,11 +14,12 @@ namespace Eduology.Infrastructure.Services
     public class CourseService : ICourseService
     {
         private readonly ICourseRepository _courseRepository;
+        private readonly IInstructorService _instructorService;
 
-
-        public CourseService(ICourseRepository courseRepository)
+        public CourseService(ICourseRepository courseRepository,IInstructorService instructorService)
         {
             _courseRepository = courseRepository;
+            _instructorService = instructorService;
         }
 
         public async Task<Course> CreateAsync(CourseCreationDto courseDto)
