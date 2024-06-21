@@ -59,7 +59,7 @@ namespace Eduology.Application.Services
                 UserName = model.Username,
                 Email = model.Email,
                 Name = model.Name,
-                OrganizationId = model.OrganizationId // Assign the OrganizationId
+                OrganizationId = model.OrganizationId 
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);

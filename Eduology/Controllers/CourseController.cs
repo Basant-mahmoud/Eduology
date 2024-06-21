@@ -20,7 +20,7 @@ namespace Eduology.Controllers
         {
             _courseService = courseService;
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CourseCreationDto course)
         {
