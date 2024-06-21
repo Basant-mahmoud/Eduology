@@ -81,5 +81,16 @@ namespace Eduology.Controllers
             else
                 return BadRequest("Failed to add student to the course.");
         }
+        [HttpGet("AllCoursetoStudent/{studentId}")]
+        public async Task<ActionResult<CourseUserDto>> AllCoursetoInstructor(string studentId)
+        {
+            var student = await _StudentService.GetAllCourseToSpecificStudentAsync(studentId);
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(student);
+        }
     } 
 }

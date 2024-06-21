@@ -218,7 +218,7 @@ namespace Eduology.Infrastructure.Services
 
                 var courseDtos = courses.Select(course => new CourseUserDto
                 {
-                    InstructorName = instructor.Name,
+                    Name = instructor.Name,
                     CourseName = course.CourseName,
                     CourseDescription = course.CourseDescription,
                     year = course.year
