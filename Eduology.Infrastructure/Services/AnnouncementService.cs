@@ -29,10 +29,10 @@ namespace Eduology.Infrastructure.Services
 
         }
 
-        public async Task<AnnouncementDto> CreateAsync(AnnouncementDto announcementDto)
+        public async Task<AnnouncementDto> CreateAsync(CreateAnnoncementDto createannouncementDto)
         {
-            var instructor = await _userManager.FindByIdAsync(announcementDto.InstructorId);
-            var isjointocourse=await _courseRepository.IsInstructorAssignedToCourse(announcementDto.InstructorId,announcementDto.CourseId);
+            var instructor = await _userManager.FindByIdAsync(createannouncementDto.InstructorId);
+            var isjointocourse=await _courseRepository.IsInstructorAssignedToCourse(createannouncementDto.InstructorId, createannouncementDto.CourseId);
             if (instructor == null)
             {
                 return null;
@@ -41,7 +41,7 @@ namespace Eduology.Infrastructure.Services
             {
                 return null;
             }
-             var courseExists = await _announcementRepository.CourseExistsAsync(announcementDto.CourseId);
+             var courseExists = await _announcementRepository.CourseExistsAsync(createannouncementDto.CourseId);
             if (!courseExists)
             {
                 return null;
@@ -49,13 +49,12 @@ namespace Eduology.Infrastructure.Services
 
             var announcement = new Announcement
             {
-                Title = announcementDto.Title,
-                Content = announcementDto.Content,
-                CreatedAT = DateTime.UtcNow,
-                CourseId = announcementDto.CourseId,
-                InstructorId = announcementDto.InstructorId
+                Title = createannouncementDto.Title,
+                Content = createannouncementDto.Content,
+                CreatedAT = createannouncementDto.CreatedAt ,
+                CourseId = createannouncementDto.CourseId,
+                InstructorId = createannouncementDto.InstructorId
             };
-
             var createdAnnouncement = await _announcementRepository.AddAsync(announcement);
             return ConvertToDto(createdAnnouncement);
         }

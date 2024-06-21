@@ -19,14 +19,14 @@ namespace Eduology.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<ActionResult<AnnouncementDto>> PostAnnouncement([FromBody] AnnouncementDto announcementDto)
+        public async Task<ActionResult<CreateAnnoncementDto>> PostAnnouncement([FromBody] CreateAnnoncementDto announcementDto)
         {
             var createdAnnouncement = await _announcementService.CreateAsync(announcementDto);
             if (createdAnnouncement == null)
             {
                 return BadRequest();
             }
-            return CreatedAtAction(nameof(GetAnnouncement), new { id = createdAnnouncement.Id }, createdAnnouncement);
+            return CreatedAtAction(nameof(GetAnnouncement), new { createdAnnouncement });
         }
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncements()
