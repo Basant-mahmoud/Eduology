@@ -100,13 +100,11 @@ namespace Eduology.Infrastructure.Services
             if (string.IsNullOrEmpty(studentid))
             {
                 return null;
-               // throw new ArgumentException("Student ID not found or cannot be null .");
             }
             var isjoin= await _studentRepository.GetStudentByIdAsync(studentid);
             if (isjoin == null)
             {
                 return null;
-               // throw new ArgumentException("Student ID not exist");
             }
             var announcements = await _announcementRepository.GetAllAnnouncementsForStudentAsync(studentid);
             if (announcements == null || !announcements.Any())
