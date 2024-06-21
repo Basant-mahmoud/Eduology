@@ -124,8 +124,22 @@ namespace Eduology.Infrastructure.Repositories
         {
             return await _context.Organizations.AnyAsync(o => o.OrganizationID == organizationId);
         }
+        ///
+        public async Task<bool> IsInstructorAssignedToCourse(string instructorId, string courseId)
+        {
+            var courseInstructor = await _context.courseInstructors
+                .FirstOrDefaultAsync(ci => ci.InstructorId == instructorId && ci.CourseId == courseId);
 
-        
+            return courseInstructor != null;
+        }
+        public async Task<bool> IsstudentAssignedToCourse(string StudentId, string courseId)
+        {
+            var courseInstructor = await _context.StudentCourses
+                .FirstOrDefaultAsync(ci => ci.StudentId == StudentId && ci.CourseId == courseId);
+
+            return courseInstructor != null;
+        }
+
     }
 
     }
