@@ -22,6 +22,10 @@ namespace Eduology.Controllers
         public async Task<ActionResult<AnnouncementDto>> PostAnnouncement([FromBody] AnnouncementDto announcementDto)
         {
             var createdAnnouncement = await _announcementService.CreateAsync(announcementDto);
+            if (createdAnnouncement == null)
+            {
+                return BadRequest();
+            }
             return CreatedAtAction(nameof(GetAnnouncement), new { id = createdAnnouncement.Id }, createdAnnouncement);
         }
         [HttpGet("GetAll")]
@@ -52,7 +56,7 @@ namespace Eduology.Controllers
             var announcement = await _announcementService.GetByIdAsync(id);
             if (announcement == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Announcement with id {id} not found." });
             }
 
             await _announcementService.DeleteAsync(id);
