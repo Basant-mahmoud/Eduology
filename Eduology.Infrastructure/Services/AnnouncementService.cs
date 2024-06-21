@@ -17,23 +17,30 @@ namespace Eduology.Infrastructure.Services
     {
         private readonly IAnnouncementRepository _announcementRepository;
         private readonly IStudentRepository _studentRepository;
+        private readonly ICourseRepository _courseRepository;
         private readonly UserManager<ApplicationUser> _userManager;
-        public AnnouncementService(IAnnouncementRepository announcementRepository, IStudentRepository studentRepository, UserManager<ApplicationUser> userManager)
+        public AnnouncementService(IAnnouncementRepository announcementRepository, IStudentRepository studentRepository, UserManager<ApplicationUser> userManager, ICourseRepository courseRepository)
         {
             _announcementRepository = announcementRepository;
             _studentRepository = studentRepository;
             _userManager = userManager;
+            _courseRepository = courseRepository;
+
 
         }
 
         public async Task<AnnouncementDto> CreateAsync(AnnouncementDto announcementDto)
         {
             var instructor = await _userManager.FindByIdAsync(announcementDto.InstructorId);
+            var isjointocourse=await _courseRepository.IsInstructorAssignedToCourse(announcementDto.InstructorId,announcementDto.CourseId);
             if (instructor == null)
             {
                 return null;
             }
-
+            if (isjointocourse == null)
+            {
+                return null;
+            }
              var courseExists = await _announcementRepository.CourseExistsAsync(announcementDto.CourseId);
             if (!courseExists)
             {
@@ -93,12 +100,14 @@ namespace Eduology.Infrastructure.Services
         {
             if (string.IsNullOrEmpty(studentid))
             {
-                throw new ArgumentException("Student ID not found or cannot be null .");
+                return null;
+               // throw new ArgumentException("Student ID not found or cannot be null .");
             }
             var isjoin= await _studentRepository.GetStudentByIdAsync(studentid);
             if (isjoin == null)
             {
-                throw new ArgumentException("Student ID not exist");
+                return null;
+               // throw new ArgumentException("Student ID not exist");
             }
             var announcements = await _announcementRepository.GetAllAnnouncementsForStudentAsync(studentid);
             if (announcements == null || !announcements.Any())
