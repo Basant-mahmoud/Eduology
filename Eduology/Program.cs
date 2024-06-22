@@ -63,6 +63,9 @@ namespace Eduology
             builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
             builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+            builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+            builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
+            builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
             // Register services
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IInstructorService, InstructorService>();
@@ -73,9 +76,8 @@ namespace Eduology
             builder.Services.AddScoped<IOrganizationService, OrganizationService>();
             builder.Services.AddScoped<ISubmissionService, SubmissionService>();
             builder.Services.AddScoped<IMaterialService, MaterialService>();
-            builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
             builder.Services.AddScoped<IModuleService, ModuleServicecs>();
-            builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
+          
             // Configure JWT authentication
             builder.Services.AddAuthentication(options =>
             {
