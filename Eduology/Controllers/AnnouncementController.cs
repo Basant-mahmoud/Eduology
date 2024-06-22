@@ -27,7 +27,7 @@ namespace Eduology.Controllers
             {
                 return BadRequest();
             }
-            return CreatedAtAction(nameof(GetAnnouncement), new { createdAnnouncement });
+            return CreatedAtAction(nameof(GetAnnouncement), new { id = createdAnnouncement.Id }, createdAnnouncement);
         }
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncements()
