@@ -22,13 +22,15 @@ namespace Eduology.Application.Services
         private readonly IAuthRepository _authRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-
-        public AuthService(IOptions<JWT> jwt, IAuthRepository authRepository, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        private readonly IEmailSender _emailSender;
+        public AuthService(IOptions<JWT> jwt, IAuthRepository authRepository, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
         {
             _jwt = jwt.Value;
             _authRepository = authRepository;
             _userManager = userManager;
             _roleManager = roleManager;
+            _emailSender = emailSender;
+
         }
 
         public async Task<AuthModel> RegisterAsync(RegisterModel model)
@@ -69,6 +71,8 @@ namespace Eduology.Application.Services
             }
 
             var jwtSecurityToken = await CreateJwtToken(user);
+
+            await _emailSender.SendEmailAsync(user.Email, "Registration Successful", $"You have successfully registered to Eduology LMS. Your Email is {model.Email} and Your password is: {model.Password}");
 
             return new AuthModel
             {
