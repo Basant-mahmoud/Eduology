@@ -27,7 +27,7 @@ namespace Eduology.Controllers
             var success = await _materialService.AddMaterialAsync(materialDto);
             if (!success)
             {
-                return NotFound(new { message = "Failed to add material." });
+                return NotFound(new { message = "Failed to add material  input is not correct." });
             }
 
             return Ok(new { message = "Material added successfully." });
@@ -46,19 +46,20 @@ namespace Eduology.Controllers
 
             return Ok(materials);
         }
-       
+
         [HttpDelete("DeleteFile")]
         public async Task<IActionResult> DeleteFile([FromBody] DeleteFileDto file)
         {
-            var response = await _materialService.DeleteMatrialAsync(file.fileId,file.courseId,file.materialType);
+            var response = await _materialService.DeleteMatrialAsync(file.fileId, file.courseId, file.materialType);
 
-            if (response == null)
+            if (!response) // Check for false instead of null
             {
                 return NotFound(new { message = "Failed to delete file or file does not exist." });
             }
 
-             return Ok(new { message = "File deleted successfully." });
+            return Ok(new { message = "File deleted successfully." });
         }
-        
+
+
     }
 }

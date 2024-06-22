@@ -96,7 +96,7 @@ namespace Eduology.Infrastructure.Services
         }
 
       
-        public async Task<List<MaterialDto>> GetAllMaterialsAsync(string courseId)
+        public async Task<List<GetMaterialDto>> GetAllMaterialsAsync(string courseId)
         {
             if(courseId == null)
             {
@@ -106,57 +106,52 @@ namespace Eduology.Infrastructure.Services
             if (existing == null)
             {
                 Console.Error.WriteLine($"Type not exist");
-                return new List<MaterialDto>();
+                return new List<GetMaterialDto>();
                
               
             }
             var materials = await _matrialRepository.GetAllMaterialsAsync(courseId);
 
-            var materialDtos = materials.Select(m => new MaterialDto
+            var GetMaterialDto = materials.Select(m => new GetMaterialDto
             {
                 Title = m.Title,
+                MaterialId= m.MaterialId,
                 MaterialType = m.MaterialType.Name, 
                 InstructorId = m.InstructorId,
                 CourseId = m.CourseId,
-                FileURLs = m.Files.Select(f => new FileDto
+                FileURLs = m.Files.Select(f => new GetFileDto
                 {
-                    URL = f.URL,
-                    Title = f.Title
+                    FileId=f.FileId,
+                    Title = f.Title,
+                    URL = f.URL
+                   
+                
                 }).ToList()
             }).ToList();
 
-            return materialDtos;
+            return GetMaterialDto;
         }
 
-       
+
         public async Task<bool> DeleteMatrialAsync(string fileId, string courseId, string materialType)
         {
-
-            if (string.IsNullOrEmpty(fileId))
-            {
-                return false;   
-            }
-
-            if (string.IsNullOrEmpty(courseId))
+            if (string.IsNullOrEmpty(fileId) || string.IsNullOrEmpty(courseId) || string.IsNullOrEmpty(materialType))
             {
                 return false;
             }
 
-            if (string.IsNullOrEmpty(materialType))
-            {
-                return false;
-            }
             var course = await _courseRepository.GetByIdAsync(courseId);
-                var material = await _ModuleRepository.GetModuleByNameAsync(materialType.ToLower());
+            var material = await _ModuleRepository.GetModuleByNameAsync(materialType.ToLower());
 
-                if (course == null || material == null)
-                {
-                    return false; 
-                }
-                var success = await _matrialRepository.DeleteMatrialAsync(fileId, courseId, materialType);
-                return success;
-            
+            if (course == null || material == null)
+            {
+                return false;
+            }
+
+            var success = await _matrialRepository.DeleteMatrialAsync(fileId, courseId, materialType);
+            return success;
         }
-        
+
+
     }
 }
