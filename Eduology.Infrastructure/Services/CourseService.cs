@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Eduology.Infrastructure.Repositories;
 using Type = Eduology.Domain.Models.Type;
+using Eduology.Application.Services.Interface;
 namespace Eduology.Infrastructure.Services
 {
 
@@ -15,8 +16,7 @@ namespace Eduology.Infrastructure.Services
     {
         private readonly ICourseRepository _courseRepository;
         private readonly IInstructorService _instructorService;
-
-        public CourseService(ICourseRepository courseRepository,IInstructorService instructorService)
+        public CourseService(ICourseRepository courseRepository,IInstructorService instructorService,IStudentService studentService)
         {
             _courseRepository = courseRepository;
             _instructorService = instructorService;
@@ -51,8 +51,45 @@ namespace Eduology.Infrastructure.Services
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(chars, 6).Select(s => s[random.Next(s.Length)]).ToArray());
         }
+        public async Task<IEnumerable<CourseDetailsDto>> GetAllAsync(string userID, string courseId)
+        {
+            bool isEnrolledStudent = await _courseRepository.IStudentAssignedToCourse(userID, courseId);
+            bool isEnrolledInstructor = await _courseRepository.IsInstructorAssignedToCourse(userID, courseId);
 
-        public async Task<bool> DeleteAsync(String id)
+            if (!isEnrolledStudent && !isEnrolledInstructor)
+            {
+                return Enumerable.Empty<CourseDetailsDto>();
+            }
+
+            var courses = await _courseRepository.GetAllAsync();
+            if (courses == null)
+                return Enumerable.Empty<CourseDetailsDto>();
+
+            var userCourses = courses.Where(c =>
+                c.StudentCourses.Any(sc => sc.StudentId == userID) ||
+                c.CourseInstructors.Any(ci => ci.InstructorId == userID)).ToList();
+
+            return userCourses.Select(c => new CourseDetailsDto
+            {
+                CourseId = c.CourseId,
+                Name = c.Name,
+                CourseCode = c.CourseCode,
+                Instructors = c.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
+                students = c.StudentCourses.Select(sc => sc.Student.Name).ToList()
+            }).ToList();
+        }
+
+        public async Task<bool> UpdateAsync(String id, CourseDto course)
+        {
+            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(course.InstructorId, id);
+            if (!IsRegistered)
+                return false;
+            var updatedCourse = await _courseRepository.UpdateAsync(id, course);
+            if (updatedCourse == null)
+                return false;
+            return true;
+        }
+        public async Task<bool> DeleteAsync(string id)
         {
             var course = await _courseRepository.DeleteAsync(id);
             if (course == null)
@@ -60,38 +97,36 @@ namespace Eduology.Infrastructure.Services
             return true;
         }
 
-        public async Task<IEnumerable<CourseDetailsDto>> GetAllAsync()
+        public async Task<CourseDetailsDto> GetByIdAsync(string ID, string UserID)
         {
-            var courses = await _courseRepository.GetAllAsync();
-            if (courses == null)
-                return Enumerable.Empty<CourseDetailsDto>();
-            return courses;
-        }
+            bool isEnrolledStudent = await _courseRepository.IStudentAssignedToCourse(UserID, ID);
+            bool isEnrolledInstructor = await _courseRepository.IsInstructorAssignedToCourse(UserID,ID);
 
-        public async Task<CourseDetailsDto> GetByIdAsync(String id)
-        {
-            var course = await _courseRepository.GetByIdAsync(id);
+            if (!isEnrolledStudent && !isEnrolledInstructor)
+            {
+                return null;
+            }
+
+            var course = await _courseRepository.GetByIdAsync(ID);
             if (course == null)
                 return null;
             return course;
         }
 
-        public async Task<bool> UpdateAsync(String id, CourseDto course)
+        public async Task<CourseDetailsDto> GetByNameAsync(string name, string UserID,string CourseId)
         {
-            var updatedCourse = await _courseRepository.UpdateAsync(id, course);
-            if (updatedCourse == null)
-                return false;
-            return true;
-        }
+            bool isEnrolledStudent = await _courseRepository.IStudentAssignedToCourse(UserID, CourseId);
+            bool isEnrolledInstructor = await _courseRepository.IsInstructorAssignedToCourse(UserID, CourseId);
 
-        public async Task<CourseDetailsDto> GetByNameAsync(string name)
-        {
+            if (!isEnrolledStudent && !isEnrolledInstructor)
+            {
+                return null;
+            }
+
             var course = await _courseRepository.GetByNameAsync(name);
             if (course == null)
                 return null;
             return course;
         }
-
-        
     }
 }

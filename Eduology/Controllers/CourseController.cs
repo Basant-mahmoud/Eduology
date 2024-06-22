@@ -30,38 +30,42 @@ namespace Eduology.Controllers
             }
 
             var createdCourse = await _courseService.CreateAsync(course);
+            if (createdCourse == null)
+                return BadRequest(ModelState);
             return CreatedAtAction(nameof(GetCourseById), new { id = createdCourse.CourseId }, createdCourse);
         }
-        [HttpGet("GetById/{id}")]
-        public async Task<IActionResult> GetCourseById(String id)
+        [Authorize(Roles = "Instructor,Student")]
+        [HttpGet("GetById/{id}/{UserId}")]
+        public async Task<IActionResult> GetCourseById(String id,string UserId)
         {
-            var course = await _courseService.GetByIdAsync(id);
+            var course = await _courseService.GetByIdAsync(id,UserId);
             if (course == null)
             {
                 return NotFound();
             }
             return Ok(course);
         }
-
-        [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll()
+        [Authorize(Roles = "Instructor,Student")]
+        [HttpGet("GetAll/{UserID}/{CourseId}")]
+        public async Task<IActionResult> GetAll(string UserID,string CourseId)
         {
-            var courses = await _courseService.GetAllAsync();
+            var courses = await _courseService.GetAllAsync(UserID,CourseId);
             if (courses == null || !courses.Any())
             {
                 return NoContent();
             }
             return Ok(courses);
         }
-        [HttpGet("GetByName/{name}")]
-        public async Task<IActionResult> GetByName(string name)
+        [Authorize(Roles = "Instructor,Student")]
+        [HttpGet("GetByName/{name}/{UserID}/{CourseId}")]
+        public async Task<IActionResult> GetByName(string name,string UserID,string CourseId)
         {
-            CourseDetailsDto course = await _courseService.GetByNameAsync(name);
+            CourseDetailsDto course = await _courseService.GetByNameAsync(name,UserID,CourseId);
             if (course == null)
                 return NotFound();
             return Ok(course);
         }
-        //[Authorize(Roles = "Instructor")]
+        [Authorize(Roles = "Instructor")]
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> UpdateAsync(String id,[FromBody] CourseDto courseDto)
         {
@@ -78,7 +82,7 @@ namespace Eduology.Controllers
 
             return Ok(new { message = "Course updated successfully" });
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(string id)
         {
@@ -87,9 +91,5 @@ namespace Eduology.Controllers
                 return Ok(new { message = "This course is not exist" });
            return Ok(new { message = "Course deleted successfully" });
         }
-
-        
-
-
     }
 }

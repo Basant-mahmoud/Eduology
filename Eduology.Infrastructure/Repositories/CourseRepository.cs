@@ -46,26 +46,14 @@ namespace Eduology.Infrastructure.Repositories
             return course;
         }
 
-        public async Task<IEnumerable<CourseDetailsDto>> GetAllAsync()
+        public async Task<IEnumerable<Course>> GetAllAsync()
         {
-            var courses = await _context.Courses
-                .Include( c => c.CourseInstructors)
-                .ThenInclude(ci => ci.Instructor)
-                .Include(c => c.StudentCourses)
-                .ThenInclude(sc => sc.Student)
-                .ToListAsync();
-            if (courses == null || courses.Count == 0)
-                return null;
-            return courses.Select(c => new CourseDetailsDto
-            {
-                CourseId = c.CourseId,
-                Name = c.Name,
-                CourseCode = c.CourseCode,
-                Instructors = c.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
-                students = c.StudentCourses.Select(sc => sc.Student.Name).ToList()
-            }).ToList();
-
+                return await _context.Courses
+                    .Include(c => c.CourseInstructors).ThenInclude(ci => ci.Instructor)
+                    .Include(c => c.StudentCourses).ThenInclude(sc => sc.Student)
+                    .ToListAsync();
         }
+        
 
         public async Task<CourseDetailsDto> GetByIdAsync(String id)
         {

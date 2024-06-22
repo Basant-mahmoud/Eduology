@@ -85,7 +85,7 @@ namespace Eduology.Infrastructure.Services
             {
                 throw new ArgumentException("Invalid InstructorId.");
             }
-            var course =  _courseService.GetByIdAsync(assignment.CourseId);
+            var course =  _courseService.GetByIdAsync(assignment.CourseId,assignment.InstructorId);
             if (course == null)
             {
                 throw new ArgumentException("Invalid CourseId.");
