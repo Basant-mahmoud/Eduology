@@ -1,6 +1,7 @@
 ﻿using Eduology.Application.Interface;
 using Eduology.Domain.DTO;
 using Eduology.Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,7 @@ namespace Eduology.Controllers
             _materialService = materialService;
         }
         [HttpPost("AddMaterial")]
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> AddMaterial([FromBody] MaterialDto materialDto)
         {
             if (!ModelState.IsValid)
@@ -35,6 +37,7 @@ namespace Eduology.Controllers
 
 
         [HttpPost("GetmaterialsToInstructor")]
+        [Authorize(Roles = "Instructor")]
         public async Task<ActionResult<List<GetMaterialDto>>> GetmaterialsToInstructor([FromBody] CourseInstructorRequestDto requestDto)
         {
             if (!ModelState.IsValid)
@@ -50,6 +53,7 @@ namespace Eduology.Controllers
             return Ok(result);
         }
         [HttpPost("GetmaterialsToStudent")]
+        [Authorize(Roles = "Student")]
         public async Task<ActionResult<List<GetMaterialDto>>> GetmaterialsToStudent([FromBody] CourseStudentRequestDto requestDto)
         {
             if (!ModelState.IsValid)
@@ -66,6 +70,7 @@ namespace Eduology.Controllers
         }
 
         [HttpDelete("DeleteFile")]
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> DeleteFile([FromBody] DeleteFileDto file)
         {
             if (!ModelState.IsValid)

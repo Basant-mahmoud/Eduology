@@ -4,6 +4,7 @@ using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
 using Eduology.Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -22,6 +23,7 @@ namespace Eduology.Controllers
         }
 
         [HttpGet("GetAllInstructors")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetInstructors()
         {
             var instructors = await _instructorService.GetAllInstructorsAsync();
@@ -34,8 +36,23 @@ namespace Eduology.Controllers
                 return Ok(instructors); 
             }
         }
+        [HttpGet("GetAllInstructorsToOrganization")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetAllInstructorsToOrganization(int organizationId)
+        {
+            var instructors = await _instructorService.GetAllInstructorsToOrganizationAsync(organizationId);
+            if (instructors == null || !instructors.Any())
+            {
+                return Ok(new List<UserDto>());
+            }
+            else
+            {
+                return Ok(instructors);
+            }
+        }
 
         [HttpGet("GetInstructorById/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetInstructorById(string id)
         {
             var instructor = await _instructorService.GetInstructorByIdAsync(id);
@@ -48,6 +65,7 @@ namespace Eduology.Controllers
         }
 
         [HttpGet("SearchInstructorByName/{name}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetInstructorByName(string name)
         {
             var instructor = await _instructorService.GetInstructorByNameAsync(name);
@@ -60,6 +78,7 @@ namespace Eduology.Controllers
         }
 
         [HttpGet("SearchInstructorByUserName/{username}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetInstructorByUserName(string username)
         {
             var instructor = await _instructorService.GetInstructorByUserNameAsync(username);
@@ -72,6 +91,7 @@ namespace Eduology.Controllers
         }
 
         [HttpPut("UpdateInstructor/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateInstructor(string id, [FromBody] UserDto updateInstructorDto)
         {
             var result = await _instructorService.UpdateInstructorAsync(id, updateInstructorDto);
@@ -85,6 +105,7 @@ namespace Eduology.Controllers
         }
 
         [HttpDelete("DeleteInstructor/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteInstructor(string id)
         {
             var result = await _instructorService.DeleteInstructorAsync(id);
@@ -96,6 +117,7 @@ namespace Eduology.Controllers
             return Ok(new { message = "Instructor deleted successfully" });
         }
         [HttpPost("RegisterToCourse")]
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> RegisterToCourse([FromBody] RegisterInstructorToCourseDto model)
         {
             if (!ModelState.IsValid)
@@ -110,6 +132,7 @@ namespace Eduology.Controllers
                 return BadRequest("Failed to add instructor to the course.");
         }
         [HttpGet("AllCoursetoInstructor/{instructorid}")]
+        [Authorize(Roles = "Instructor")]
         public async Task<ActionResult<CourseUserDto>> AllCoursetoInstructor(string instructorid)
         {
             var instructor = await _instructorService.GetAllCourseToSpecificInstructorAsync(instructorid);

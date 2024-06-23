@@ -1,5 +1,6 @@
 ﻿using Eduology.Application.Interface;
 using Eduology.Domain.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,7 @@ namespace Eduology.Controllers
             _ModuleService = moduleService;
         }
         [HttpPost("AddModule")]
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> AddModule([FromBody] ModuleDto module)
         {
             if (!ModelState.IsValid)
@@ -38,6 +40,7 @@ namespace Eduology.Controllers
             return Ok(new { message = "Module added successfully." });
         }
         [HttpPut("UpdateModule")]
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> UpdateModule([FromBody] UpdateModuleDto module)
         {
             var success = await _ModuleService.UpdateModuleAsync(module);
@@ -51,6 +54,7 @@ namespace Eduology.Controllers
         }
 
         [HttpDelete("DeleteModule")]
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> DeleteModule([FromBody] ModuleDto module)
         {
             var success = await _ModuleService.DeleteModuleAsync(module);
