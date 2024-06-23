@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,6 +24,7 @@ namespace Eduology.Domain.Models
         public virtual ICollection<CourseInstructor>? CourseInstructors { get; set; }
         public int OrganizationID { get; set; }
         public virtual Organization Organization { get; set; }
+        public ICollection<Module> Modules { get; set; }
 
     }
 }

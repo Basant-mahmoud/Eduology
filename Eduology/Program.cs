@@ -54,7 +54,8 @@ namespace Eduology
             // Add Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<EduologyDBContext>();
-
+            ////////////////////////
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
             // Register repositories
             builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();

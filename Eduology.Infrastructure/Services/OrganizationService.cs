@@ -52,7 +52,12 @@ namespace Eduology.Infrastructure.Services
         public async Task<OrganizationDto> CreateOrganizationAsync(CreateOrganizationDto createOrganizationDto)
         {
             // Check if the email is already registered as a user
-            var existingUser = await _userManager.FindByEmailAsync(createOrganizationDto.Email);
+            var existingEmail = await _userManager.FindByEmailAsync(createOrganizationDto.Email);
+            if (existingEmail != null)
+            {
+                return null;
+            }
+            var existingUser = await _userManager.FindByEmailAsync(createOrganizationDto.Name);
             if (existingUser != null)
             {
                 return null;

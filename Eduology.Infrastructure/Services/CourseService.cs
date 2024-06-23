@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Eduology.Infrastructure.Repositories;
-using Type = Eduology.Domain.Models.Type;
+using Type = Eduology.Domain.Models.Module;
 namespace Eduology.Infrastructure.Services
 {
 

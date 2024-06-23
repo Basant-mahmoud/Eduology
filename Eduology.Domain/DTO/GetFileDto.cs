@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Eduology.Domain.DTO
 {
-    public class FileDtoWithId
+    public class GetFileDto
     {
         public string FileId { get; set; }
         public string URL { get; set; }

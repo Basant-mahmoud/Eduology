@@ -5,15 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Type = Eduology.Domain.Models.Type;
+using Type = Eduology.Domain.Models.Module;
 
 namespace Eduology.Domain.Interfaces
 {
     public interface IMaterialRepository
     {
         Task<bool> AddMaterialAsync(Material material);
-        Task<List<Material>> GetAllMaterialsAsync(string courseId);
-        Task<bool> DeleteMatrialAsync(string fileId, string courseId, string materialType);
-       
+        Task<bool> DeleteMatrialAsync(DeleteFileDto deletedfile);
     }
 }

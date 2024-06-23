@@ -27,38 +27,61 @@ namespace Eduology.Controllers
             var success = await _materialService.AddMaterialAsync(materialDto);
             if (!success)
             {
-                return NotFound(new { message = "Failed to add material." });
+                return NotFound(new { message = "Failed to add material  input is not correct." });
             }
 
             return Ok(new { message = "Material added successfully." });
         }
 
-        
-        [HttpGet("GetAllMaterial/{courseId}")]
-        public async Task<IActionResult> GetAllMaterial(string courseId)
-        {
-            var materials = await _materialService.GetAllMaterialsAsync(courseId);
 
-            if (materials == null || !materials.Any())
+        [HttpPost("GetmaterialsToInstructor")]
+        public async Task<ActionResult<List<GetMaterialDto>>> GetmaterialsToInstructor([FromBody] CourseInstructorRequestDto requestDto)
+        {
+            if (!ModelState.IsValid)
             {
-                return NotFound(new { message = "No martials found." });
+                return BadRequest(ModelState);
+            }
+            var result = await _materialService.GetMaterialToInstructorsAsync(requestDto);
+            if (result == null)
+            {
+                return BadRequest("Failed to retrieve modules and materials.");
             }
 
-            return Ok(materials);
+            return Ok(result);
         }
-       
+        [HttpPost("GetmaterialsToStudent")]
+        public async Task<ActionResult<List<GetMaterialDto>>> GetmaterialsToStudent([FromBody] CourseStudentRequestDto requestDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _materialService.GetMaterialToStudentAsync(requestDto);
+            if (result == null)
+            {
+                return BadRequest("Failed to retrieve modules and materials.");
+            }
+
+            return Ok(result);
+        }
+
         [HttpDelete("DeleteFile")]
         public async Task<IActionResult> DeleteFile([FromBody] DeleteFileDto file)
         {
-            var response = await _materialService.DeleteMatrialAsync(file.fileId,file.courseId,file.materialType);
-
-            if (response == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound(new { message = "Failed to delete file or file does not exist." });
+                return BadRequest(ModelState);
             }
 
-             return Ok(new { message = "File deleted successfully." });
+            var success = await _materialService.DeleteFileAsync(file);
+            if (!success)
+            {
+                return NotFound($"File with Id {file.fileId} not found in  Module {file.Module}.");
+            }
+
+            return Ok("File deleted successfully."); 
         }
-        
+
+
     }
 }
