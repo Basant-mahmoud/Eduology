@@ -82,5 +82,37 @@ namespace Eduology.Infrastructure.Repositories
 
             return studentUsers;
         }
+        public async Task<List<ApplicationUser>> GetInstructorToOrganizationIdAsync(int organizationId)
+        {
+            var organization = await _context.Organizations
+                .Include(o => o.Users)
+                .FirstOrDefaultAsync(o => o.OrganizationID == organizationId);
+
+            if (organization == null || organization.Users == null)
+                return new List<ApplicationUser>();
+
+            var instructorUsers = new List<ApplicationUser>();
+
+            var instructorRole = await _context.Roles
+                .FirstOrDefaultAsync(r => r.Name == "Instructor");
+
+            if (instructorRole != null)
+            {
+                foreach (var user in organization.Users)
+                {
+                    var roles = await _context.UserRoles
+                        .Where(ur => ur.UserId == user.Id)
+                        .Select(ur => ur.RoleId)
+                        .ToListAsync();
+
+                    if (roles.Contains(instructorRole.Id))
+                    {
+                        instructorUsers.Add(user);
+                    }
+                }
+            }
+
+            return instructorUsers;
+        }
     }
 }

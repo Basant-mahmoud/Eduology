@@ -2,6 +2,7 @@
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
+using Eduology.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -182,5 +183,22 @@ namespace Eduology.Infrastructure.Services
             Courses = coursesDto,
         };
     }
-}
+        public async Task<IEnumerable<UserDto>> GetAllInstructorsToOrganizationAsync(int OrganizationId)
+        {
+
+            var instructors = await _organizationRepository.GetInstructorToOrganizationIdAsync(OrganizationId);
+            if (instructors == null || !instructors.Any())
+            {
+                return new List<UserDto>();
+            }
+            return instructors.Select(user => new UserDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                UserName = user.UserName,
+                Email = user.Email
+            }).ToList();
+            ;
+        }
+    }
 }

@@ -36,20 +36,7 @@ namespace Eduology.Controllers
                 return Ok(instructors); 
             }
         }
-        [HttpGet("GetAllInstructorsToOrganization")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetAllInstructorsToOrganization(int organizationId)
-        {
-            var instructors = await _instructorService.GetAllInstructorsToOrganizationAsync(organizationId);
-            if (instructors == null || !instructors.Any())
-            {
-                return Ok(new List<UserDto>());
-            }
-            else
-            {
-                return Ok(instructors);
-            }
-        }
+       
 
         [HttpGet("GetInstructorById/{id}")]
         [Authorize(Roles = "Admin")]
