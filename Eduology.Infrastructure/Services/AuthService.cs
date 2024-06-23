@@ -72,7 +72,7 @@ namespace Eduology.Application.Services
 
             var jwtSecurityToken = await CreateJwtToken(user);
 
-            await _emailSender.SendEmailAsync(user.Email, "Registration Successful", $"You have successfully registered to Eduology LMS. Your Email is {model.Email} and Your password is: {model.Password}");
+           // await _emailSender.SendEmailAsync(user.Email, "Registration Successful", $"You have successfully registered to Eduology LMS. Your Email is {model.Email} and Your password is: {model.Password}");
 
             return new AuthModel
             {

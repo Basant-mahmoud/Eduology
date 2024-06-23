@@ -28,23 +28,7 @@ namespace Eduology.Infrastructure.Services
                 }
                 return instructors;
         }
-        public async Task<IEnumerable<UserDto>> GetAllInstructorsToOrganizationAsync(int OrganizationId)
-        {
-
-            var instructors = await _instructorRepository.GetInstructorToOrganizationIdAsync(OrganizationId);
-            if (instructors == null || !instructors.Any())
-            {
-                return new List<UserDto>();
-            }
-              return instructors.Select(user => new UserDto
-            {
-                Id = user.Id,
-                Name = user.Name,
-                UserName = user.UserName,
-                Email = user.Email
-            }).ToList();
-            ;
-        }
+      
 
         public async Task<UserDto> GetInstructorByIdAsync(string id)
         {
