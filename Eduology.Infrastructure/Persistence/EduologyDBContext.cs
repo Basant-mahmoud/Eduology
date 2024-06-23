@@ -20,7 +20,7 @@ namespace Eduology.Infrastructure.Persistence
     {
         public DbSet<Course> Courses { get; set; }
         public DbSet<Material> Materials { get; set; } // Add this line
-        public DbSet<Domain.Models.Type> MaterialTypes { get; set; } // Add this line
+        public DbSet<Domain.Models.Module> Modules { get; set; } // Add this line
         public DbSet<Announcement> Announcements { get; set; } // Add this line
         public DbSet<Assignment> Assignments { get; set; }
         public DbSet<AssignmentFile> AssignmentFiles { get; set; }
@@ -109,6 +109,16 @@ namespace Eduology.Infrastructure.Persistence
                 .WithOne(f => f.Material)
                 .HasForeignKey(f => f.MaterialId)
                 .OnDelete(DeleteBehavior.Cascade);
+            // one to many relation between course and module 
+            modelBuilder.Entity<Course>()
+            .HasMany(c => c.Modules)
+            .WithOne(m => m.Course)
+            .HasForeignKey(m => m.courseId);
+            //one to many relation between moudule and matrial
+            modelBuilder.Entity<Domain.Models.Module>()
+           .HasMany(m => m.Materials)
+           .WithOne(mat => mat.Module)
+           .HasForeignKey(mat => mat.ModuleId);
         }
 
 

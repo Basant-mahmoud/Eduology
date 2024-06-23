@@ -12,7 +12,7 @@ namespace Eduology.Infrastructure.Services
         {
             var mail = "EduologyLMS@outlook.com";
             var password = "Edulogy@123"; // Corrected variable name
-            var client = new SmtpClient("smtp-mail.outlook.com", 587)
+             var client = new SmtpClient("smtp-mail.outlook.com", 587)
             {
                 EnableSsl = true,
                 Credentials = new NetworkCredential(mail, password) // Corrected variable name and object initialization

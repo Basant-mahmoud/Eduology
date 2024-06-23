@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Type = Eduology.Domain.Models.Type;
+using Module = Eduology.Domain.Models.Module;
 
 namespace Eduology.Infrastructure.Repositories
 {
@@ -19,60 +19,72 @@ namespace Eduology.Infrastructure.Repositories
         {
             _context = context;
         }
-        public async Task<(bool Success, bool Exists, Type Type)> AddModuleAsync(Type type)
+        public async Task<bool> AddModuleAsync(Module module)
         {
-            var existingType = await _context.MaterialTypes
-                .FirstOrDefaultAsync(t => t.Name.ToLower() == type.Name.ToLower());
+            var existingModule = await _context.Modules
+                .FirstOrDefaultAsync(m => m.Name.ToLower() == module.Name.ToLower() && m.courseId == module.courseId);
 
-            if (existingType != null)
+            if (existingModule != null)
             {
-                return (false, true, null);
+                return false;
             }
 
-            _context.MaterialTypes.Add(type);
+            _context.Modules.Add(module);
             await _context.SaveChangesAsync();
-            return (true, false, type);
+            return true;
         }
 
-        public async Task<Type> GetModuleByNameAsync(string typeName)
+        
+        public async Task<Module> GetModuleByNameAsync(ModuleDto module)
         {
-            return await _context.MaterialTypes
-                .FirstOrDefaultAsync(t => t.Name.ToLower() == typeName.ToLower());
+            return await _context.Modules.FirstOrDefaultAsync(t => t.Name.ToLower() == module.Name.ToLower()&&t.courseId==module.CourseId);
         }
-        //////////
-        public async Task<bool> DeleteModuleAsync(string materialType)
+
+        public async Task<bool> DeleteModuleAsync(ModuleDto module)
         {
-            var module = await _context.MaterialTypes
-                .FirstOrDefaultAsync(mt => mt.Name.ToLower() == materialType.ToLower());
+            var DeltedModule = await _context.Modules
+                .FirstOrDefaultAsync(m => m.Name.ToLower() == module.Name.ToLower() && m.courseId == module.CourseId);
 
             if (module == null)
             {
                 return false;
             }
 
-            _context.MaterialTypes.Remove(module);
+            _context.Modules.Remove(DeltedModule);
             await _context.SaveChangesAsync();
             return true;
         }
-        /////////
-        public async Task<List<ModuleWithFilesDto>> GetAllModulesAsync(string courseId)
+        public async Task<bool> UpdateModuleAsync(UpdateModuleDto module)
         {
-            var typesWithFiles = await _context.Materials
-                .Where(m => m.CourseId == courseId)
-                .Include(m => m.MaterialType)
-                .Select(m => new ModuleWithFilesDto
-                {
-                    TypeName = m.MaterialType.Name,
-                    Files = m.Files.Select(f => new FileDtoWithId
-                    {
-                        FileId = f.FileId,
-                        URL = f.URL,
-                        Title = f.Title
-                    }).ToList()
-                })
-                .ToListAsync();
+            var existingModule = await _context.Modules
+                 .FirstOrDefaultAsync(m => m.Name.ToLower() == module.Name.ToLower() && m.courseId == module.CourseId);
 
-            return typesWithFiles;
+            if (existingModule == null)
+            {
+                return false; // Module not found
+            }
+
+            existingModule.Name = module.NewName.ToLower(); // Update other properties as needed
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
         }
+        public async Task<List<Module>> GetModulesByCourseIdAsync(string courseId)
+        {
+            return await _context.Modules
+                .Where(m => m.courseId == courseId)
+                .Include(m => m.Materials) 
+                .ThenInclude(mat => mat.Files) // Include related files in materials
+                .ToListAsync();
+        }
+
     }
-}
+ }
+

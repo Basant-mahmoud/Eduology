@@ -11,8 +11,9 @@ namespace Eduology.Application.Interface
    public interface  IMaterialService
     {
         Task<bool> AddMaterialAsync(MaterialDto MaterialDto);
-        Task<List<GetMaterialDto>> GetAllMaterialsAsync(string courseId);
-        Task<bool> DeleteMatrialAsync(string fileId, string courseId, string materialType);
-      
+        Task<ICollection<GetMaterialDto>> GetMaterialToInstructorsAsync(CourseInstructorRequestDto requestDto);
+        Task<ICollection<GetMaterialDto>> GetMaterialToStudentAsync(CourseStudentRequestDto requestDto);
+        Task<bool> DeleteFileAsync(DeleteFileDto deletefile);
+
     }
 }

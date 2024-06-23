@@ -6,9 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Type = Eduology.Domain.Models.Type;
+using Type = Eduology.Domain.Models.Module;
 using Microsoft.EntityFrameworkCore;
 using Eduology.Domain.DTO;
+using System.Reflection;
 namespace Eduology.Infrastructure.Repositories
 {
     public class MaterialRepository: IMaterialRepository
@@ -18,59 +19,52 @@ namespace Eduology.Infrastructure.Repositories
         {
             _context = context;
         }
-         public async Task<bool> AddMaterialAsync(Material material)
+        public async Task<bool> AddMaterialAsync(Material material)
         {
-            var course = await _context.Courses.FindAsync(material.CourseId);
-            if (course == null)
+            try
             {
-                Console.Error.WriteLine($"course repo  not exist");
-                return false; 
-            }
-
-            course.Materials ??= new List<Material>();
-            course.Materials.Add(material);
-
-            if (material.Files != null && material.Files.Count > 0)
-            {
-                foreach (var file in material.Files)
+                var course = await _context.Courses.FindAsync(material.CourseId);
+                if (course == null)
                 {
-                    _context.Files.Add(file);
+                    // Course not found
+                    return false;
                 }
+
+                var module = await _context.Modules.FindAsync(material.ModuleId);
+                if (module == null || module.courseId != material.CourseId)
+                {
+                    return false;
+                }
+
+                _context.Materials.Add(material);
+
+                await _context.SaveChangesAsync();
+
+                return true;
             }
-
-            await _context.SaveChangesAsync();
-
-            return true;
+            catch
+            {
+                
+                return false;
+            }
         }
 
-        public async Task<List<Material>> GetAllMaterialsAsync(string courseId)
-        {
-            return await _context.Materials
-                .Include(m => m.MaterialType)
-                .Include(m => m.Files)
-                .Where(m => m.CourseId == courseId)
-                .ToListAsync();
-        }
-
-       
-        public async Task<bool> DeleteMatrialAsync(string fileId, string courseId, string materialType)
+        public async Task<bool> DeleteMatrialAsync(DeleteFileDto deletedfile)
         {
             var file = await _context.Files
                 .Include(f => f.Material)
-                .ThenInclude(m => m.MaterialType)
-                .FirstOrDefaultAsync(f => f.FileId == fileId && f.Material.CourseId == courseId && f.Material.MaterialType.Name.ToLower() == materialType.ToLower());
+                .ThenInclude(m => m.Module)
+                .FirstOrDefaultAsync(f => f.FileId == deletedfile.fileId && f.Material.CourseId == deletedfile.courseId && f.Material.Module.Name.ToLower() == deletedfile.Module.ToLower());
 
             if (file == null)
             {
-                return false; 
+                return false;
             }
 
             _context.Files.Remove(file);
             await _context.SaveChangesAsync();
             return true;
         }
-        
-
     }
     }
 

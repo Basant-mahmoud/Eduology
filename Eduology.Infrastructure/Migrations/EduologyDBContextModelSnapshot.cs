@@ -287,12 +287,12 @@ namespace Eduology.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("ModuleId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TypeId")
-                        .HasColumnType("int");
 
                     b.HasKey("MaterialId");
 
@@ -300,9 +300,32 @@ namespace Eduology.Infrastructure.Migrations
 
                     b.HasIndex("InstructorId");
 
-                    b.HasIndex("TypeId");
+                    b.HasIndex("ModuleId");
 
                     b.ToTable("Materials");
+                });
+
+            modelBuilder.Entity("Eduology.Domain.Models.Module", b =>
+                {
+                    b.Property<int>("ModuleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ModuleId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("courseId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ModuleId");
+
+                    b.HasIndex("courseId");
+
+                    b.ToTable("Modules");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.Organization", b =>
@@ -383,23 +406,6 @@ namespace Eduology.Infrastructure.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("submissions");
-                });
-
-            modelBuilder.Entity("Eduology.Domain.Models.Type", b =>
-                {
-                    b.Property<int>("TypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TypeId"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("TypeId");
-
-                    b.ToTable("MaterialTypes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -654,9 +660,9 @@ namespace Eduology.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Eduology.Domain.Models.Type", "MaterialType")
+                    b.HasOne("Eduology.Domain.Models.Module", "Module")
                         .WithMany("Materials")
-                        .HasForeignKey("TypeId")
+                        .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -664,7 +670,18 @@ namespace Eduology.Infrastructure.Migrations
 
                     b.Navigation("Instructor");
 
-                    b.Navigation("MaterialType");
+                    b.Navigation("Module");
+                });
+
+            modelBuilder.Entity("Eduology.Domain.Models.Module", b =>
+                {
+                    b.HasOne("Eduology.Domain.Models.Course", "Course")
+                        .WithMany("Modules")
+                        .HasForeignKey("courseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("Eduology.Domain.Models.StudentCourse", b =>
@@ -789,6 +806,8 @@ namespace Eduology.Infrastructure.Migrations
 
                     b.Navigation("Materials");
 
+                    b.Navigation("Modules");
+
                     b.Navigation("StudentCourses");
                 });
 
@@ -797,16 +816,16 @@ namespace Eduology.Infrastructure.Migrations
                     b.Navigation("Files");
                 });
 
+            modelBuilder.Entity("Eduology.Domain.Models.Module", b =>
+                {
+                    b.Navigation("Materials");
+                });
+
             modelBuilder.Entity("Eduology.Domain.Models.Organization", b =>
                 {
                     b.Navigation("Courses");
 
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("Eduology.Domain.Models.Type", b =>
-                {
-                    b.Navigation("Materials");
                 });
 #pragma warning restore 612, 618
         }
