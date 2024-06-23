@@ -10,6 +10,7 @@ namespace Eduology.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AnnouncementController : ControllerBase
     {
         private readonly IAnnouncementService _announcementService;
@@ -30,7 +31,9 @@ namespace Eduology.Controllers
             }
             return CreatedAtAction(nameof(GetAnnouncement), new { id = createdAnnouncement.Id }, createdAnnouncement);
         }
+
         [HttpGet("GetById/{id}")]
+        [Authorize(Roles = "Instructor, Student")]
         public async Task<ActionResult<AnnouncementDto>> GetAnnouncement(int id)
         {
             var announcement = await _announcementService.GetByIdAsync(id);
@@ -54,7 +57,9 @@ namespace Eduology.Controllers
             await _announcementService.DeleteAsync(id);
             return Ok(new { message = "Announcement deleted successfully." });
         }
+
         [HttpGet("GetWithCourse/{courseId}")]
+        [Authorize(Roles = "Instructor, Student")]
         public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncementsByCourseId(string courseId)
         {
             if (string.IsNullOrWhiteSpace(courseId))
@@ -68,7 +73,9 @@ namespace Eduology.Controllers
             }
             return Ok(announcements);
         }
+
         [HttpGet("GetWithCourse/{courseId}/AnnouncementID/{announcementId}")]
+        [Authorize(Roles = "Instructor, Student")]
         public async Task<ActionResult<AnnouncementDto>> GetAnnouncementByIdAndCourseId(string courseId, int announcementId)
         {
             var announcement = await _announcementService.GetAnnouncementByIdAndCourseIdAsync(courseId, announcementId);
@@ -78,6 +85,7 @@ namespace Eduology.Controllers
             }
             return Ok(announcement);
         }
+
         [HttpGet("GetAllAnnouncementsToStudent/{studentid}")]
         [Authorize(Roles = "Student")]
         public async Task<ActionResult<IEnumerable<AllAnnoncemetDto>>> GetAllStudentAnnouncement(string studentid)
