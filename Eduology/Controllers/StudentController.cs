@@ -2,12 +2,14 @@
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Eduology.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _StudentService;
@@ -16,6 +18,7 @@ namespace Eduology.Controllers
             _StudentService = studentService;
         }
         [HttpGet("GetAll")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetStudents()
         {
             var Students = await _StudentService.GetAllStudentsAsync();
@@ -30,6 +33,7 @@ namespace Eduology.Controllers
           
         }
         [HttpGet("GetById/{studentId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetStudentById(string studentId)
         {
             var student = await _StudentService.GetStudentByIdAsync(studentId);
@@ -40,6 +44,7 @@ namespace Eduology.Controllers
             return Ok(student);
         }
         [HttpPut("Update/{studentId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateStudentAsync(string studentId, [FromBody] UserDto studentDto)
         {
             if (!ModelState.IsValid)
@@ -57,6 +62,7 @@ namespace Eduology.Controllers
         }
 
         [HttpDelete("delete/{studentId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteStudentAsync(string studentId)
         {
             var student = await _StudentService.DeleteStudentAsync(studentId);
@@ -68,6 +74,7 @@ namespace Eduology.Controllers
             return Ok(new { message = "Student deleted successfully" });
         }
         [HttpPost("RegisterToCourse")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RegisterToCourse([FromBody] RegisterStudentToCourseDto model)
         {
             if (!ModelState.IsValid)
@@ -82,7 +89,8 @@ namespace Eduology.Controllers
                 return NotFound("Failed to add student to the course.");
         }
         [HttpGet("AllCoursestoStudent/{studentId}")]
-        public async Task<ActionResult<CourseUserDto>> AllCoursetoInstructor(string studentId)
+        [Authorize(Roles = "Student")]
+        public async Task<ActionResult<CourseUserDto>> AllCoursestoStudent(string studentId)
         {
             var student = await _StudentService.GetAllCourseToSpecificStudentAsync(studentId);
             if (student == null)
