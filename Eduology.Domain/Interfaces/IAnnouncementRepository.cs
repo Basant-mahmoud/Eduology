@@ -9,7 +9,6 @@ namespace Eduology.Domain.Interfaces
 {
     public interface IAnnouncementRepository
     {
-        Task<IEnumerable<Announcement>> GetAllAsync();
         Task<Announcement> GetByIdAsync(int id);
         Task<Announcement> AddAsync(Announcement announcement);
         Task<bool> CourseExistsAsync(string courseId);

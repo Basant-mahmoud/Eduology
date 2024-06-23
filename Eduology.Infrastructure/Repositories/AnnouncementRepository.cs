@@ -19,11 +19,6 @@ namespace Eduology.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Announcement>> GetAllAsync()
-        {
-            return await _context.Announcements.ToListAsync();
-        }
-
         public async Task<Announcement> GetByIdAsync(int id)
         {
             return await _context.Announcements.FindAsync(id);
