@@ -63,7 +63,6 @@ namespace Eduology.Infrastructure.Repositories
             await _courseService.UpdateAsync(course.CourseId, new CourseDto 
             {
                 Name = course.Name,
-                Description = course.Description,
             });
             await _context.SaveChangesAsync();
             assignmentDto.Id = assignment.AssignmentId;
