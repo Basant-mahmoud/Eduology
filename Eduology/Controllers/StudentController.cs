@@ -74,7 +74,7 @@ namespace Eduology.Controllers
             return Ok(new { message = "Student deleted successfully" });
         }
         [HttpPost("RegisterToCourse")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> RegisterToCourse([FromBody] RegisterStudentToCourseDto model)
         {
             if (!ModelState.IsValid)
