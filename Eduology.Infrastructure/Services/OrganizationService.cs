@@ -108,7 +108,26 @@ namespace Eduology.Infrastructure.Services
             return true;
         }
 
-    private async Task<OrganizationDetailsDto> MapToOrganizationDetailsDtoAsync(Organization organization)
+        public async Task<List<UserDto>> GetStudentsByOrganizationIdAsync(int organizationId)
+        {
+
+            var studentUsers = await _organizationRepository.GetStudentsByOrganizationIdAsync(organizationId);
+
+            if (studentUsers == null || !studentUsers.Any())
+            {
+                return new List<UserDto>();
+            }
+
+            return studentUsers.Select(user => new UserDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                UserName = user.UserName,
+                Email = user.Email
+            }).ToList();
+        }
+
+        private async Task<OrganizationDetailsDto> MapToOrganizationDetailsDtoAsync(Organization organization)
     {
         if (organization == null)
             return null;
