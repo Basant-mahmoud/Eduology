@@ -90,7 +90,7 @@ namespace Eduology.Controllers
             var students = await _organizationService.GetStudentsByOrganizationIdAsync(organizationId);
             if (students == null || !students.Any())
             {
-                return NotFound("No students found for the given organization ID.");
+                return NotFound($"No students found for the given organization ID {organizationId}.");
             }
             return Ok(students);
         }
