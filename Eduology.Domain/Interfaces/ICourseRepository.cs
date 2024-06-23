@@ -16,9 +16,11 @@ namespace Eduology.Domain.Interfaces
         Task<Course> DeleteAsync(String id);
         Task<CourseDetailsDto> GetByIdAsync(String id);
         Task<CourseDetailsDto> GetByNameAsync(string name);
-        Task<IEnumerable<Course>> GetAllAsync();
+        Task<IEnumerable<Course>> GetAllAsync(string userId,string role);
         Task<Course> UpdateAsync(String id, CourseDto course);
         Task<bool> IsInstructorAssignedToCourse(string instructorId, string courseId);
         Task<bool> IStudentAssignedToCourse(string instructorId, string courseId);
+        Task<bool> IsInstructorAssignedToCourseByName(string instructorId, string Name);
+        Task<bool> IStudentAssignedToCourseByName(string instructorId, string Name);
     }
 }

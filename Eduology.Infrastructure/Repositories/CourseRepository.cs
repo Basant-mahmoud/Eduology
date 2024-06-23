@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,10 @@ namespace Eduology.Infrastructure.Repositories
             {
                 throw new KeyNotFoundException("Organization not found."); 
             }
+            var organization = await _context.Organizations
+                                                 .Include(o => o.Courses)
+                                                 .FirstOrDefaultAsync(o => o.OrganizationID == course.OrganizationID);
+            organization.Courses.Add(course);
             await _context.Courses.AddAsync(course);
             await _context.SaveChangesAsync();
             return course;
@@ -46,12 +51,24 @@ namespace Eduology.Infrastructure.Repositories
             return course;
         }
 
-        public async Task<IEnumerable<Course>> GetAllAsync()
+        public async Task<IEnumerable<Course>> GetAllAsync(string userId,string role)
         {
-                return await _context.Courses
-                    .Include(c => c.CourseInstructors).ThenInclude(ci => ci.Instructor)
-                    .Include(c => c.StudentCourses).ThenInclude(sc => sc.Student)
-                    .ToListAsync();
+            IQueryable<Course> coursesQuery = _context.Courses
+            .Include(c => c.CourseInstructors) 
+            .ThenInclude(ci => ci.Instructor) 
+            .Include(c => c.StudentCourses) 
+            .ThenInclude(sc => sc.Student); 
+
+            if (role == "Instructor")
+            {
+                coursesQuery = coursesQuery.Where(c => c.CourseInstructors.Any(ci => ci.InstructorId == userId));
+            }
+            else if (role == "Student")
+            {
+                coursesQuery = coursesQuery.Where(c => c.StudentCourses.Any(sc => sc.StudentId == userId));
+            }
+
+            return await coursesQuery.ToListAsync();
         }
         
 
@@ -81,7 +98,6 @@ namespace Eduology.Infrastructure.Repositories
             if (_course == null)
                 return null;
             _course.Name = course.Name;
-            _course.CourseCode = course.CourseCode;
             _course.Year = course.Year;
             _context.SaveChanges();
             return _course;
@@ -101,6 +117,7 @@ namespace Eduology.Infrastructure.Repositories
                 CourseId = course.CourseId,
                 Name = course.Name,
                 CourseCode = course.CourseCode,
+                Description = course.Description,
                 Instructors = course.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
                 students = course.StudentCourses.Select(sc => sc.Student.Name).ToList()
             };
@@ -125,7 +142,25 @@ namespace Eduology.Infrastructure.Repositories
 
             return courseInstructor != null;
         }
+        public async Task<bool> IsInstructorAssignedToCourseByName(string instructorName, string courseName)
+        {
+            var courseInstructor = await _context.courseInstructors
+                .Include(ci => ci.Instructor)
+                .Include(ci => ci.course)
+                .FirstOrDefaultAsync(ci => ci.Instructor.UserName == instructorName && ci.course.Name == courseName);
 
+            return courseInstructor != null;
+        }
+
+        public async Task<bool> IStudentAssignedToCourseByName(string studentName, string courseName)
+        {
+            var studentCourse = await _context.StudentCourses
+                .Include(sc => sc.Student)
+                .Include(sc => sc.Course)
+                .FirstOrDefaultAsync(sc => sc.Student.UserName == studentName && sc.Course.Name == courseName);
+
+            return studentCourse != null;
+        }
     }
 
-    }
+}

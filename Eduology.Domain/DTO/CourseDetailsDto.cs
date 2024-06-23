@@ -14,6 +14,7 @@ namespace Eduology.Domain.DTO
         [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }
         public string CourseCode { get; set; }
+        public string Description { get; set; }
         public ICollection<string> students { get; set; }
         public ICollection<string> Instructors { get; set; }
         public ICollection<Assignment> assignments { get; set; }

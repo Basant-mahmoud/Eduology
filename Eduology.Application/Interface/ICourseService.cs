@@ -10,11 +10,11 @@ namespace Eduology.Application.Interface
 {
     public interface ICourseService
     {
-        Task<Course> CreateAsync(CourseCreationDto courseDto);
+        Task<courseCreationDetailsDto> CreateAsync(CourseDto courseDto);
         Task<bool> DeleteAsync(String id);
         Task<CourseDetailsDto> GetByIdAsync(String ID,String UserID);
-        Task<CourseDetailsDto> GetByNameAsync(string name,string UserID,string CourseId);
-        Task<IEnumerable<CourseDetailsDto>> GetAllAsync(string UserID, string CourseId);
+        Task<CourseDetailsDto> GetByNameAsync(string name,string UserID);
+        Task<IEnumerable<CourseDetailsDto>> GetAllAsync(string UserID,string role);
         Task<bool> UpdateAsync(String id, CourseDto course);
     }
 }

@@ -7,6 +7,7 @@ using Eduology.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Eduology.Controllers
 {
@@ -22,7 +23,7 @@ namespace Eduology.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromBody] CourseCreationDto course)
+        public async Task<IActionResult> Create([FromBody] CourseDto course)
         {
             if (!ModelState.IsValid)
             {
@@ -32,13 +33,19 @@ namespace Eduology.Controllers
             var createdCourse = await _courseService.CreateAsync(course);
             if (createdCourse == null)
                 return BadRequest(ModelState);
-            return CreatedAtAction(nameof(GetCourseById), new { id = createdCourse.CourseId }, createdCourse);
+            return CreatedAtAction(nameof(GetCourseById), new { id = createdCourse }, createdCourse);
         }
         [Authorize(Roles = "Instructor,Student")]
-        [HttpGet("GetById/{id}/{UserId}")]
-        public async Task<IActionResult> GetCourseById(String id,string UserId)
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetCourseById(String id)
         {
-            var course = await _courseService.GetByIdAsync(id,UserId);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User ID not found in the token");
+            }
+            var course = await _courseService.GetByIdAsync(id,userId);
+
             if (course == null)
             {
                 return NotFound();
@@ -46,10 +53,20 @@ namespace Eduology.Controllers
             return Ok(course);
         }
         [Authorize(Roles = "Instructor,Student")]
-        [HttpGet("GetAll/{UserID}/{CourseId}")]
-        public async Task<IActionResult> GetAll(string UserID,string CourseId)
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
         {
-            var courses = await _courseService.GetAllAsync(UserID,CourseId);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User ID not found in the token");
+            }
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (role == null)
+            {
+                return Unauthorized("Role not found in the token");
+            }
+            var courses = await _courseService.GetAllAsync(userId,role);
             if (courses == null || !courses.Any())
             {
                 return NoContent();
@@ -57,10 +74,15 @@ namespace Eduology.Controllers
             return Ok(courses);
         }
         [Authorize(Roles = "Instructor,Student")]
-        [HttpGet("GetByName/{name}/{UserID}/{CourseId}")]
-        public async Task<IActionResult> GetByName(string name,string UserID,string CourseId)
+        [HttpGet("GetByName/{name}")]
+        public async Task<IActionResult> GetByName(string name)
         {
-            CourseDetailsDto course = await _courseService.GetByNameAsync(name,UserID,CourseId);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User ID not found in the token");
+            }
+            CourseDetailsDto course = await _courseService.GetByNameAsync(name,userId);
             if (course == null)
                 return NotFound();
             return Ok(course);

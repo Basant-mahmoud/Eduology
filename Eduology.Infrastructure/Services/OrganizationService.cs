@@ -142,7 +142,6 @@ namespace Eduology.Infrastructure.Services
                 var courseDto = new CourseDto
                 {
                     Name = course.Name,
-                    CourseCode = course.CourseCode,
                     Year = course.Year
                 };
                 coursesDto.Add(courseDto);
