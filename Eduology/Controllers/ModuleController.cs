@@ -1,5 +1,6 @@
 ﻿using Eduology.Application.Interface;
 using Eduology.Domain.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,50 +16,55 @@ namespace Eduology.Controllers
         {
             _ModuleService = moduleService;
         }
-        [HttpPost("AddType")]
-        public async Task<IActionResult> AddType([FromBody] MaterialType type)
+        [HttpPost("AddModule")]
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> AddModule([FromBody] ModuleDto module)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var (success, exists, createdType) = await _ModuleService.AddModuleAsync(type);
+            var (success, exists) = await _ModuleService.AddModuleAsync(module);
+
             if (exists)
             {
-                return BadRequest(new { message = "Module already exists." });
+                return Conflict(new { message = "Module already exists in the course." });
             }
 
             if (!success)
             {
-                return BadRequest(new { message = "Failed to add module." });
+                return BadRequest(new { message = "Failed to add module. The course might not exist." });
             }
 
-            return Ok(new { message = "Module added successfully.", createdType });
+            return Ok(new { message = "Module added successfully." });
         }
-        [HttpGet("ModuleWithFiles/{courseId}")]
-        public async Task<IActionResult> AllModuleWithFilesByCourseId(string courseId)
+        [HttpPut("UpdateModule")]
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> UpdateModule([FromBody] UpdateModuleDto module)
         {
-            var typesWithFiles = await _ModuleService.GetAllModulesAsync(courseId);
+            var success = await _ModuleService.UpdateModuleAsync(module);
 
-            if (typesWithFiles == null || !typesWithFiles.Any())
+            if (!success)
             {
-                return NoContent();
+                return NotFound(new { message = $"Module with name {module.Name}  not found in course ." });
             }
 
-            return Ok(typesWithFiles);
+            return Ok(new { message = $"Module with ID {module.Name} update successfully." });
         }
-        [HttpDelete("DeleteModule/{moduleName}")]
-        public async Task<IActionResult> DeleteModule(string moduleName)
-        {
-            var response = await _ModuleService.DeleteModule(moduleName);
 
-            if (response == null)
+        [HttpDelete("DeleteModule")]
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> DeleteModule([FromBody] ModuleDto module)
+        {
+            var success = await _ModuleService.DeleteModuleAsync(module);
+
+            if (!success)
             {
-                return BadRequest(new { message = "Failed to delete Module or Module does not exist." });
+                return NotFound(new { message = $"Module with name {module.Name}  not found in course ." });
             }
 
-            return Ok(new { message = "Module deleted successfully." });
+            return Ok(new { message = $"Module with ID {module.Name} deleted successfully." });
         }
     }
 }

@@ -1,78 +1,99 @@
 ﻿using Eduology.Application.Interface;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Eduology.Infrastructure.Repositories;
 using System.Threading.Tasks;
 
 namespace Eduology.Infrastructure.Services
 {
-    public class ModuleServicecs: IModuleService
+    public class ModuleServicecs : IModuleService
     {
-        private readonly IModuleRepository _ModuleRepository;
-
+        private readonly IModuleRepository _moduleRepository;
         private readonly ICourseRepository _courseRepository;
-      
 
-        public ModuleServicecs( ICourseRepository courseRepository, IModuleRepository moduleRepository)
+        public ModuleServicecs(ICourseRepository courseRepository, IModuleRepository moduleRepository)
         {
-           
             _courseRepository = courseRepository;
-            _ModuleRepository = moduleRepository;
+            _moduleRepository = moduleRepository;
         }
-        public async Task<(bool Success, bool Exists, Domain.Models.Type Type)> AddModuleAsync(MaterialType materialType)
+
+        public async Task<(bool Success, bool Exists)> AddModuleAsync(ModuleDto moduleDto)
         {
-            if (materialType == null)
+            if (moduleDto == null || string.IsNullOrEmpty(moduleDto.Name) || string.IsNullOrEmpty(moduleDto.CourseId))
             {
-                throw new ArgumentException("Module cannot be null.");
+                return (false, false);
             }
 
-            if (string.IsNullOrEmpty(materialType.Name))
-            {
-                throw new ArgumentException("Module name cannot be null or empty.");
-            }
-            var type = new Domain.Models.Type
-            {
-                Name = materialType.Name.ToLower(),
-            };
-
-            var (success, exists, createdType) = await _ModuleRepository.AddModuleAsync(type);
-            return (success, exists, createdType);
-        }
-        public async Task<List<ModuleWithFilesDto>> GetAllModulesAsync(string courseId)
-        {
-            if (courseId == null)
-            {
-                 return null;
-            }
-            var courseExists = await _courseRepository.GetByIdAsync(courseId);
+            var courseExists = await _courseRepository.GetByIdAsync(moduleDto.CourseId);
+            var instructorExist = await _courseRepository.IsInstructorAssignedToCourse(moduleDto.InstructorId,moduleDto.CourseId);
             if (courseExists == null)
             {
-                return new List<ModuleWithFilesDto>();
-                
+                return (false, false);
+            }
+            if(instructorExist == false)
+            {
+                return (false, false);
             }
 
-            var typesWithFiles = await _ModuleRepository.GetAllModulesAsync(courseId);
-            return typesWithFiles;
+            var moduleExists = await _moduleRepository.GetModuleByNameAsync(moduleDto);
+            if (moduleExists != null)
+            {
+                return (false, true);
+            }
+
+            var module = new Domain.Models.Module
+            {
+                Name = moduleDto.Name,
+                courseId = moduleDto.CourseId
+            };
+
+            var success = await _moduleRepository.AddModuleAsync(module);
+            return (success, false);
         }
-        public async Task<bool> DeleteModule(string Module)
+
+        public async Task<bool> DeleteModuleAsync(ModuleDto moduleDto)
         {
-            if (string.IsNullOrEmpty(Module))
+            if (string.IsNullOrEmpty(moduleDto.Name) || string.IsNullOrEmpty(moduleDto.CourseId))
             {
                 return false;
             }
-
-            var material = await _ModuleRepository.GetModuleByNameAsync(Module.ToLower());
-
-            if (material == null)
+            var instructorExist = await _courseRepository.IsInstructorAssignedToCourse(moduleDto.InstructorId, moduleDto.CourseId);
+            if (instructorExist == false)
             {
-                return false;
+                return false ;
             }
-            var success = await _ModuleRepository.DeleteModuleAsync(Module);
+
+            var success = await _moduleRepository.DeleteModuleAsync(moduleDto);
             return success;
-
         }
+        public async Task<bool> UpdateModuleAsync(UpdateModuleDto updatemodule)
+        {
+            if (updatemodule == null || string.IsNullOrEmpty(updatemodule.Name) || string.IsNullOrEmpty(updatemodule.CourseId))
+            {
+                return false;
+            }
+            var instructorExist = await _courseRepository.IsInstructorAssignedToCourse(updatemodule.Instructorid, updatemodule.CourseId);
+            if (instructorExist == false)
+            {
+                return false;
+            }
+
+            var module = new ModuleDto
+            {
+                Name = updatemodule.Name.ToLower(),
+                CourseId = updatemodule.CourseId
+            };
+            var existingModule = await _moduleRepository.GetModuleByNameAsync(module);
+            if (existingModule == null)
+            {
+                return false; // Module not found
+            }
+
+            
+            var success = await _moduleRepository.UpdateModuleAsync(updatemodule);
+            return success;
+        }
+        
+
     }
 }

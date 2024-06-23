@@ -14,7 +14,7 @@ namespace Eduology.Domain.Models
         public DateTime CreatedAT { get; set; }
         public String CourseId { get; set; } // Foreign key
         public virtual Course Course { get; set; } // Navigation property
-        public string InstructorId { get; set; } // Ensure this matches the primary key type in ApplicationUser
+        public string InstructorId { get; set; } 
         public virtual ApplicationUser Instructor { get; set; }
     }
 }

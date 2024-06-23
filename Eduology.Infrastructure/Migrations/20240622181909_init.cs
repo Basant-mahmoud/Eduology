@@ -26,19 +26,6 @@ namespace Eduology.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MaterialTypes",
-                columns: table => new
-                {
-                    TypeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MaterialTypes", x => x.TypeId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Organizations",
                 columns: table => new
                 {
@@ -305,36 +292,22 @@ namespace Eduology.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Materials",
+                name: "Modules",
                 columns: table => new
                 {
-                    MaterialId = table.Column<int>(type: "int", nullable: false)
+                    ModuleId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TypeId = table.Column<int>(type: "int", nullable: false),
-                    CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    InstructorId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    courseId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Materials", x => x.MaterialId);
+                    table.PrimaryKey("PK_Modules", x => x.ModuleId);
                     table.ForeignKey(
-                        name: "FK_Materials_AspNetUsers_InstructorId",
-                        column: x => x.InstructorId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Materials_Courses_CourseId",
-                        column: x => x.CourseId,
+                        name: "FK_Modules_Courses_courseId",
+                        column: x => x.courseId,
                         principalTable: "Courses",
                         principalColumn: "CourseId",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_Materials_MaterialTypes_TypeId",
-                        column: x => x.TypeId,
-                        principalTable: "MaterialTypes",
-                        principalColumn: "TypeId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -409,6 +382,40 @@ namespace Eduology.Infrastructure.Migrations
                         column: x => x.AssignmentId,
                         principalTable: "Assignments",
                         principalColumn: "AssignmentId",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Materials",
+                columns: table => new
+                {
+                    MaterialId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ModuleId = table.Column<int>(type: "int", nullable: false),
+                    CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    InstructorId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Materials", x => x.MaterialId);
+                    table.ForeignKey(
+                        name: "FK_Materials_AspNetUsers_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Materials_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "CourseId",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Materials_Modules_ModuleId",
+                        column: x => x.ModuleId,
+                        principalTable: "Modules",
+                        principalColumn: "ModuleId",
                         onDelete: ReferentialAction.NoAction);
                 });
 
@@ -533,9 +540,14 @@ namespace Eduology.Infrastructure.Migrations
                 column: "InstructorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Materials_TypeId",
+                name: "IX_Materials_ModuleId",
                 table: "Materials",
-                column: "TypeId");
+                column: "ModuleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Modules_courseId",
+                table: "Modules",
+                column: "courseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudentCourses_CourseId",
@@ -599,7 +611,7 @@ namespace Eduology.Infrastructure.Migrations
                 name: "Assignments");
 
             migrationBuilder.DropTable(
-                name: "MaterialTypes");
+                name: "Modules");
 
             migrationBuilder.DropTable(
                 name: "Courses");

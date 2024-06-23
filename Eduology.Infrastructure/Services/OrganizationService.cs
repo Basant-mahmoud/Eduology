@@ -2,6 +2,7 @@
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
+using Eduology.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -52,7 +53,12 @@ namespace Eduology.Infrastructure.Services
         public async Task<OrganizationDto> CreateOrganizationAsync(CreateOrganizationDto createOrganizationDto)
         {
             // Check if the email is already registered as a user
-            var existingUser = await _userManager.FindByEmailAsync(createOrganizationDto.Email);
+            var existingEmail = await _userManager.FindByEmailAsync(createOrganizationDto.Email);
+            if (existingEmail != null)
+            {
+                return null;
+            }
+            var existingUser = await _userManager.FindByEmailAsync(createOrganizationDto.Name);
             if (existingUser != null)
             {
                 return null;
@@ -103,7 +109,26 @@ namespace Eduology.Infrastructure.Services
             return true;
         }
 
-    private async Task<OrganizationDetailsDto> MapToOrganizationDetailsDtoAsync(Organization organization)
+        public async Task<List<UserDto>> GetStudentsByOrganizationIdAsync(int organizationId)
+        {
+
+            var studentUsers = await _organizationRepository.GetStudentsByOrganizationIdAsync(organizationId);
+
+            if (studentUsers == null || !studentUsers.Any())
+            {
+                return new List<UserDto>();
+            }
+
+            return studentUsers.Select(user => new UserDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                UserName = user.UserName,
+                Email = user.Email
+            }).ToList();
+        }
+
+        private async Task<OrganizationDetailsDto> MapToOrganizationDetailsDtoAsync(Organization organization)
     {
         if (organization == null)
             return null;
@@ -157,5 +182,22 @@ namespace Eduology.Infrastructure.Services
             Courses = coursesDto,
         };
     }
-}
+        public async Task<IEnumerable<UserDto>> GetAllInstructorsToOrganizationAsync(int OrganizationId)
+        {
+
+            var instructors = await _organizationRepository.GetInstructorToOrganizationIdAsync(OrganizationId);
+            if (instructors == null || !instructors.Any())
+            {
+                return new List<UserDto>();
+            }
+            return instructors.Select(user => new UserDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                UserName = user.UserName,
+                Email = user.Email
+            }).ToList();
+            ;
+        }
+    }
 }

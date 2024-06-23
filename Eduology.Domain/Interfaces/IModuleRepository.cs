@@ -4,14 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Type = Eduology.Domain.Models.Type;
+using Module = Eduology.Domain.Models.Module;
 namespace Eduology.Domain.Interfaces
 {
     public interface IModuleRepository
     {
-        Task<(bool Success, bool Exists, Type Type)> AddModuleAsync(Type type);
-        Task<Type> GetModuleByNameAsync(string typeName);
-        Task<bool> DeleteModuleAsync(string materialType);
-        Task<List<ModuleWithFilesDto>> GetAllModulesAsync(string courseId);
+         Task<bool> AddModuleAsync(Module module);
+         Task<Module> GetModuleByNameAsync(ModuleDto module);
+        Task<bool> DeleteModuleAsync(ModuleDto module);
+        Task<bool> UpdateModuleAsync(UpdateModuleDto module);
+        Task<List<Module>> GetModulesByCourseIdAsync(string courseId);
+
     }
 }

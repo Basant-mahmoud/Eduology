@@ -1,6 +1,8 @@
 ﻿using Eduology.Application.Interface;
 using Eduology.Application.Utilities;
 using Eduology.Domain.DTO;
+using Eduology.Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -82,6 +84,31 @@ namespace Eduology.Controllers
 
             await _organizationService.DeleteOrganizationAsync(id);
             return Ok("Organization deleted successfully.");
+        }
+
+        [HttpGet("AllStudentsWithOrganization/{organizationId}")]
+        public async Task<ActionResult<List<UserDto>>> GetStudentsByOrganizationId(int organizationId)
+        {
+            var students = await _organizationService.GetStudentsByOrganizationIdAsync(organizationId);
+            if (students == null || !students.Any())
+            {
+                return NotFound($"No students found for the given organization ID {organizationId}.");
+            }
+            return Ok(students);
+        }
+        [HttpGet("GetAllInstructorsToOrganization")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetAllInstructorsToOrganization(int organizationId)
+        {
+            var instructors = await _organizationService.GetAllInstructorsToOrganizationAsync(organizationId);
+            if (instructors == null || !instructors.Any())
+            {
+                return Ok(new List<UserDto>());
+            }
+            else
+            {
+                return Ok(instructors);
+            }
         }
     }
 }

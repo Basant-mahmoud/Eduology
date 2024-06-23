@@ -4,11 +4,13 @@ using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace Eduology.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AnnouncementController : ControllerBase
     {
         private readonly IAnnouncementService _announcementService;
@@ -19,6 +21,7 @@ namespace Eduology.Controllers
         }
 
         [HttpPost("Create")]
+        [Authorize(Roles = "Instructor")]
         public async Task<ActionResult<CreateAnnoncementDto>> PostAnnouncement([FromBody] CreateAnnoncementDto announcementDto)
         {
             var createdAnnouncement = await _announcementService.CreateAsync(announcementDto);
@@ -26,31 +29,23 @@ namespace Eduology.Controllers
             {
                 return BadRequest();
             }
-            return CreatedAtAction(nameof(GetAnnouncement), new { createdAnnouncement });
-        }
-        [HttpGet("GetAll")]
-        public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncements()
-        {
-            var announcements = await _announcementService.GetAllAsync();
-            if (announcements == null || !announcements.Any())
-            {
-                return NotFound("No announcements found.");
-            }
-            return Ok(announcements);
+            return CreatedAtAction(nameof(GetAnnouncement), new { id = createdAnnouncement.Id }, createdAnnouncement);
         }
 
         [HttpGet("GetById/{id}")]
+        [Authorize(Roles = "Instructor, Student")]
         public async Task<ActionResult<AnnouncementDto>> GetAnnouncement(int id)
         {
             var announcement = await _announcementService.GetByIdAsync(id);
             if (announcement == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Announcement with id {id} not found." });
             }
             return Ok(announcement);
         }
 
         [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> DeleteAnnouncement(int id)
         {
             var announcement = await _announcementService.GetByIdAsync(id);
@@ -62,29 +57,43 @@ namespace Eduology.Controllers
             await _announcementService.DeleteAsync(id);
             return Ok(new { message = "Announcement deleted successfully." });
         }
-        [HttpGet("Course/{courseId}")]
+
+        [HttpGet("GetWithCourse/{courseId}")]
+        [Authorize(Roles = "Instructor, Student")]
         public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncementsByCourseId(string courseId)
         {
+            if (string.IsNullOrWhiteSpace(courseId))
+            {
+                return BadRequest(new { message = "Course ID cannot be null or empty." });
+            }
             var announcements = await _announcementService.GetAnnouncementsByCourseIdAsync(courseId);
+            if (announcements == null || !announcements.Any())
+            {
+                return NotFound(new { message = $"Course with ID {courseId} not found." });
+            }
             return Ok(announcements);
         }
-        [HttpGet("Course/{courseId}/Announcement/{announcementId}")]
+
+        [HttpGet("GetWithCourse/{courseId}/AnnouncementID/{announcementId}")]
+        [Authorize(Roles = "Instructor, Student")]
         public async Task<ActionResult<AnnouncementDto>> GetAnnouncementByIdAndCourseId(string courseId, int announcementId)
         {
             var announcement = await _announcementService.GetAnnouncementByIdAndCourseIdAsync(courseId, announcementId);
             if (announcement == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Announcement id {announcementId} or course id  {courseId} not found." });
             }
             return Ok(announcement);
         }
-        [HttpGet("GetAllStudentAnnouncement/{studentid}")]
+
+        [HttpGet("GetAllAnnouncementsToStudent/{studentid}")]
+        [Authorize(Roles = "Student")]
         public async Task<ActionResult<IEnumerable<AllAnnoncemetDto>>> GetAllStudentAnnouncement(string studentid)
         {
             var announcement = await _announcementService.GetAllAnnouncementsForStudentAsync(studentid);
             if (announcement == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Student with id {studentid} not found." });
             }
             return Ok(announcement);
         }

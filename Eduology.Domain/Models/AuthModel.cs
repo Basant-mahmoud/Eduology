@@ -8,6 +8,7 @@ namespace Eduology.Domain.Models
 {
     public class AuthModel
     {
+        public int OrganizationId { get; set; }
         public string Message { get; set; }
         public bool IsAuthenticated { get; set; }
         public string Username { get; set; }
@@ -15,5 +16,6 @@ namespace Eduology.Domain.Models
         public List<string> Roles { get; set; }
         public string Token { get; set; }
         public DateTime ExpiresOn { get; set; }
+       
     }
 }

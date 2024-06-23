@@ -7,156 +7,217 @@ using System;
 using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using File = Eduology.Domain.Models.File;
-using Type = Eduology.Domain.Models.Type;
+using Type = Eduology.Domain.Models.Module;
 namespace Eduology.Infrastructure.Services
 {
-    public class MaterialService: IMaterialService
+    public class MaterialService : IMaterialService
     {
         private readonly IMaterialRepository _matrialRepository;
 
         private readonly ICourseRepository _courseRepository;
-        private readonly IModuleRepository _ModuleRepository;
+        private readonly IModuleRepository _moduleRepository;
 
         public MaterialService(IMaterialRepository matrialRepository, ICourseRepository courseRepository, IModuleRepository moduleRepository)
         {
             _matrialRepository = matrialRepository;
             _courseRepository = courseRepository;
-            _ModuleRepository = moduleRepository;
+            _moduleRepository = moduleRepository;
         }
         public async Task<bool> AddMaterialAsync(MaterialDto materialDto)
         {
-            if (materialDto == null)
+            if (materialDto == null ||
+                string.IsNullOrEmpty(materialDto.CourseId) ||
+                string.IsNullOrEmpty(materialDto.InstructorId) ||
+                string.IsNullOrEmpty(materialDto.Module) ||
+                materialDto.FileURLs == null || materialDto.FileURLs.Count == 0)
             {
                 return false;
             }
-            if (materialDto.CourseId == null)
-            {
-                return false;
-            }
-            if (materialDto.InstructorId == null)
-            {
-                return false;
-            }
-            if (materialDto.FileURLs == null)
-            {
-                return false;
-            }
-            if (materialDto.MaterialType == null)
-            {
-                return false;
-            }
-            //instructor should be in course to add matrial
+
+            // Check if the instructor is assigned to the course
             var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(materialDto.InstructorId, materialDto.CourseId);
             if (!isInstructorAssigned)
             {
                 return false;
             }
-            var existingType = await _ModuleRepository.GetModuleByNameAsync(materialDto.MaterialType.ToLower());
-            if (existingType == null)
+
+            // Get the module by name within the course
+            var moduleDto = new ModuleDto
             {
-             
+                CourseId = materialDto.CourseId,
+                Name = materialDto.Module
+            };
+            var existingModule = await _moduleRepository.GetModuleByNameAsync(moduleDto);
+            if (existingModule == null)
+            {
                 return false; 
             }
-            var course = await _courseRepository.GetByIdAsync(materialDto.CourseId);
-            if (course == null)
-            {
-                return false;
-               
-            }
-            
+
+            // Create a new Material entity
             var material = new Material
             {
                 Title = materialDto.Title,
                 InstructorId = materialDto.InstructorId,
                 CourseId = materialDto.CourseId,
-                MaterialType = existingType, 
-                Files = new List<File>() 
+                ModuleId = existingModule.ModuleId, 
+                Files = new List<File>()
             };
 
-            if (materialDto.FileURLs != null && materialDto.FileURLs.Count > 0)
+            // Add files to the material
+            foreach (var fileDto in materialDto.FileURLs)
             {
-                foreach (var fileDto in materialDto.FileURLs)
+                var file = new File
                 {
-                    var file = new File
-                    {
-                        FileId = Guid.NewGuid().ToString(),
-                        URL = fileDto.URL,
-                        Title = $"File for {fileDto.Title}",
-                        MaterialId = material.MaterialId
-                    };
-                    material.Files.Add(file);
-                }
+                    FileId = Guid.NewGuid().ToString(),
+                    URL = fileDto.URL,
+                    Title = $"File for {fileDto.Title}",
+                    MaterialId = material.MaterialId
+                };
+                material.Files.Add(file);
             }
+
+            // Call repository method to add the material
             var success = await _matrialRepository.AddMaterialAsync(material);
 
             return success;
         }
 
-      
-        public async Task<List<MaterialDto>> GetAllMaterialsAsync(string courseId)
+        public async Task<ICollection<GetMaterialDto>> GetMaterialToInstructorsAsync(CourseInstructorRequestDto requestDto)
         {
-            if(courseId == null)
+            if (requestDto == null ||
+                string.IsNullOrEmpty(requestDto.CourseId) ||
+                string.IsNullOrEmpty(requestDto.InstructorId))
             {
                 return null;
             }
-            var existing= await _courseRepository.GetByIdAsync(courseId);
-            if (existing == null)
+
+            // Check if the instructor is assigned to the course
+            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(requestDto.InstructorId, requestDto.CourseId);
+            if (!isInstructorAssigned)
             {
-                Console.Error.WriteLine($"Type not exist");
-                return new List<MaterialDto>();
-               
-              
+                return null;
             }
-            var materials = await _matrialRepository.GetAllMaterialsAsync(courseId);
 
-            var materialDtos = materials.Select(m => new MaterialDto
+            // Get all modules for the course
+            var modules = await _moduleRepository.GetModulesByCourseIdAsync(requestDto.CourseId);
+            if (modules == null || !modules.Any())
             {
-                Title = m.Title,
-                MaterialType = m.MaterialType.Name, 
-                InstructorId = m.InstructorId,
-                CourseId = m.CourseId,
-                FileURLs = m.Files.Select(f => new FileDto
-                {
-                    URL = f.URL,
-                    Title = f.Title
-                }).ToList()
-            }).ToList();
+                return new List<GetMaterialDto>();
+            }
 
-            return materialDtos;
+            var moduleWithMaterialsList = new List<GetMaterialDto>();
+
+            foreach (var module in modules)
+            {
+                // Aggregate files for the current module
+                var files = module.Materials.SelectMany(m => m.Files).Select(f => new GetFileDto
+                {
+                    FileId = f.FileId,
+                    Title = f.Title,
+                    URL = f.URL
+                }).ToList();
+
+                // Check if the module already exists in the list
+                var existingModule = moduleWithMaterialsList.FirstOrDefault(m => m.Module == module.Name);
+                if (existingModule != null)
+                {
+                    // Add files to the existing module
+                    existingModule.FileURLs.AddRange(files);
+                }
+                else
+                {
+                    var moduleDto = new GetMaterialDto
+                    {  
+                        Module = module.Name,
+                        FileURLs = files
+                    };
+                    moduleWithMaterialsList.Add(moduleDto);
+                }
+            }
+
+            return moduleWithMaterialsList;
+        }
+        /// ////////////////////////////////
+        public async Task<ICollection<GetMaterialDto>> GetMaterialToStudentAsync(CourseStudentRequestDto requestDto)
+        {
+            if (requestDto == null ||
+                string.IsNullOrEmpty(requestDto.CourseId) ||
+                string.IsNullOrEmpty(requestDto.StudentId))
+            {
+                return null;
+            }
+
+            // Check if the instructor is assigned to the course
+            var isStudentAssigned = await _courseRepository.IStudentAssignedToCourse(requestDto.StudentId, requestDto.CourseId);
+            if (!isStudentAssigned)
+            {
+                return null;
+            }
+
+            // Get all modules for the course
+            var modules = await _moduleRepository.GetModulesByCourseIdAsync(requestDto.CourseId);
+            if (modules == null || !modules.Any())
+            {
+                return new List<GetMaterialDto>();
+            }
+
+            var moduleWithMaterialsList = new List<GetMaterialDto>();
+
+            foreach (var module in modules)
+            {
+                // Aggregate files for the current module
+                var files = module.Materials.SelectMany(m => m.Files).Select(f => new GetFileDto
+                {
+                    FileId = f.FileId,
+                    Title = f.Title,
+                    URL = f.URL
+                }).ToList();
+
+                // Check if the module already exists in the list
+                var existingModule = moduleWithMaterialsList.FirstOrDefault(m => m.Module == module.Name);
+                if (existingModule != null)
+                {
+                    // Add files to the existing module
+                    existingModule.FileURLs.AddRange(files);
+                }
+                else
+                {
+                    var moduleDto = new GetMaterialDto
+                    {
+                        Module = module.Name,
+                        FileURLs = files
+                    };
+                    moduleWithMaterialsList.Add(moduleDto);
+                }
+            }
+
+            return moduleWithMaterialsList;
+        }
+        public async Task<bool> DeleteFileAsync(DeleteFileDto deletefile)
+        {
+            if (deletefile == null ||
+                string.IsNullOrEmpty(deletefile.courseId) ||
+                string.IsNullOrEmpty(deletefile.InstructorId)|| string.IsNullOrEmpty(deletefile.Module)|| string.IsNullOrEmpty(deletefile.fileId))
+            {
+                return false;
+            }
+            // Check if the instructor is assigned to the course
+            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(deletefile.InstructorId, deletefile.courseId);
+            if (!isInstructorAssigned)
+            {
+                return false;
+            }
+            var iscourseexist = _courseRepository.GetByIdAsync(deletefile.courseId);
+            if (iscourseexist == null) { return false; }
+            var success = await _matrialRepository.DeleteMatrialAsync(deletefile);
+            return success;
         }
 
        
-        public async Task<bool> DeleteMatrialAsync(string fileId, string courseId, string materialType)
-        {
-
-            if (string.IsNullOrEmpty(fileId))
-            {
-                return false;   
-            }
-
-            if (string.IsNullOrEmpty(courseId))
-            {
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(materialType))
-            {
-                return false;
-            }
-            var course = await _courseRepository.GetByIdAsync(courseId);
-                var material = await _ModuleRepository.GetModuleByNameAsync(materialType.ToLower());
-
-                if (course == null || material == null)
-                {
-                    return false; // Course or material doesn't exist
-                }
-                var success = await _matrialRepository.DeleteMatrialAsync(fileId, courseId, materialType);
-                return success;
-            
-        }
-        
     }
 }
+

@@ -1,11 +1,11 @@
-﻿ using Eduology.Domain.Models;
+﻿using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Eduology.Application.Utilities;
-using Eduology.Domain.Interfaces;
 using Eduology.Application.Services.Interface;
 using Eduology.Application.Interface;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Eduology.Controllers
 {
@@ -14,10 +14,12 @@ namespace Eduology.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+
         public AuthController(IAuthService authService)
         {
             _authService = authService;
         }
+
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterModel model)
         {
@@ -45,7 +47,6 @@ namespace Eduology.Controllers
             return Ok(result);
         }
 
-
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] LoginModel model)
         {
@@ -59,9 +60,9 @@ namespace Eduology.Controllers
 
             return Ok(result);
         }
-        
 
-        [HttpPost("addrole")]//should be auth
+        [HttpPost("addrole")]
+        [Authorize] // This endpoint should be authorized
         public async Task<IActionResult> AddRoleAsync([FromBody] AddRoleModel model)
         {
             if (!ModelState.IsValid)

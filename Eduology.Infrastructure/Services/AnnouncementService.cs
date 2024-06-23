@@ -59,13 +59,6 @@ namespace Eduology.Infrastructure.Services
             return ConvertToDto(createdAnnouncement);
         }
 
-
-        public async Task<IEnumerable<AnnouncementDto>> GetAllAsync()
-        {
-            var announcements = await _announcementRepository.GetAllAsync();
-            return announcements.Select(ConvertToDto);
-        }
-
         public async Task<AnnouncementDto> GetByIdAsync(int id)
         {
             var announcement = await _announcementRepository.GetByIdAsync(id);

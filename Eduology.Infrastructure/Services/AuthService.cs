@@ -1,57 +1,52 @@
-﻿using Eduology.Domain.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Eduology.Application.Interface;
 using Eduology.Application.Services.Helper;
 using Eduology.Application.Services.Interface;
-using Eduology.Application.Interface;
-using Microsoft.EntityFrameworkCore;
-using Eduology.Infrastructure.Persistence;
+using Eduology.Domain.Interfaces;
+using Eduology.Domain.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Eduology.Application.Services
 {
     public class AuthService : IAuthService
     {
+        private readonly JWT _jwt;
+        private readonly IAuthRepository _authRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly JWT _jwt;
-        private readonly EduologyDBContext _context;
-
-        public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt, EduologyDBContext context)
+        private readonly IEmailSender _emailSender;
+        public AuthService(IOptions<JWT> jwt, IAuthRepository authRepository, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
         {
+            _jwt = jwt.Value;
+            _authRepository = authRepository;
             _userManager = userManager;
             _roleManager = roleManager;
-            _jwt = jwt.Value;
-            _context = context;
+            _emailSender = emailSender;
+
         }
 
         public async Task<AuthModel> RegisterAsync(RegisterModel model)
         {
-            // Check if the OrganizationId is provided and valid
             if (model.OrganizationId > 0)
             {
-                var organizationExists = await _context.Organizations
-                    .AnyAsync(o => o.OrganizationID == model.OrganizationId);
-
-                if (!organizationExists)
+                if (!await _authRepository.OrganizationExistsAsync(model.OrganizationId))
                 {
                     return new AuthModel { Message = "Invalid OrganizationId provided." };
                 }
             }
 
-            // Check if the email is already registered
-            if (await _userManager.FindByEmailAsync(model.Email) != null)
+            if (await _authRepository.EmailExistsAsync(model.Email))
                 return new AuthModel { Message = "Email is already registered!" };
 
-            // Check if the username is already registered
-            if (await _userManager.FindByNameAsync(model.Username) != null)
+            if (await _authRepository.UsernameExistsAsync(model.Username))
                 return new AuthModel { Message = "Username is already registered!" };
 
             var user = new ApplicationUser
@@ -59,7 +54,7 @@ namespace Eduology.Application.Services
                 UserName = model.Username,
                 Email = model.Email,
                 Name = model.Name,
-                OrganizationId = model.OrganizationId 
+                OrganizationId = model.OrganizationId
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -77,8 +72,11 @@ namespace Eduology.Application.Services
 
             var jwtSecurityToken = await CreateJwtToken(user);
 
+           // await _emailSender.SendEmailAsync(user.Email, "Registration Successful", $"You have successfully registered to Eduology LMS. Your Email is {model.Email} and Your password is: {model.Password}");
+
             return new AuthModel
             {
+                OrganizationId = model.OrganizationId,
                 Email = user.Email,
                 ExpiresOn = jwtSecurityToken.ValidTo,
                 IsAuthenticated = true,
@@ -108,6 +106,7 @@ namespace Eduology.Application.Services
             authModel.Username = user.UserName;
             authModel.ExpiresOn = jwtSecurityToken.ValidTo;
             authModel.Roles = rolesList.ToList();
+            authModel.OrganizationId = user.OrganizationId;
 
             return authModel;
         }
@@ -141,7 +140,8 @@ namespace Eduology.Application.Services
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id)
+                new Claim("uid", user.Id),
+                new Claim("organizationId", user.OrganizationId.ToString())
             }
             .Union(userClaims)
             .Union(roleClaims);

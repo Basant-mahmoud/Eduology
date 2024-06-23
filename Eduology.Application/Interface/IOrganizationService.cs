@@ -14,5 +14,7 @@ namespace Eduology.Application.Interface
         Task<OrganizationDetailsDto> GetOrganizationByIdAsync(int id);
         Task<OrganizationDto> CreateOrganizationAsync(CreateOrganizationDto createOrganizationDto);
         Task<bool> DeleteOrganizationAsync(int id);
+        Task<List<UserDto>> GetStudentsByOrganizationIdAsync(int organizationId);
+        Task<IEnumerable<UserDto>> GetAllInstructorsToOrganizationAsync(int OrganizationId);
     }
 }

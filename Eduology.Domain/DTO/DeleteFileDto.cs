@@ -8,8 +8,9 @@ namespace Eduology.Domain.DTO
 {
     public class DeleteFileDto
     {
-        public string fileId { get; set; }
+        public string InstructorId { get; set; }
         public string courseId { get; set; }
-        public string materialType { get; set; }
+        public string Module { get; set; }
+        public string fileId { get; set; }
     }
 }
