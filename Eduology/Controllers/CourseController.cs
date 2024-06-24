@@ -109,9 +109,9 @@ namespace Eduology.Controllers
         public async Task<IActionResult> Delete(string id)
         {
            var course =  await _courseService.DeleteAsync(id);
-           if(course == null)
-                return Ok(new { message = "This course is not exist" });
-           return Ok(new { message = "Course deleted successfully" });
+           if(!course)
+                return NotFound(new { message = $"Course with id {id} not found." });
+            return Ok(new { message = "Course deleted successfully" });
         }
     }
 }

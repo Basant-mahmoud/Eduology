@@ -58,12 +58,16 @@ namespace Eduology.Infrastructure.Persistence
             modelBuilder.Entity<CourseInstructor>()
                 .HasOne(ci => ci.course)
                 .WithMany(c => c.CourseInstructors)
-                .HasForeignKey(ci => ci.CourseId);
+                .HasForeignKey(ci => ci.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             modelBuilder.Entity<CourseInstructor>()
                 .HasOne(ci => ci.Instructor)
                 .WithMany(i => i.CourseInstructors)
-                .HasForeignKey(ci => ci.InstructorId);
+                .HasForeignKey(ci => ci.InstructorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Configure one-to-many relationship between ApplicationUser (Instructor) and Material
             modelBuilder.Entity<Material>()
                 .HasOne(m => m.Instructor)

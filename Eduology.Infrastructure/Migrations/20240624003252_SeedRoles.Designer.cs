@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eduology.Infrastructure.Migrations
 {
     [DbContext(typeof(EduologyDBContext))]
-    [Migration("20240622182651_SeedRoles")]
+    [Migration("20240624003252_SeedRoles")]
     partial class SeedRoles
     {
         /// <inheritdoc />

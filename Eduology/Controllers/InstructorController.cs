@@ -23,7 +23,7 @@ namespace Eduology.Controllers
         }
 
         [HttpGet("GetAllInstructors")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetInstructors()
         {
             var instructors = await _instructorService.GetAllInstructorsAsync();
@@ -39,7 +39,7 @@ namespace Eduology.Controllers
        
 
         [HttpGet("GetInstructorById/{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetInstructorById(string id)
         {
             var instructor = await _instructorService.GetInstructorByIdAsync(id);
@@ -52,7 +52,7 @@ namespace Eduology.Controllers
         }
 
         [HttpGet("SearchInstructorByName/{name}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetInstructorByName(string name)
         {
             var instructor = await _instructorService.GetInstructorByNameAsync(name);
@@ -65,7 +65,7 @@ namespace Eduology.Controllers
         }
 
         [HttpGet("SearchInstructorByUserName/{username}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetInstructorByUserName(string username)
         {
             var instructor = await _instructorService.GetInstructorByUserNameAsync(username);
@@ -78,7 +78,7 @@ namespace Eduology.Controllers
         }
 
         [HttpPut("UpdateInstructor/{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateInstructor(string id, [FromBody] UserDto updateInstructorDto)
         {
             var result = await _instructorService.UpdateInstructorAsync(id, updateInstructorDto);
@@ -92,7 +92,7 @@ namespace Eduology.Controllers
         }
 
         [HttpDelete("DeleteInstructor/{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteInstructor(string id)
         {
             var result = await _instructorService.DeleteInstructorAsync(id);
@@ -104,7 +104,7 @@ namespace Eduology.Controllers
             return Ok(new { message = "Instructor deleted successfully" });
         }
         [HttpPost("RegisterToCourse")]
-        //[Authorize(Roles = "Instructor")]
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> RegisterToCourse([FromBody] RegisterInstructorToCourseDto model)
         {
             if (!ModelState.IsValid)
@@ -119,7 +119,7 @@ namespace Eduology.Controllers
                 return BadRequest("Failed to add instructor to the course.");
         }
         [HttpGet("AllCoursetoInstructor/{instructorid}")]
-        //[Authorize(Roles = "Instructor")]
+        [Authorize(Roles = "Instructor")]
         public async Task<ActionResult<CourseUserDto>> AllCoursetoInstructor(string instructorid)
         {
             var instructor = await _instructorService.GetAllCourseToSpecificInstructorAsync(instructorid);
