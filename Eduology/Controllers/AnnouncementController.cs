@@ -38,7 +38,7 @@ namespace Eduology.Controllers
             {
                 return BadRequest();
             }
-            return CreatedAtAction(nameof(GetAnnouncement), new { id = createdAnnouncement.Id }, createdAnnouncement);
+            return CreatedAtAction(nameof(GetAnnouncement), new { announcemmentid = createdAnnouncement.Id, courseid = createdAnnouncement.CourseId }, createdAnnouncement);
         }
 
         [HttpGet("GetById/{announcemmentid}/{courseid}")]
