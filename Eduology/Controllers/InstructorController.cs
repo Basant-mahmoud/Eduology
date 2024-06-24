@@ -24,7 +24,7 @@ namespace Eduology.Controllers
         }
 
         [HttpGet("GetAllInstructors")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetInstructors()
         {
             var instructors = await _instructorService.GetAllInstructorsAsync();
@@ -40,7 +40,7 @@ namespace Eduology.Controllers
        
 
         [HttpGet("GetInstructorById/{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetInstructorById(string id)
         {
             var instructor = await _instructorService.GetInstructorByIdAsync(id);
@@ -53,7 +53,7 @@ namespace Eduology.Controllers
         }
 
         [HttpGet("SearchInstructorByName/{name}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetInstructorByName(string name)
         {
             var instructor = await _instructorService.GetInstructorByNameAsync(name);
@@ -123,7 +123,7 @@ namespace Eduology.Controllers
             if (success)
                 return Ok(new { message = "Instructor added to the course successfully." });
             else
-                return BadRequest("Failed to add instructor to the course.");
+                return BadRequest(new { message = "Failed to add instructor to the course." });
         }
         [HttpGet("AllCoursetoInstructor/{instructorid}")]
         [Authorize(Roles = "Instructor")]
