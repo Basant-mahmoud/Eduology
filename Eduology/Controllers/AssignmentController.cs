@@ -88,7 +88,7 @@ namespace Eduology.Controllers
         }
         [Authorize(Roles = "Instructor")]
         [HttpPut("Update/{id}")]
-        public async Task<ActionResult> Udate(int id,AssignmentDto assignment)
+        public async Task<ActionResult> Update(int id,AssignmentDto assignment)
         {
             var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
@@ -96,9 +96,9 @@ namespace Eduology.Controllers
                 return Unauthorized("User ID not found in the token");
             }
             var _assignment = await _asignmentServices.UpdateAsync(id,assignment,userId);
-            if (!_assignment)
+            if (_assignment == null)
             {
-                return BadRequest(ModelState);
+                return BadRequest("Assignment update failed.");
             }
             return Ok(new { Message = "Assignment Updated Successfully" });
         }

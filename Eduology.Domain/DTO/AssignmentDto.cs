@@ -12,7 +12,7 @@ namespace Eduology.Domain.DTO
         public string Description { get; set; }
         public string Title { get; set; }
         public DateTime Deadline { get; set; }
-        public AssignmentFileDto AssignmentFile { get; set; }
+        public AssignmentFileDto fileURLs { get; set; }
         public String CourseId { get; set; } // Foreign key
     }
 }

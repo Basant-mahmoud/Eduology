@@ -41,7 +41,7 @@ namespace Eduology.Infrastructure.Services
             return new AssignmentDto
             {
                 Title = assignment.Title,
-                AssignmentFile = assignment.AssignmentFile,
+                fileURLs = assignment.fileURLs,
                 CourseId = assignment.CourseId,
                 Deadline = assignment.Deadline,
                 Description = assignment.Description,
@@ -80,22 +80,21 @@ namespace Eduology.Infrastructure.Services
         {
             var assignment = await _asignmentRepository.GetByNameAsync(name);
             if (assignment == null)
-                return null;
-
+                throw new Exception("Assignment not available");
             bool isAssigned = await _courseRepository.IsUserAssignedToCourseAsync(userId, assignment.CourseId, role);
             if (!isAssigned)
-                return null;
+                throw new Exception("You are not registered in course");
 
             return assignment;
         }
-        public async Task<bool> UpdateAsync(int id, AssignmentDto assignment, string userId)
+        public async Task<Assignment> UpdateAsync(int id, AssignmentDto assignment, string userId)
         {
             bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, assignment.CourseId);
             if (!IsRegistered)
-                return false;
+                return null;
             var _assignment = await _asignmentRepository.UpdateAsync(id, assignment);
             if (_assignment == null)
-                return false;
+                return null;
             if (_instructorService.GetInstructorByIdAsync(userId).ToString() == null)
             {
                 throw new ArgumentException("Invalid InstructorId.");
@@ -105,7 +104,7 @@ namespace Eduology.Infrastructure.Services
             {
                 throw new ArgumentException("Invalid CourseId.");
             }
-            return true;
+            return _assignment;
         }
         public async Task<List<AssignmentDto>> GetAllAsync(string userId,string role)
         {
