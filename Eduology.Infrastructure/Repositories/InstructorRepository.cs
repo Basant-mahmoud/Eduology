@@ -117,15 +117,26 @@ namespace Eduology.Infrastructure.Repositories
         {
             var instructor = await _context.Users.FindAsync(instructorId);
             if (instructor == null)
+            {
+                Console.WriteLine("Instructor not found in database");
                 return false;
+            }
+
             var course = await _context.Courses
                 .Include(c => c.CourseInstructors)
                 .FirstOrDefaultAsync(c => c.CourseCode == courseCode);
             if (course == null)
+            {
+                Console.WriteLine("Course not found in database");
                 return false;
+            }
+
             // Check if the instructor is already assigned to the course
             if (course.CourseInstructors.Any(ci => ci.InstructorId == instructorId))
+            {
+                Console.WriteLine("Instructor already assigned to the course");
                 return true;
+            }
 
             var courseInstructor = new CourseInstructor
             {
@@ -134,10 +145,13 @@ namespace Eduology.Infrastructure.Repositories
             };
 
             _context.courseInstructors.Add(courseInstructor);
-            await _context.SaveChangesAsync();
-
-            return true;
+          
+                await _context.SaveChangesAsync();
+                Console.WriteLine("Instructor successfully registered to course");
+                return true;
+            
         }
+
 
         public async Task<List<CourseUserDto>> GetAllCourseToSpecificInstructorAsync(string InstructorId)
         {
