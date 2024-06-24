@@ -87,12 +87,13 @@ namespace Eduology.Controllers
         }
 
         [HttpGet("AllStudentsWithOrganization/{organizationId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<UserDto>>> GetStudentsByOrganizationId(int organizationId)
         {
             var students = await _organizationService.GetStudentsByOrganizationIdAsync(organizationId);
             if (students == null || !students.Any())
             {
-                return NotFound($"No students found for the given organization ID {organizationId}.");
+                return Ok(new List<UserDto>());
             }
             return Ok(students);
         }
