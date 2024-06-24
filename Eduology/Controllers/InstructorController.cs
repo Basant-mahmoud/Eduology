@@ -112,7 +112,7 @@ namespace Eduology.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new { message = "User ID not found in the token" });
             }
             if (!ModelState.IsValid)
             {
@@ -132,7 +132,7 @@ namespace Eduology.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new { message = "User ID not found in the token" });
             }
             if (!ModelState.IsValid)
             {
