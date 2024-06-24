@@ -8,8 +8,8 @@ namespace Eduology.Domain.DTO
 {
     public class RegisterInstructorToCourseDto
     {
-        [Required]
-        public string InstructorId { get; set; }
+       // [Required]
+      //  public string InstructorId { get; set; }
 
         [Required]
         public string CourseCode { get; set; }
