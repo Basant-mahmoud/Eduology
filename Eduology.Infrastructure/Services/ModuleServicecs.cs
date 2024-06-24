@@ -17,15 +17,15 @@ namespace Eduology.Infrastructure.Services
             _moduleRepository = moduleRepository;
         }
 
-        public async Task<(bool Success, bool Exists)> AddModuleAsync(ModuleDto moduleDto)
+        public async Task<(bool Success, bool Exists)> AddModuleAsync(string instructorid,ModuleDto moduleDto)
         {
-            if (moduleDto == null || string.IsNullOrEmpty(moduleDto.Name) || string.IsNullOrEmpty(moduleDto.CourseId))
+            if (moduleDto == null || string.IsNullOrEmpty(moduleDto.Name) || string.IsNullOrEmpty(moduleDto.CourseId)|| string.IsNullOrEmpty(instructorid))
             {
                 return (false, false);
             }
 
             var courseExists = await _courseRepository.GetByIdAsync(moduleDto.CourseId);
-            var instructorExist = await _courseRepository.IsInstructorAssignedToCourse(moduleDto.InstructorId,moduleDto.CourseId);
+            var instructorExist = await _courseRepository.IsInstructorAssignedToCourse(instructorid, moduleDto.CourseId);
             if (courseExists == null)
             {
                 return (false, false);
@@ -51,13 +51,13 @@ namespace Eduology.Infrastructure.Services
             return (success, false);
         }
 
-        public async Task<bool> DeleteModuleAsync(ModuleDto moduleDto)
+        public async Task<bool> DeleteModuleAsync(string instructorid,ModuleDto moduleDto)
         {
             if (string.IsNullOrEmpty(moduleDto.Name) || string.IsNullOrEmpty(moduleDto.CourseId))
             {
                 return false;
             }
-            var instructorExist = await _courseRepository.IsInstructorAssignedToCourse(moduleDto.InstructorId, moduleDto.CourseId);
+            var instructorExist = await _courseRepository.IsInstructorAssignedToCourse(instructorid, moduleDto.CourseId);
             if (instructorExist == false)
             {
                 return false ;
@@ -66,13 +66,13 @@ namespace Eduology.Infrastructure.Services
             var success = await _moduleRepository.DeleteModuleAsync(moduleDto);
             return success;
         }
-        public async Task<bool> UpdateModuleAsync(UpdateModuleDto updatemodule)
+        public async Task<bool> UpdateModuleAsync(string instructorid,UpdateModuleDto updatemodule)
         {
             if (updatemodule == null || string.IsNullOrEmpty(updatemodule.Name) || string.IsNullOrEmpty(updatemodule.CourseId))
             {
                 return false;
             }
-            var instructorExist = await _courseRepository.IsInstructorAssignedToCourse(updatemodule.Instructorid, updatemodule.CourseId);
+            var instructorExist = await _courseRepository.IsInstructorAssignedToCourse(instructorid, updatemodule.CourseId);
             if (instructorExist == false)
             {
                 return false;

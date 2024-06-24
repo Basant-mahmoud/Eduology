@@ -22,6 +22,10 @@ namespace Eduology.Controllers
         {
             _instructorService = instructorService;
         }
+        private string GetUserId()
+        {
+            return User.FindFirst("uid")?.Value;
+        }
 
         [HttpGet("GetAllInstructors")]
         [Authorize(Roles = "Admin")]
@@ -106,13 +110,13 @@ namespace Eduology.Controllers
         }
         /// 
         [HttpPost("RegisterToCourse")]
-        [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> RegisterToCourse([FromBody] RegisterInstructorToCourseDto model)
+       [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> RegisterToCourse([FromBody] RegisterUserToCourseDto model)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = GetUserId();
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new { message = "User ID not found in the token" });
             }
             if (!ModelState.IsValid)
             {
@@ -125,14 +129,14 @@ namespace Eduology.Controllers
             else
                 return BadRequest(new { message = "Failed to add instructor to the course." });
         }
-        [HttpGet("AllCoursetoInstructor/{instructorid}")]
+        [HttpGet("AllCoursetoInstructor")]
         [Authorize(Roles = "Instructor")]
         public async Task<ActionResult<CourseUserDto>> AllCoursetoInstructor()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = GetUserId();
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new { message = "User ID not found in the token" });
             }
             if (!ModelState.IsValid)
             {
@@ -146,6 +150,7 @@ namespace Eduology.Controllers
 
             return Ok(instructor);
         }
+       
        
     }
 }

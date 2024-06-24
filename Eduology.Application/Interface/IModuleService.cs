@@ -9,9 +9,9 @@ namespace Eduology.Application.Interface
 {
     public interface IModuleService
     {
-        Task<(bool Success, bool Exists)> AddModuleAsync(ModuleDto module);
-        Task<bool> DeleteModuleAsync(ModuleDto module);
-        Task<bool> UpdateModuleAsync(UpdateModuleDto moduleDto);
+        Task<(bool Success, bool Exists)> AddModuleAsync(string instructorid, ModuleDto moduleDto);
+        Task<bool> DeleteModuleAsync(string instructorid, ModuleDto moduleDto);
+        Task<bool> UpdateModuleAsync(string instructorid, UpdateModuleDto updatemodule);
 
     }
 }

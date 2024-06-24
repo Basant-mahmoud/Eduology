@@ -27,11 +27,11 @@ namespace Eduology.Infrastructure.Services
             _courseRepository = courseRepository;
             _moduleRepository = moduleRepository;
         }
-        public async Task<bool> AddMaterialAsync(MaterialDto materialDto)
+        public async Task<bool> AddMaterialAsync(string instructorid,MaterialDto materialDto)
         {
             if (materialDto == null ||
                 string.IsNullOrEmpty(materialDto.CourseId) ||
-                string.IsNullOrEmpty(materialDto.InstructorId) ||
+                string.IsNullOrEmpty(instructorid) ||
                 string.IsNullOrEmpty(materialDto.Module) ||
                 materialDto.FileURLs == null || materialDto.FileURLs.Count == 0)
             {
@@ -39,7 +39,7 @@ namespace Eduology.Infrastructure.Services
             }
 
             // Check if the instructor is assigned to the course
-            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(materialDto.InstructorId, materialDto.CourseId);
+            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(instructorid, materialDto.CourseId);
             if (!isInstructorAssigned)
             {
                 return false;
@@ -60,8 +60,7 @@ namespace Eduology.Infrastructure.Services
             // Create a new Material entity
             var material = new Material
             {
-                Title = materialDto.Title,
-                InstructorId = materialDto.InstructorId,
+                InstructorId = instructorid,
                 CourseId = materialDto.CourseId,
                 ModuleId = existingModule.ModuleId, 
                 Files = new List<File>()
@@ -86,17 +85,17 @@ namespace Eduology.Infrastructure.Services
             return success;
         }
 
-        public async Task<ICollection<GetMaterialDto>> GetMaterialToInstructorsAsync(CourseInstructorRequestDto requestDto)
+        public async Task<ICollection<GetMaterialDto>> GetMaterialToInstructorsAsync(string instructorid,CourseUserRequestDto requestDto)
         {
             if (requestDto == null ||
                 string.IsNullOrEmpty(requestDto.CourseId) ||
-                string.IsNullOrEmpty(requestDto.InstructorId))
+                string.IsNullOrEmpty(instructorid))
             {
                 return null;
             }
 
             // Check if the instructor is assigned to the course
-            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(requestDto.InstructorId, requestDto.CourseId);
+            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(instructorid, requestDto.CourseId);
             if (!isInstructorAssigned)
             {
                 return null;
@@ -142,17 +141,17 @@ namespace Eduology.Infrastructure.Services
             return moduleWithMaterialsList;
         }
         /// ////////////////////////////////
-        public async Task<ICollection<GetMaterialDto>> GetMaterialToStudentAsync(CourseStudentRequestDto requestDto)
+        public async Task<ICollection<GetMaterialDto>> GetMaterialToStudentAsync(string studentid, CourseUserRequestDto requestDto)
         {
             if (requestDto == null ||
                 string.IsNullOrEmpty(requestDto.CourseId) ||
-                string.IsNullOrEmpty(requestDto.StudentId))
+                string.IsNullOrEmpty(studentid))
             {
                 return null;
             }
 
             // Check if the instructor is assigned to the course
-            var isStudentAssigned = await _courseRepository.IStudentAssignedToCourse(requestDto.StudentId, requestDto.CourseId);
+            var isStudentAssigned = await _courseRepository.IStudentAssignedToCourse(studentid, requestDto.CourseId);
             if (!isStudentAssigned)
             {
                 return null;
@@ -197,16 +196,16 @@ namespace Eduology.Infrastructure.Services
 
             return moduleWithMaterialsList;
         }
-        public async Task<bool> DeleteFileAsync(DeleteFileDto deletefile)
+        public async Task<bool> DeleteFileAsync(string instructorIid,DeleteFileDto deletefile)
         {
             if (deletefile == null ||
                 string.IsNullOrEmpty(deletefile.courseId) ||
-                string.IsNullOrEmpty(deletefile.InstructorId)|| string.IsNullOrEmpty(deletefile.Module)|| string.IsNullOrEmpty(deletefile.fileId))
+                string.IsNullOrEmpty(instructorIid) || string.IsNullOrEmpty(deletefile.Module)|| string.IsNullOrEmpty(deletefile.fileId))
             {
                 return false;
             }
             // Check if the instructor is assigned to the course
-            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(deletefile.InstructorId, deletefile.courseId);
+            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(instructorIid, deletefile.courseId);
             if (!isInstructorAssigned)
             {
                 return false;

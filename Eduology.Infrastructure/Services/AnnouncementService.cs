@@ -29,10 +29,15 @@ namespace Eduology.Infrastructure.Services
 
         }
 
-        public async Task<AnnouncementDto> CreateAsync(CreateAnnoncementDto createannouncementDto)
+        public async Task<AnnouncementDto> CreateAsync(string instructorid,CreateAnnoncementDto createannouncementDto)
         {
-            var instructor = await _userManager.FindByIdAsync(createannouncementDto.InstructorId);
-            var isjointocourse=await _courseRepository.IsInstructorAssignedToCourse(createannouncementDto.InstructorId, createannouncementDto.CourseId);
+            var instructor = await _userManager.FindByIdAsync(instructorid);
+            var isjointocourse=await _courseRepository.IsInstructorAssignedToCourse(instructorid, createannouncementDto.CourseId);
+            var courseExists = await _announcementRepository.CourseExistsAsync(createannouncementDto.CourseId);
+            if (!courseExists)
+            {
+                return null;
+            }
             if (instructor == null)
             {
                 return null;
@@ -41,11 +46,7 @@ namespace Eduology.Infrastructure.Services
             {
                 return null;
             }
-             var courseExists = await _announcementRepository.CourseExistsAsync(createannouncementDto.CourseId);
-            if (!courseExists)
-            {
-                return null;
-            }
+            
 
             var announcement = new Announcement
             {
@@ -53,15 +54,31 @@ namespace Eduology.Infrastructure.Services
                 Content = createannouncementDto.Content,
                 CreatedAT = createannouncementDto.CreatedAt ,
                 CourseId = createannouncementDto.CourseId,
-                InstructorId = createannouncementDto.InstructorId
+                InstructorId = instructorid
             };
             var createdAnnouncement = await _announcementRepository.AddAsync(announcement);
             return ConvertToDto(createdAnnouncement);
         }
 
-        public async Task<AnnouncementDto> GetByIdAsync(int id)
+        public async Task<AnnouncementDto> GetByIdAsync(string instructorid,int announcementid,string courseid)
         {
-            var announcement = await _announcementRepository.GetByIdAsync(id);
+            var instructor = await _userManager.FindByIdAsync(instructorid);
+            var courseExists = await _announcementRepository.CourseExistsAsync(courseid);
+            if (!courseExists)
+            {
+                return null;
+            }
+            var isjointocourse = await _courseRepository.IsInstructorAssignedToCourse(instructorid, courseid);
+            if (instructor == null)
+            {
+                return null;
+            }
+            if (isjointocourse == null)
+            {
+                return null;
+            }
+           
+            var announcement = await _announcementRepository.GetByIdAsync(announcementid);
             return ConvertToDto(announcement);
         }
 
@@ -80,12 +97,6 @@ namespace Eduology.Infrastructure.Services
         {
             var announcements = await _announcementRepository.GetByCourseIdAsync(courseId);
             return announcements.Select(ConvertToDto); 
-        }
-
-        public async Task<AnnouncementDto> GetAnnouncementByIdAndCourseIdAsync(string courseId, int announcementId)
-        {
-            var announcement = await _announcementRepository.GetAnnouncementByIdAndCourseIdAsync(courseId, announcementId);
-            return ConvertToDto(announcement);
         }
 
        public async Task<IEnumerable<AllAnnoncemetDto>> GetAllAnnouncementsForStudentAsync(string studentid)
