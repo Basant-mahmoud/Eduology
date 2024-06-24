@@ -27,12 +27,9 @@ namespace Eduology.Controllers
             {
                return Ok(new List<UserDto>());   
             }
-            else
-            {
-                return Ok(Students);
-            }
-          
+             return Ok(Students);
         }
+
         [HttpGet("GetById/{studentId}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetStudentById(string studentId)
@@ -44,6 +41,7 @@ namespace Eduology.Controllers
             }
             return Ok(student);
         }
+
         [HttpPut("Update/{studentId}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateStudentAsync(string studentId, [FromBody] UserDto studentDto)
@@ -74,6 +72,7 @@ namespace Eduology.Controllers
 
             return Ok(new { message = "Student deleted successfully" });
         }
+
         [HttpPost("RegisterToCourse")]
         [Authorize(Roles = "Student")]
         public async Task<IActionResult> RegisterToCourse([FromBody] RegisterUserToCourseDto model)
@@ -95,6 +94,7 @@ namespace Eduology.Controllers
             else
                 return NotFound("Failed to add student to the course.");
         }
+
         [HttpGet("AllCoursestoStudent")]
         [Authorize(Roles = "Student")]
         public async Task<ActionResult<CourseUserDto>> AllCoursestoStudent()
