@@ -10,7 +10,7 @@ namespace Eduology.Application.Interface
 {
     public interface IAnnouncementService
     {
-        Task<AnnouncementDto> GetByIdAsync(int id);
+        Task<AnnouncementDto> GetByIdAsync(string instructorid, int announcementid, string courseid);
         Task<AnnouncementDto> CreateAsync(string instructorid, CreateAnnoncementDto createannouncementDto);
         Task<bool> DeleteAsync(int id);
         Task<AnnouncementDto> GetAnnouncementByIdAndCourseIdAsync(string courseId, int announcementId);
