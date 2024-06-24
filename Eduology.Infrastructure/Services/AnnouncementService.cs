@@ -93,11 +93,47 @@ namespace Eduology.Infrastructure.Services
             await _announcementRepository.DeleteAsync(id);
             return true; 
         }
-        public async Task<IEnumerable<AnnouncementDto>> GetAnnouncementsByCourseIdAsync(string courseId)
+        public async Task<IEnumerable<AnnouncementDto>> GetAnnouncementsToInstructorByCourseIdAsync(string instructorId,string courseId)
         {
+            var instructor = await _userManager.FindByIdAsync(instructorId);
+            var courseExists = await _announcementRepository.CourseExistsAsync(courseId);
+            if (!courseExists)
+            {
+                return null;
+            }
+            var isjointocourse = await _courseRepository.IsInstructorAssignedToCourse(instructorId, courseId);
+            if (instructor == null)
+            {
+                return null;
+            }
+            if (isjointocourse == null)
+            {
+                return null;
+            }
             var announcements = await _announcementRepository.GetByCourseIdAsync(courseId);
             return announcements.Select(ConvertToDto); 
         }
+        public async Task<IEnumerable<AnnouncementDto>> GetAnnouncementsToByStudentCourseIdAsync(string studentid, string courseId)
+        {
+            var instructor = await _userManager.FindByIdAsync(studentid);
+            var courseExists = await _announcementRepository.CourseExistsAsync(courseId);
+            if (!courseExists)
+            {
+                return null;
+            }
+            var isjointocourse = await _courseRepository.ISStudentAssignedToCourse(studentid, courseId);
+            if (instructor == null)
+            {
+                return null;
+            }
+            if (isjointocourse == null)
+            {
+                return null;
+            }
+            var announcements = await _announcementRepository.GetByCourseIdAsync(courseId);
+            return announcements.Select(ConvertToDto);
+        }
+
 
        public async Task<IEnumerable<AllAnnoncemetDto>> GetAllAnnouncementsForStudentAsync(string studentid)
         {
@@ -138,5 +174,7 @@ namespace Eduology.Infrastructure.Services
                 InstructorId = announcement.InstructorId
             };
         }
+
+      
     }
 }
