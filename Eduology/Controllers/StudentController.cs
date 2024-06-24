@@ -17,6 +17,10 @@ namespace Eduology.Controllers
         {
             _StudentService = studentService;
         }
+        private string GetUserId()
+        {
+            return User.FindFirst("uid")?.Value;
+        }
         [HttpGet("GetAll")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetStudents()
@@ -75,14 +79,20 @@ namespace Eduology.Controllers
         }
         [HttpPost("RegisterToCourse")]
         [Authorize(Roles = "Student")]
-        public async Task<IActionResult> RegisterToCourse([FromBody] RegisterStudentToCourseDto model)
+        public async Task<IActionResult> RegisterToCourse([FromBody] RegisterUserToCourseDto model)
         {
+            var userId = GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User ID not found in the token" });
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var success = await _StudentService.RegisterToCourseAsync(model.StudentId, model.CourseCode);
+            var success = await _StudentService.RegisterToCourseAsync(userId, model.CourseCode);
             if (success)
                 return Ok("Student added to the course successfully.");
             else
@@ -90,12 +100,17 @@ namespace Eduology.Controllers
         }
         [HttpGet("AllCoursestoStudent/{studentId}")]
         [Authorize(Roles = "Student")]
-        public async Task<ActionResult<CourseUserDto>> AllCoursestoStudent(string studentId)
+        public async Task<ActionResult<CourseUserDto>> AllCoursestoStudent()
         {
-            var student = await _StudentService.GetAllCourseToSpecificStudentAsync(studentId);
+            var userId = GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User ID not found in the token" });
+            }
+            var student = await _StudentService.GetAllCourseToSpecificStudentAsync(userId);
             if (student == null)
             {
-                return NotFound(new { message = $"Student id{studentId} not exists." });
+                return NotFound(new { message = $"Student id{userId} not exists." });
             }
 
             return Ok(student);

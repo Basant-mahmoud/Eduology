@@ -111,7 +111,7 @@ namespace Eduology.Controllers
         /// 
         [HttpPost("RegisterToCourse")]
        [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> RegisterToCourse([FromBody] RegisterInstructorToCourseDto model)
+        public async Task<IActionResult> RegisterToCourse([FromBody] RegisterUserToCourseDto model)
         {
             var userId = GetUserId();
             if (userId == null)
