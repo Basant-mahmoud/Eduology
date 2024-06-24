@@ -66,7 +66,7 @@ namespace Eduology.Controllers
         }
 
         [HttpGet("SearchInstructorByUserName/{username}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetInstructorByUserName(string username)
         {
             var instructor = await _instructorService.GetInstructorByUserNameAsync(username);
@@ -79,7 +79,7 @@ namespace Eduology.Controllers
         }
 
         [HttpPut("UpdateInstructor/{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateInstructor(string id, [FromBody] UserDto updateInstructorDto)
         {
             var result = await _instructorService.UpdateInstructorAsync(id, updateInstructorDto);
@@ -93,7 +93,7 @@ namespace Eduology.Controllers
         }
 
         [HttpDelete("DeleteInstructor/{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteInstructor(string id)
         {
             var result = await _instructorService.DeleteInstructorAsync(id);
@@ -106,7 +106,7 @@ namespace Eduology.Controllers
         }
         /// 
         [HttpPost("RegisterToCourse")]
-        //[Authorize(Roles = "Instructor")]
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> RegisterToCourse([FromBody] RegisterInstructorToCourseDto model)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

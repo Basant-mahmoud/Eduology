@@ -13,7 +13,7 @@ namespace Eduology.Domain.Interfaces
         Task<Course> CreateAsync(Course course);
         Task<bool> ExistsByCourseCodeAsync(string courseCode);
         Task<bool> OrganizationExistsAsync(int organizationId);
-        Task<Course> DeleteAsync(String id);
+        Task<bool> DeleteAsync(String id);
         Task<CourseDetailsDto> GetByIdAsync(String id);
         Task<CourseDetailsDto> GetByNameAsync(string name);
         Task<IEnumerable<Course>> GetAllAsync(string userId,string role);

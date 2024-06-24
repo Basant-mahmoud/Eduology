@@ -41,14 +41,14 @@ namespace Eduology.Infrastructure.Repositories
         {
             return await _context.Courses.AnyAsync(c => c.CourseCode == courseCode);
         }
-        public async Task<Course> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(string id)
         {
             var course = await _context.Courses.FindAsync(id);
             if (course == null)
-                return null;
+                return false;
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
-            return course;
+            return true;
         }
 
         public async Task<IEnumerable<Course>> GetAllAsync(string userId,string role)
@@ -142,22 +142,22 @@ namespace Eduology.Infrastructure.Repositories
 
             return courseInstructor != null;
         }
-        public async Task<bool> IsInstructorAssignedToCourseByName(string instructorName, string courseName)
+        public async Task<bool> IsInstructorAssignedToCourseByName(string instructorId, string courseName)
         {
             var courseInstructor = await _context.courseInstructors
                 .Include(ci => ci.Instructor)
                 .Include(ci => ci.course)
-                .FirstOrDefaultAsync(ci => ci.Instructor.UserName == instructorName && ci.course.Name == courseName);
+        .FirstOrDefaultAsync(ci => ci.InstructorId == instructorId && ci.course.Name == courseName);
 
             return courseInstructor != null;
         }
 
-        public async Task<bool> IStudentAssignedToCourseByName(string studentName, string courseName)
+        public async Task<bool> IStudentAssignedToCourseByName(string studentId, string courseName)
         {
             var studentCourse = await _context.StudentCourses
                 .Include(sc => sc.Student)
                 .Include(sc => sc.Course)
-                .FirstOrDefaultAsync(sc => sc.Student.UserName == studentName && sc.Course.Name == courseName);
+                .FirstOrDefaultAsync(sc => sc.Student.Id == studentId && sc.Course.Name == courseName);
 
             return studentCourse != null;
         }

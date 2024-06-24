@@ -84,9 +84,10 @@ namespace Eduology.Infrastructure.Services
         }
         public async Task<bool> DeleteAsync(string id)
         {
-            var course = await _courseRepository.DeleteAsync(id);
+            var course = await _courseRepository.GetByIdAsync(id);
             if (course == null)
                 return false;
+            await _courseRepository.DeleteAsync(id);
             return true;
         }
 
@@ -95,11 +96,10 @@ namespace Eduology.Infrastructure.Services
             bool isEnrolledStudent = await _courseRepository.IStudentAssignedToCourse(UserID, ID);
             bool isEnrolledInstructor = await _courseRepository.IsInstructorAssignedToCourse(UserID, ID);
 
-            if (isEnrolledStudent == false|| isEnrolledInstructor == false)
+            if (!isEnrolledStudent && !isEnrolledInstructor)
             {
-                return null;
+                return null; 
             }
-
             var course = await _courseRepository.GetByIdAsync(ID);
             if (course == null)
                 return null;
