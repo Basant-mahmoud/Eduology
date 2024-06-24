@@ -38,12 +38,12 @@ namespace Eduology.Controllers
             {
                 return BadRequest();
             }
-            return CreatedAtAction(nameof(GetAnnouncement), new { announcemmentid = createdAnnouncement.Id, courseid = createdAnnouncement.CourseId }, createdAnnouncement);
+            return CreatedAtAction(nameof(GetAnnouncement), new { announcemmentId = createdAnnouncement.Id, courseId = createdAnnouncement.CourseId }, createdAnnouncement);
         }
 
-        [HttpGet("GetWithCourseID/{courseid}/AnnouncementID/{announcemmentid}")]
+        [HttpGet("GetWithCourseID/{courseId}/AnnouncementID/{announcemmentId}")]
         [Authorize(Roles = "Instructor, Student")]
-        public async Task<ActionResult<AnnouncementDto>> GetAnnouncement(int announcemmentid,string courseid)
+        public async Task<ActionResult<AnnouncementDto>> GetAnnouncement(int announcemmentId,string courseId)
         {
             var userId = GetUserId();
             if (userId == null)
@@ -51,17 +51,17 @@ namespace Eduology.Controllers
                 return Unauthorized(new { message = "User ID not found in the token" });
             }
 
-            var announcement = await _announcementService.GetByIdAsync(userId, announcemmentid, courseid);
+            var announcement = await _announcementService.GetByIdAsync(userId, announcemmentId, courseId);
             if (announcement == null)
             {
-                return NotFound(new { message = $"Announcement with id {announcemmentid} or course id  {courseid} not found." });
+                return NotFound(new { message = $"Announcement with id {announcemmentId} or course id  {courseId} not found." });
             }
             return Ok(announcement);
         }
 
-        [HttpDelete("DeleteWithCourseID/{courseid}/AnnouncemmentID/{announcemmentid}")]
+        [HttpDelete("DeleteWithCourseID/{courseId}/AnnouncemmentID/{announcemmentId}")]
         [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> DeleteAnnouncement(int announcemmentid, string courseid)
+        public async Task<IActionResult> DeleteAnnouncement(int announcemmentId, string courseId)
         {
             var userId = GetUserId();
             if (userId == null)
@@ -69,13 +69,13 @@ namespace Eduology.Controllers
                 return Unauthorized(new { message = "User ID not found in the token" });
             }
 
-            var announcement = await _announcementService.GetByIdAsync(userId, announcemmentid, courseid);
+            var announcement = await _announcementService.GetByIdAsync(userId, announcemmentId, courseId);
             if (announcement == null)
             {
-                return NotFound(new { message = $"Announcement with id {announcemmentid} not found." });
+                return NotFound(new { message = $"Announcement with id {announcemmentId} not found." });
             }
 
-            await _announcementService.DeleteAsync(announcemmentid);
+            await _announcementService.DeleteAsync(announcemmentId);
             return Ok(new { message = "Announcement deleted successfully." });
         }
 

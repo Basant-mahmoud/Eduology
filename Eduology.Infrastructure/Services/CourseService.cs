@@ -64,7 +64,7 @@ namespace Eduology.Infrastructure.Services
             var courseDetails = courses.Select(c => new CourseDetailsDto
             {
                 CourseId = c.CourseId,
-                Name = c.Name,
+                CourseName = c.Name,
                 CourseCode = c.CourseCode,
                 Instructors = c.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
                 students = c.StudentCourses.Select(sc => sc.Student.Name).ToList()
@@ -94,10 +94,8 @@ namespace Eduology.Infrastructure.Services
 
         public async Task<CourseDetailsDto> GetByIdAsync(string ID, string UserID,string role)
         {
-            bool isEnrolledStudent = await _courseRepository.ISStudentAssignedToCourse(UserID, ID);
-            bool isEnrolledInstructor = await _courseRepository.IsInstructorAssignedToCourse(UserID, ID);
-
-            if (!isEnrolledStudent && !isEnrolledInstructor)
+            bool IsRegisterd = await _courseRepository.IsUserAssignedToCourseAsyncByNmae(UserID,ID, role);
+            if (!IsRegisterd)
             {
                 return null;
             }

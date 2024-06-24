@@ -71,7 +71,7 @@ namespace Eduology.Controllers
             return Ok(_assignment);
         }
         [Authorize(Roles = "Instructor")]
-        [HttpDelete("courses/{courseId}/assignments/{assignmentId}")]
+        [HttpDelete("courses/{courseId}/assignments/{assignmentId}/Delete")]
         public async Task<ActionResult> Delete(int assignmentId,string courseId)
         {
             var userId = User.FindFirst("uid")?.Value;

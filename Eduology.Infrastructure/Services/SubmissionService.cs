@@ -87,6 +87,9 @@ namespace Eduology.Infrastructure.Services
             return await _submissionRepository.DeleteAsync(deletesubmission);
 
         }
+
+      
+
         public async Task<SubmissionDto> GetByIdAsync(int id, string userId, string role)
         {
             bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, role);
@@ -102,5 +105,16 @@ namespace Eduology.Infrastructure.Services
 
             return submission;
         }
+       /* public async Task<List<SubmissionDto>> GetAllAsync(string userId, string role)
+        {
+            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, role);
+            if (!IsRegistered)
+            {
+                throw new Exception("You Not Registered In This Course");
+            }
+            var submissions = _submissionRepository.GetAll();
+            return submissions;
+        }*/
+
     }
 }

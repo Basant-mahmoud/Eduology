@@ -85,7 +85,7 @@ namespace Eduology.Infrastructure.Repositories
             return new CourseDetailsDto
             {
                 CourseId = course.CourseId,
-                Name = course.Name,
+                CourseName = course.Name,
                 CourseCode = course.CourseCode,
                 Instructors = course.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
                 students = course.StudentCourses.Select(sc => sc.Student.Name).ToList()
@@ -115,7 +115,7 @@ namespace Eduology.Infrastructure.Repositories
             return new CourseDetailsDto
             {
                 CourseId = course.CourseId,
-                Name = course.Name,
+                CourseName = course.Name,
                 CourseCode = course.CourseCode,
                 Description = course.Description,
                 Instructors = course.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
