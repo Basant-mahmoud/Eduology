@@ -151,7 +151,7 @@ namespace Eduology.Infrastructure.Services
             }
 
             // Check if the instructor is assigned to the course
-            var isStudentAssigned = await _courseRepository.IStudentAssignedToCourse(studentid, requestDto.CourseId);
+            var isStudentAssigned = await _courseRepository.ISStudentAssignedToCourse(studentid, requestDto.CourseId);
             if (!isStudentAssigned)
             {
                 return null;

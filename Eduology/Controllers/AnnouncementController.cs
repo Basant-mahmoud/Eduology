@@ -79,15 +79,40 @@ namespace Eduology.Controllers
             return Ok(new { message = "Announcement deleted successfully." });
         }
 
-        [HttpGet("GetWithCourse/{courseId}")]
-        [Authorize(Roles = "Instructor, Student")]
-        public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncementsByCourseId(string courseId)
+        [HttpGet("GetAnnouncementsToInstructorByCourseId/{courseId}")]
+        [Authorize(Roles = "Instructor")]
+        public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncementsToInstructorByCourseId(string courseId)
         {
+            var userId = GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User ID not found in the token" });
+            }
             if (string.IsNullOrWhiteSpace(courseId))
             {
                 return BadRequest(new { message = "Course ID cannot be null or empty." });
             }
-            var announcements = await _announcementService.GetAnnouncementsByCourseIdAsync(courseId);
+            var announcements = await _announcementService.GetAnnouncementsToInstructorByCourseIdAsync(userId, courseId);
+            if (announcements == null || !announcements.Any())
+            {
+                return NotFound(new { message = $"Course with ID {courseId} not found." });
+            }
+            return Ok(announcements);
+        }
+        [HttpGet("GetAnnouncementsToStudentByCourseId/{courseId}")]
+        [Authorize(Roles = "Student")]
+        public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncementsToStudentByCourseId(string courseId)
+        {
+            var userId = GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User ID not found in the token" });
+            }
+            if (string.IsNullOrWhiteSpace(courseId))
+            {
+                return BadRequest(new { message = "Course ID cannot be null or empty." });
+            }
+            var announcements = await _announcementService.GetAnnouncementsToByStudentCourseIdAsync(userId, courseId);
             if (announcements == null || !announcements.Any())
             {
                 return NotFound(new { message = $"Course with ID {courseId} not found." });
