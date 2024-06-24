@@ -59,7 +59,7 @@ namespace Eduology.Infrastructure.Services
             }
             var assigment = await _assignmentService.GetByIdAsync(deletesubmission.AssigmentId,userId, role);
             var submission= await _submissionRepository.GetByIdAsync(deletesubmission.SubmissionId);
-            var student = await _studentService.GetStudentByIdAsync(deletesubmission.StudentId);
+            var student = await _studentService.GetStudentByIdAsync(userId);
             if (student == null)
             {
                 throw new ArgumentException("student ID not exist .");
@@ -78,7 +78,7 @@ namespace Eduology.Infrastructure.Services
             {
                 throw new InvalidOperationException("Cant delete submmision.");
             }
-            if (_studentService.GetStudentByIdAsync(deletesubmission.StudentId) == null)
+            if (_studentService.GetStudentByIdAsync(userId) == null)
             {
                 throw new ArgumentException("Invalid student ID.");
             }
