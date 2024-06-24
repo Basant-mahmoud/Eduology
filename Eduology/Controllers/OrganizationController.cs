@@ -106,10 +106,7 @@ namespace Eduology.Controllers
             {
                 return Ok(new List<UserDto>());
             }
-            else
-            {
-                return Ok(instructors);
-            }
+             return Ok(instructors);
         }
     }
 }
