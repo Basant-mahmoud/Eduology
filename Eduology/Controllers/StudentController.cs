@@ -17,10 +17,7 @@ namespace Eduology.Controllers
         {
             _StudentService = studentService;
         }
-        private string GetUserId()
-        {
-            return User.FindFirst("uid")?.Value;
-        }
+
         [HttpGet("GetAll")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetStudents()
@@ -98,7 +95,7 @@ namespace Eduology.Controllers
             else
                 return NotFound("Failed to add student to the course.");
         }
-        [HttpGet("AllCoursestoStudent/{studentId}")]
+        [HttpGet("AllCoursestoStudent")]
         [Authorize(Roles = "Student")]
         public async Task<ActionResult<CourseUserDto>> AllCoursestoStudent()
         {
@@ -114,6 +111,10 @@ namespace Eduology.Controllers
             }
 
             return Ok(student);
+        }
+        private string GetUserId()
+        {
+            return User.FindFirst("uid")?.Value;
         }
     } 
 }
