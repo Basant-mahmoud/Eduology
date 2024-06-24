@@ -7,6 +7,7 @@ using Eduology.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Eduology.Controllers
 {
@@ -22,7 +23,7 @@ namespace Eduology.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromBody] CourseCreationDto course)
+        public async Task<IActionResult> Create([FromBody] CourseDto course)
         {
             if (!ModelState.IsValid)
             {
@@ -30,38 +31,63 @@ namespace Eduology.Controllers
             }
 
             var createdCourse = await _courseService.CreateAsync(course);
-            return CreatedAtAction(nameof(GetCourseById), new { id = createdCourse.CourseId }, createdCourse);
+            if (createdCourse == null)
+                return BadRequest(ModelState);
+            return CreatedAtAction(nameof(GetCourseById), new { id = createdCourse }, createdCourse);
         }
+        [Authorize(Roles = "Instructor,Student")]
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetCourseById(String id)
         {
-            var course = await _courseService.GetByIdAsync(id);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User ID not found in the token");
+            }
+            var course = await _courseService.GetByIdAsync(id,userId);
+
             if (course == null)
             {
                 return NotFound();
             }
             return Ok(course);
         }
-
+        [Authorize(Roles = "Instructor,Student")]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var courses = await _courseService.GetAllAsync();
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User ID not found in the token");
+            }
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (role == null)
+            {
+                return Unauthorized("Role not found in the token");
+            }
+            var courses = await _courseService.GetAllAsync(userId,role);
             if (courses == null || !courses.Any())
             {
                 return NoContent();
             }
             return Ok(courses);
         }
+        [Authorize(Roles = "Instructor,Student")]
         [HttpGet("GetByName/{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
-            CourseDetailsDto course = await _courseService.GetByNameAsync(name);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User ID not found in the token");
+            }
+            CourseDetailsDto course = await _courseService.GetByNameAsync(name,userId);
             if (course == null)
                 return NotFound();
             return Ok(course);
         }
-        //[Authorize(Roles = "Instructor")]
+        [Authorize(Roles = "Instructor")]
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> UpdateAsync(String id,[FromBody] CourseDto courseDto)
         {
@@ -78,7 +104,7 @@ namespace Eduology.Controllers
 
             return Ok(new { message = "Course updated successfully" });
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(string id)
         {
@@ -87,9 +113,5 @@ namespace Eduology.Controllers
                 return Ok(new { message = "This course is not exist" });
            return Ok(new { message = "Course deleted successfully" });
         }
-
-        
-
-
     }
 }

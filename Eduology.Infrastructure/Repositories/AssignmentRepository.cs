@@ -51,7 +51,7 @@ namespace Eduology.Infrastructure.Repositories
             assignment.File = file;
 
             await _context.Assignments.AddAsync(assignment);
-            var course = await _courseService.GetByIdAsync(assignmentDto.CourseId);
+            var course = await _courseService.GetByIdAsync(assignmentDto.CourseId,assignment.InstructorId);
             if (course == null)
             {
                 throw new KeyNotFoundException($"Course with ID {assignmentDto.CourseId} not found.");
@@ -63,7 +63,6 @@ namespace Eduology.Infrastructure.Repositories
             await _courseService.UpdateAsync(course.CourseId, new CourseDto 
             {
                 Name = course.Name,
-                CourseCode = course.CourseCode, 
             });
             await _context.SaveChangesAsync();
             assignmentDto.Id = assignment.AssignmentId;

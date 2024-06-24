@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace Eduology.Domain.DTO
 {
-    public class CourseCreationDto
+    public class courseCreationDetailsDto
     {
-        public string Name { get; set; }
-        public int Year { get; set; }
-        public int OrganizationId { get; set; }
+        public string Id { get; set; }
+        public string CourseCode { get; set; }
     }
 }

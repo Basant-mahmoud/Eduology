@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Eduology.Infrastructure.Repositories;
-using Type = Eduology.Domain.Models.Module;
+using Eduology.Application.Services.Interface;
 namespace Eduology.Infrastructure.Services
 {
 
@@ -15,14 +15,13 @@ namespace Eduology.Infrastructure.Services
     {
         private readonly ICourseRepository _courseRepository;
         private readonly IInstructorService _instructorService;
-
-        public CourseService(ICourseRepository courseRepository,IInstructorService instructorService)
+        public CourseService(ICourseRepository courseRepository,IInstructorService instructorService,IStudentService studentService)
         {
             _courseRepository = courseRepository;
             _instructorService = instructorService;
         }
 
-        public async Task<Course> CreateAsync(CourseCreationDto courseDto)
+        public async Task<courseCreationDetailsDto> CreateAsync(CourseDto courseDto)
         {
             // Generate a unique course code
             string courseCode;
@@ -31,18 +30,22 @@ namespace Eduology.Infrastructure.Services
                 courseCode = GenerateCourseCode();
             } while (await _courseRepository.ExistsByCourseCodeAsync(courseCode));
 
-            var course = new Course
+            Course course = new Course
             {
                 CourseId = Guid.NewGuid().ToString(),
                 Name = courseDto.Name,
                 CourseCode = courseCode,
                 Year = courseDto.Year,
-                OrganizationID = courseDto.OrganizationId 
-
+                OrganizationID = courseDto.OrganizationId,
+               
             };
-
             await _courseRepository.CreateAsync(course);
-            return course;
+            courseCreationDetailsDto details = new courseCreationDetailsDto
+            {
+                CourseCode = courseCode,
+                Id = course.CourseId,
+            };
+            return details;
         }
 
         private string GenerateCourseCode()
@@ -51,8 +54,35 @@ namespace Eduology.Infrastructure.Services
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(chars, 6).Select(s => s[random.Next(s.Length)]).ToArray());
         }
+        public async Task<IEnumerable<CourseDetailsDto>> GetAllAsync(string userID,string role)
+        {
+            var courses = await _courseRepository.GetAllAsync(userID, role);
 
-        public async Task<bool> DeleteAsync(String id)
+            if (courses == null || !courses.Any())
+                return Enumerable.Empty<CourseDetailsDto>();
+            var courseDetails = courses.Select(c => new CourseDetailsDto
+            {
+                CourseId = c.CourseId,
+                Name = c.Name,
+                CourseCode = c.CourseCode,
+                Instructors = c.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
+                students = c.StudentCourses.Select(sc => sc.Student.Name).ToList()
+            }).ToList();
+
+            return courseDetails;
+        }
+
+        public async Task<bool> UpdateAsync(String id, CourseDto course)
+        {
+            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourseByName(course.Name, id);
+            if (!IsRegistered)
+                return false;
+            var updatedCourse = await _courseRepository.UpdateAsync(id, course);
+            if (updatedCourse == null)
+                return false;
+            return true;
+        }
+        public async Task<bool> DeleteAsync(string id)
         {
             var course = await _courseRepository.DeleteAsync(id);
             if (course == null)
@@ -60,38 +90,35 @@ namespace Eduology.Infrastructure.Services
             return true;
         }
 
-        public async Task<IEnumerable<CourseDetailsDto>> GetAllAsync()
+        public async Task<CourseDetailsDto> GetByIdAsync(string ID, string UserID)
         {
-            var courses = await _courseRepository.GetAllAsync();
-            if (courses == null)
-                return Enumerable.Empty<CourseDetailsDto>();
-            return courses;
-        }
+            bool isEnrolledStudent = await _courseRepository.IStudentAssignedToCourse(UserID, ID);
+            bool isEnrolledInstructor = await _courseRepository.IsInstructorAssignedToCourse(UserID, ID);
 
-        public async Task<CourseDetailsDto> GetByIdAsync(String id)
-        {
-            var course = await _courseRepository.GetByIdAsync(id);
+            if (isEnrolledStudent == false|| isEnrolledInstructor == false)
+            {
+                return null;
+            }
+
+            var course = await _courseRepository.GetByIdAsync(ID);
             if (course == null)
                 return null;
             return course;
         }
 
-        public async Task<bool> UpdateAsync(String id, CourseDto course)
+        public async Task<CourseDetailsDto> GetByNameAsync(string name, string UserID)
         {
-            var updatedCourse = await _courseRepository.UpdateAsync(id, course);
-            if (updatedCourse == null)
-                return false;
-            return true;
-        }
+            bool isEnrolledStudent = await _courseRepository.IStudentAssignedToCourseByName(UserID,name);
+            bool isEnrolledInstructor = await _courseRepository.IsInstructorAssignedToCourseByName(UserID,name);
 
-        public async Task<CourseDetailsDto> GetByNameAsync(string name)
-        {
+            if (!isEnrolledStudent && !isEnrolledInstructor)
+            {
+                return null;
+            }
             var course = await _courseRepository.GetByNameAsync(name);
             if (course == null)
                 return null;
             return course;
         }
-
-        
     }
 }
