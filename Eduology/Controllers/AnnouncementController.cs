@@ -19,12 +19,21 @@ namespace Eduology.Controllers
         {
             _announcementService = announcementService;
         }
+        private string GetUserId()
+        {
+            return User.FindFirst("uid")?.Value;
+        }
 
         [HttpPost("Create")]
         [Authorize(Roles = "Instructor")]
         public async Task<ActionResult<CreateAnnoncementDto>> PostAnnouncement([FromBody] CreateAnnoncementDto announcementDto)
         {
-            var createdAnnouncement = await _announcementService.CreateAsync(announcementDto);
+            var userId = GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User ID not found in the token" });
+            }
+            var createdAnnouncement = await _announcementService.CreateAsync(userId, announcementDto);
             if (createdAnnouncement == null)
             {
                 return BadRequest();
@@ -36,6 +45,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor, Student")]
         public async Task<ActionResult<AnnouncementDto>> GetAnnouncement(int id)
         {
+          
             var announcement = await _announcementService.GetByIdAsync(id);
             if (announcement == null)
             {
@@ -48,6 +58,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> DeleteAnnouncement(int id)
         {
+           
             var announcement = await _announcementService.GetByIdAsync(id);
             if (announcement == null)
             {
@@ -88,12 +99,17 @@ namespace Eduology.Controllers
 
         [HttpGet("GetAllAnnouncementsToStudent/{studentid}")]
         [Authorize(Roles = "Student")]
-        public async Task<ActionResult<IEnumerable<AllAnnoncemetDto>>> GetAllStudentAnnouncement(string studentid)
+        public async Task<ActionResult<IEnumerable<AllAnnoncemetDto>>> GetAllStudentAnnouncement()
         {
-            var announcement = await _announcementService.GetAllAnnouncementsForStudentAsync(studentid);
+            var userId = GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User ID not found in the token" });
+            }
+            var announcement = await _announcementService.GetAllAnnouncementsForStudentAsync(userId);
             if (announcement == null)
             {
-                return NotFound(new { message = $"Student with id {studentid} not found." });
+                return NotFound(new { message = $"Student with id {userId} not found." });
             }
             return Ok(announcement);
         }

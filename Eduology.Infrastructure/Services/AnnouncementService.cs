@@ -29,10 +29,10 @@ namespace Eduology.Infrastructure.Services
 
         }
 
-        public async Task<AnnouncementDto> CreateAsync(CreateAnnoncementDto createannouncementDto)
+        public async Task<AnnouncementDto> CreateAsync(string instructorid,CreateAnnoncementDto createannouncementDto)
         {
-            var instructor = await _userManager.FindByIdAsync(createannouncementDto.InstructorId);
-            var isjointocourse=await _courseRepository.IsInstructorAssignedToCourse(createannouncementDto.InstructorId, createannouncementDto.CourseId);
+            var instructor = await _userManager.FindByIdAsync(instructorid);
+            var isjointocourse=await _courseRepository.IsInstructorAssignedToCourse(instructorid, createannouncementDto.CourseId);
             if (instructor == null)
             {
                 return null;
@@ -53,7 +53,7 @@ namespace Eduology.Infrastructure.Services
                 Content = createannouncementDto.Content,
                 CreatedAT = createannouncementDto.CreatedAt ,
                 CourseId = createannouncementDto.CourseId,
-                InstructorId = createannouncementDto.InstructorId
+                InstructorId = instructorid
             };
             var createdAnnouncement = await _announcementRepository.AddAsync(announcement);
             return ConvertToDto(createdAnnouncement);
@@ -61,6 +61,7 @@ namespace Eduology.Infrastructure.Services
 
         public async Task<AnnouncementDto> GetByIdAsync(int id)
         {
+           
             var announcement = await _announcementRepository.GetByIdAsync(id);
             return ConvertToDto(announcement);
         }
