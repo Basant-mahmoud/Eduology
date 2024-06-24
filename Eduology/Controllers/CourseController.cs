@@ -39,7 +39,7 @@ namespace Eduology.Controllers
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetCourseById(String id)
         {
-            var userId = User.FindFirst("uid")?.Value; ;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
