@@ -41,8 +41,8 @@ namespace Eduology.Controllers
             return CreatedAtAction(nameof(GetAnnouncement), new { announcemmentid = createdAnnouncement.Id, courseid = createdAnnouncement.CourseId }, createdAnnouncement);
         }
 
-        [HttpGet("GetById/{announcemmentid}/{courseid}")]
-        [Authorize(Roles = "Instructor")]
+        [HttpGet("GetWithCourseID/{courseid}/AnnouncementID/{announcemmentid}")]
+        [Authorize(Roles = "Instructor, Student")]
         public async Task<ActionResult<AnnouncementDto>> GetAnnouncement(int announcemmentid,string courseid)
         {
             var userId = GetUserId();
@@ -54,12 +54,12 @@ namespace Eduology.Controllers
             var announcement = await _announcementService.GetByIdAsync(userId, announcemmentid, courseid);
             if (announcement == null)
             {
-                return NotFound(new { message = $"Announcement with id {announcemmentid} not found." });
+                return NotFound(new { message = $"Announcement with id {announcemmentid} or course id  {courseid} not found." });
             }
             return Ok(announcement);
         }
 
-        [HttpDelete("Delete/{id}")]
+        [HttpDelete("DeleteWithCourseID/{courseid}/AnnouncemmentID/{announcemmentid}")]
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> DeleteAnnouncement(int announcemmentid, string courseid)
         {
@@ -93,18 +93,6 @@ namespace Eduology.Controllers
                 return NotFound(new { message = $"Course with ID {courseId} not found." });
             }
             return Ok(announcements);
-        }
-
-        [HttpGet("GetWithCourse/{courseId}/AnnouncementID/{announcementId}")]
-        [Authorize(Roles = "Instructor, Student")]
-        public async Task<ActionResult<AnnouncementDto>> GetAnnouncementByIdAndCourseId(string courseId, int announcementId)
-        {
-            var announcement = await _announcementService.GetAnnouncementByIdAndCourseIdAsync(courseId, announcementId);
-            if (announcement == null)
-            {
-                return NotFound(new { message = $"Announcement id {announcementId} or course id  {courseId} not found." });
-            }
-            return Ok(announcement);
         }
 
         [HttpGet("GetAllAnnouncementsToStudent/{studentid}")]
