@@ -22,7 +22,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> AddMaterial([FromBody] MaterialDto materialDto)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -46,7 +46,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<ActionResult<List<GetMaterialDto>>> GetmaterialsToInstructor([FromBody] CourseUserRequestDto requestDto)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -68,7 +68,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Student")]
         public async Task<ActionResult<List<GetMaterialDto>>> GetmaterialsToStudent([FromBody] CourseUserRequestDto requestDto)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -90,7 +90,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> DeleteFile([FromBody] DeleteFileDto file)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
