@@ -28,7 +28,7 @@ namespace Eduology.Infrastructure.Services
 
         public async Task<SubmissionDto> CreateAsync(SubmissionDto submission,string userId, string role)
         {
-            bool IsRegistered =  await _courseRepository.IStudentAssignedToCourse(userId, role);
+            bool IsRegistered =  await _courseRepository.ISStudentAssignedToCourse(userId, role);
             if (!IsRegistered)
             {
                 throw new Exception("You Not Registered In This Course");
