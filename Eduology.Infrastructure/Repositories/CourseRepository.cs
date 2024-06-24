@@ -161,6 +161,30 @@ namespace Eduology.Infrastructure.Repositories
 
             return studentCourse != null;
         }
+        public async Task<bool> IsUserAssignedToCourseAsync(string userId, string courseId, string role)
+        {
+            if (role == "Instructor")
+            {
+                return await IsInstructorAssignedToCourse(userId, courseId);
+            }
+            else if (role == "Student")
+            {
+                return await IStudentAssignedToCourse(userId, courseId);
+            }
+            return false;
+        }
+        public async Task<bool> IsUserAssignedToCourseAsyncByNmae(string userId, string name, string role)
+        {
+            if (role == "Instructor")
+            {
+                return await IsInstructorAssignedToCourseByName(userId, name);
+            }
+            else if (role == "Student")
+            {
+                return await IStudentAssignedToCourseByName(userId, name);
+            }
+            return false;
+        }
     }
 
 }

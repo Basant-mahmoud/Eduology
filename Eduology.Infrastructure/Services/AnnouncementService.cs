@@ -135,12 +135,6 @@ namespace Eduology.Infrastructure.Services
         }
 
 
-        public async Task<AnnouncementDto> GetAnnouncementByIdAndCourseIdAsync(string courseId, int announcementId)
-        {
-            var announcement = await _announcementRepository.GetAnnouncementByIdAndCourseIdAsync(courseId, announcementId);
-            return ConvertToDto(announcement);
-        }
-
        public async Task<IEnumerable<AllAnnoncemetDto>> GetAllAnnouncementsForStudentAsync(string studentid)
         {
             if (string.IsNullOrEmpty(studentid))

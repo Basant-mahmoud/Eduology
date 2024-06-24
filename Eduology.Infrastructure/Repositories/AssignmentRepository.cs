@@ -16,11 +16,11 @@ namespace Eduology.Infrastructure.Repositories
     public class AssignmentRepository : IAssignmentRepository
     {
         private readonly EduologyDBContext _context;
-        private readonly ICourseService _courseService;
-        public AssignmentRepository(EduologyDBContext context,ICourseService courseService)
+        private readonly ICourseRepository _courseRepository;
+        public AssignmentRepository(EduologyDBContext context,ICourseRepository courseRepository)
         {
             _context = context;
-            _courseService = courseService;
+            _courseRepository = courseRepository;
         }
         public async Task<AssignmentDto> CreateAsync(AssignmentDto assignmentDto)
         {
@@ -51,7 +51,7 @@ namespace Eduology.Infrastructure.Repositories
             assignment.File = file;
 
             await _context.Assignments.AddAsync(assignment);
-            var course = await _courseService.GetByIdAsync(assignmentDto.CourseId,assignment.InstructorId);
+            var course = await _courseRepository.GetByIdAsync(assignmentDto.CourseId);
             if (course == null)
             {
                 throw new KeyNotFoundException($"Course with ID {assignmentDto.CourseId} not found.");
@@ -60,7 +60,7 @@ namespace Eduology.Infrastructure.Repositories
             course.assignments ??= new List<Assignment>(); 
             course.assignments.Add(assignment);
 
-            await _courseService.UpdateAsync(course.CourseId, new CourseDto 
+            await _courseRepository.UpdateAsync(course.CourseId, new CourseDto 
             {
                 Name = course.Name,
             });
@@ -83,7 +83,7 @@ namespace Eduology.Infrastructure.Repositories
                 return null;
             return assignment;
         }
-        public async Task<Assignment> UpdateAsync(int id, AssignmentDto assignment)
+        async Task<Assignment> IAssignmentRepository.UpdateAsync(int id, AssignmentDto assignment)
         {
             var _assignment = await _context.Assignments.FindAsync(id);
             if (assignment == null)

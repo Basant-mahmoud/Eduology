@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Eduology.Infrastructure.Repositories;
 using Eduology.Application.Services.Interface;
+using System.Data;
 namespace Eduology.Infrastructure.Services
 {
 
@@ -91,14 +92,14 @@ namespace Eduology.Infrastructure.Services
             return true;
         }
 
-        public async Task<CourseDetailsDto> GetByIdAsync(string ID, string UserID)
+        public async Task<CourseDetailsDto> GetByIdAsync(string ID, string UserID,string role)
         {
             bool isEnrolledStudent = await _courseRepository.ISStudentAssignedToCourse(UserID, ID);
             bool isEnrolledInstructor = await _courseRepository.IsInstructorAssignedToCourse(UserID, ID);
 
             if (!isEnrolledStudent && !isEnrolledInstructor)
             {
-                return null; 
+                return null;
             }
             var course = await _courseRepository.GetByIdAsync(ID);
             if (course == null)
@@ -106,12 +107,10 @@ namespace Eduology.Infrastructure.Services
             return course;
         }
 
-        public async Task<CourseDetailsDto> GetByNameAsync(string name, string UserID)
+        public async Task<CourseDetailsDto> GetByNameAsync(string name, string UserID,string role)
         {
-            bool isEnrolledStudent = await _courseRepository.IStudentAssignedToCourseByName(UserID,name);
-            bool isEnrolledInstructor = await _courseRepository.IsInstructorAssignedToCourseByName(UserID,name);
-
-            if (!isEnrolledStudent && !isEnrolledInstructor)
+            bool IsRegisterd = await _courseRepository.IsUserAssignedToCourseAsyncByNmae(UserID,name, role);
+            if (!IsRegisterd)
             {
                 return null;
             }

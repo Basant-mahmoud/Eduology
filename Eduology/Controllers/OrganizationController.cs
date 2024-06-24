@@ -97,7 +97,7 @@ namespace Eduology.Controllers
             }
             return Ok(students);
         }
-        [HttpGet("GetAllInstructorsToOrganization")]
+        [HttpGet("GetAllInstructorsToOrganization/{organizationId}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAllInstructorsToOrganization(int organizationId)
         {
@@ -106,10 +106,7 @@ namespace Eduology.Controllers
             {
                 return Ok(new List<UserDto>());
             }
-            else
-            {
-                return Ok(instructors);
-            }
+             return Ok(instructors);
         }
     }
 }
