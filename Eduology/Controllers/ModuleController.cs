@@ -20,12 +20,17 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> AddModule([FromBody] ModuleDto module)
         {
+            var userId = User.FindFirst("uid")?.Value;
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User ID not found in the token" });
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var (success, exists) = await _ModuleService.AddModuleAsync(module);
+            var (success, exists) = await _ModuleService.AddModuleAsync(userId,module);
 
             if (exists)
             {
@@ -43,7 +48,14 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> UpdateModule([FromBody] UpdateModuleDto module)
         {
-            var success = await _ModuleService.UpdateModuleAsync(module);
+            var userId = User.FindFirst("uid")?.Value;
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User ID not found in the token" });
+            } 
+            if (!ModelState.IsValid)
+            { return BadRequest(ModelState); }
+            var success = await _ModuleService.UpdateModuleAsync(userId, module);
 
             if (!success)
             {
@@ -57,7 +69,14 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> DeleteModule([FromBody] ModuleDto module)
         {
-            var success = await _ModuleService.DeleteModuleAsync(module);
+            var userId = User.FindFirst("uid")?.Value;
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User ID not found in the token" });
+            }
+            if (!ModelState.IsValid)
+            { return BadRequest(ModelState); }
+            var success = await _ModuleService.DeleteModuleAsync(userId,module);
 
             if (!success)
             {
@@ -66,5 +85,7 @@ namespace Eduology.Controllers
 
             return Ok(new { message = $"Module with ID {module.Name} deleted successfully." });
         }
+        
+       
     }
 }
