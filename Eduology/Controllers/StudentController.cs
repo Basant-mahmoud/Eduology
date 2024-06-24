@@ -90,9 +90,9 @@ namespace Eduology.Controllers
 
             var success = await _StudentService.RegisterToCourseAsync(userId, model.CourseCode);
             if (success)
-                return Ok("Student added to the course successfully.");
+                return Ok(new { message = "Student added to the course successfully." });
             else
-                return NotFound("Failed to add student to the course.");
+                return NotFound(new { message = "Failed to add student to the course." });
         }
 
         [HttpGet("AllCoursestoStudent")]
