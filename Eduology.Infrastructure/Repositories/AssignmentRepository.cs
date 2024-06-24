@@ -37,15 +37,15 @@ namespace Eduology.Infrastructure.Repositories
                 InstructorId = instructorId,
                 Description = assignmentDto.Description
             };
-            if (assignmentDto.AssignmentFile == null)
+            if (assignmentDto.fileURLs == null)
             {
-                throw new ArgumentNullException(nameof(assignmentDto.AssignmentFile), "File information is required.");
+                throw new ArgumentNullException(nameof(assignmentDto.fileURLs), "File information is required.");
             }
 
             var file = new AssignmentFile
             {
-                Title = assignmentDto.AssignmentFile.Title,
-                URL = assignmentDto.AssignmentFile.URL,
+                Title = assignmentDto.fileURLs.Title,
+                URL = assignmentDto.fileURLs.URL,
                 Assignment = assignment
             };
             assignment.File = file;
@@ -85,16 +85,17 @@ namespace Eduology.Infrastructure.Repositories
         async Task<Assignment> IAssignmentRepository.UpdateAsync(int id, AssignmentDto assignment)
         {
             var _assignment = await _context.Assignments.FindAsync(id);
-            if (assignment == null)
-                return null;
+            if (_assignment == null)
+                throw new KeyNotFoundException($"Assignment with Id {id} not found.");
             _assignment.Description = assignment.Description;
             _assignment.File = new AssignmentFile
             {
-                Title = assignment.AssignmentFile.Title,
-                URL = assignment.AssignmentFile.URL,
+                Title = assignment.fileURLs.Title,
+                URL = assignment.fileURLs.URL,
             };
             _assignment.Deadline = assignment.Deadline;
             _assignment.CourseId = assignment.CourseId;
+             _context.Assignments.Update(_assignment);
             return _assignment;
         }
         public async Task<bool> DeleteAsync(int id)
@@ -120,7 +121,7 @@ namespace Eduology.Infrastructure.Repositories
                 CourseId = a.CourseId,
                 Deadline = a.Deadline,
                 Description = a.Description,
-                AssignmentFile = a.File != null ? new AssignmentFileDto
+                fileURLs = a.File != null ? new AssignmentFileDto
                 {
                     Title = a.File.Title,
                     URL = a.File.URL
