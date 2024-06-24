@@ -26,7 +26,7 @@ namespace Eduology.Controllers
 
         [HttpPost("Create")]
         [Authorize(Roles = "Instructor")]
-        public async Task<ActionResult<CreateAnnoncementDto>> PostAnnouncement([FromBody] CreateAnnoncementDto announcementDto)
+        public async Task<ActionResult<CreateAnnoncementDto>> CreateAnnouncement([FromBody] CreateAnnoncementDto announcementDto)
         {
             var userId = GetUserId();
             if (userId == null)
@@ -120,9 +120,9 @@ namespace Eduology.Controllers
             return Ok(announcements);
         }
 
-        [HttpGet("GetAllAnnouncementsToStudent")]
+        [HttpGet("GetAllCourseAnnouncementsToStudent")]
         [Authorize(Roles = "Student")]
-        public async Task<ActionResult<IEnumerable<AllAnnoncemetDto>>> GetAllStudentAnnouncement()
+        public async Task<ActionResult<IEnumerable<AllAnnoncemetDto>>> GetAllCourseAnnouncementsToStudent()
         {
             var userId = GetUserId();
             if (userId == null)
