@@ -9,7 +9,6 @@ namespace Eduology.Domain.Models
     public class Material
     {
         public int MaterialId { get; set; }
-        public string Title { get; set; }
         public int ModuleId { get; set; } // Foreign key
         public virtual Module Module { get; set; } // Navigation property
         public String CourseId { get; set; } // Foreign key
