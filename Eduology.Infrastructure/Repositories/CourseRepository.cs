@@ -169,7 +169,7 @@ namespace Eduology.Infrastructure.Repositories
             }
             else if (role == "Student")
             {
-                return await IStudentAssignedToCourse(userId, courseId);
+                return await ISStudentAssignedToCourse(userId, courseId);
             }
             return false;
         }
