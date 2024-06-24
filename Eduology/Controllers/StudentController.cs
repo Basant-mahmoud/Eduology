@@ -107,7 +107,7 @@ namespace Eduology.Controllers
             var student = await _StudentService.GetAllCourseToSpecificStudentAsync(userId);
             if (student == null)
             {
-                return NotFound(new { message = $"Student id{userId} not exists." });
+                return NotFound(new { message = $"Student id {userId} not exists." });
             }
 
             return Ok(student);

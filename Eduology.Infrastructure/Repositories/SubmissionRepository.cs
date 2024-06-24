@@ -66,5 +66,9 @@ namespace Eduology.Infrastructure.Repositories
 
             return deleteSubmissionDto;
         }
+
+/*        public async Task<List<SubmissionDto>> GetAllAsync()
+        {
+        }*/
     }
 }
