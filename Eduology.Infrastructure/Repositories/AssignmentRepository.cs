@@ -22,7 +22,7 @@ namespace Eduology.Infrastructure.Repositories
             _context = context;
             _courseRepository = courseRepository;
         }
-        public async Task<AssignmentDto> CreateAsync(AssignmentDto assignmentDto)
+        public async Task<AssignmentDto> CreateAsync(AssignmentDto assignmentDto,string instructorId)
         {
             if (assignmentDto == null)
             {
@@ -33,8 +33,8 @@ namespace Eduology.Infrastructure.Repositories
                 Title = assignmentDto.Title,
                 CourseId = assignmentDto.CourseId,
                 CreatedDate = DateTime.Now,
-                InstructorId = assignmentDto.InstructorId,
                 Deadline = assignmentDto.Deadline,
+                InstructorId = instructorId,
                 Description = assignmentDto.Description
             };
             if (assignmentDto.AssignmentFile == null)
@@ -65,7 +65,6 @@ namespace Eduology.Infrastructure.Repositories
                 Name = course.CourseName,
             });
             await _context.SaveChangesAsync();
-            assignmentDto.Id = assignment.AssignmentId;
             return assignmentDto;
         }
 
@@ -88,7 +87,6 @@ namespace Eduology.Infrastructure.Repositories
             var _assignment = await _context.Assignments.FindAsync(id);
             if (assignment == null)
                 return null;
-            _assignment.InstructorId = assignment.InstructorId;
             _assignment.Description = assignment.Description;
             _assignment.File = new AssignmentFile
             {
@@ -118,12 +116,10 @@ namespace Eduology.Infrastructure.Repositories
 
             return assignments.Select(a => new AssignmentDto
             {
-                Id = a.AssignmentId,
                 Title = a.Title,
                 CourseId = a.CourseId,
                 Deadline = a.Deadline,
                 Description = a.Description,
-                InstructorId = a.InstructorId,
                 AssignmentFile = a.File != null ? new AssignmentFileDto
                 {
                     Title = a.File.Title,

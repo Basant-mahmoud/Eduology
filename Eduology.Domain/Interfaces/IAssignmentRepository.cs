@@ -10,7 +10,7 @@ namespace Eduology.Domain.Interfaces
 {
     public interface IAssignmentRepository
     {
-        public Task<AssignmentDto> CreateAsync(AssignmentDto assignment);
+        public Task<AssignmentDto> CreateAsync(AssignmentDto assignment,string instructorId);
         public Task<Assignment> GetByIdAsync(int id);
         public Task<Assignment> GetByNameAsync(String name);
         public Task<Assignment> UpdateAsync(int id,AssignmentDto assignment);

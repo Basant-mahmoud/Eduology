@@ -32,15 +32,11 @@ namespace Eduology.Infrastructure.Services
         {
             bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, assignment.CourseId);
             if (!IsRegistered)
-                throw new Exception("Not Vaild");
-            var _assignment = await _asignmentRepository.CreateAsync(assignment);
+                throw new Exception("Invalid Instructor.");
+            var _assignment = await _asignmentRepository.CreateAsync(assignment,userId);
             if (assignment == null)
             {
                 throw new ArgumentNullException(nameof(_assignment));
-            }
-            if (_instructorService.GetInstructorByIdAsync(assignment.InstructorId).ToString() == null)
-            {
-                throw new ArgumentException("Invalid InstructorId.");
             }
             return new AssignmentDto
             {
@@ -49,8 +45,6 @@ namespace Eduology.Infrastructure.Services
                 CourseId = assignment.CourseId,
                 Deadline = assignment.Deadline,
                 Description = assignment.Description,
-                Id = assignment.Id,
-                InstructorId = assignment.InstructorId,
             };
         }
 
@@ -96,13 +90,13 @@ namespace Eduology.Infrastructure.Services
         }
         public async Task<bool> UpdateAsync(int id, AssignmentDto assignment, string userId)
         {
-            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(assignment.InstructorId, assignment.CourseId);
+            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, assignment.CourseId);
             if (!IsRegistered)
                 return false;
             var _assignment = await _asignmentRepository.UpdateAsync(id, assignment);
             if (_assignment == null)
                 return false;
-            if (_instructorService.GetInstructorByIdAsync(assignment.InstructorId).ToString() == null)
+            if (_instructorService.GetInstructorByIdAsync(userId).ToString() == null)
             {
                 throw new ArgumentException("Invalid InstructorId.");
             }
