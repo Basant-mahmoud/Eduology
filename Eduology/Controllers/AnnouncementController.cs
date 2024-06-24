@@ -95,7 +95,7 @@ namespace Eduology.Controllers
             return Ok(announcements);
         }
 
-        [HttpGet("GetAllAnnouncementsToStudent/{studentid}")]
+        [HttpGet("GetAllAnnouncementsToStudent")]
         [Authorize(Roles = "Student")]
         public async Task<ActionResult<IEnumerable<AllAnnoncemetDto>>> GetAllStudentAnnouncement()
         {
