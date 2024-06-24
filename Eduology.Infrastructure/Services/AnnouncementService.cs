@@ -33,6 +33,11 @@ namespace Eduology.Infrastructure.Services
         {
             var instructor = await _userManager.FindByIdAsync(instructorid);
             var isjointocourse=await _courseRepository.IsInstructorAssignedToCourse(instructorid, createannouncementDto.CourseId);
+            var courseExists = await _announcementRepository.CourseExistsAsync(createannouncementDto.CourseId);
+            if (!courseExists)
+            {
+                return null;
+            }
             if (instructor == null)
             {
                 return null;
@@ -41,11 +46,7 @@ namespace Eduology.Infrastructure.Services
             {
                 return null;
             }
-             var courseExists = await _announcementRepository.CourseExistsAsync(createannouncementDto.CourseId);
-            if (!courseExists)
-            {
-                return null;
-            }
+            
 
             var announcement = new Announcement
             {
@@ -59,10 +60,25 @@ namespace Eduology.Infrastructure.Services
             return ConvertToDto(createdAnnouncement);
         }
 
-        public async Task<AnnouncementDto> GetByIdAsync(int id)
+        public async Task<AnnouncementDto> GetByIdAsync(string instructorid,int announcementid,string courseid)
         {
+            var instructor = await _userManager.FindByIdAsync(instructorid);
+            var courseExists = await _announcementRepository.CourseExistsAsync(courseid);
+            if (!courseExists)
+            {
+                return null;
+            }
+            var isjointocourse = await _courseRepository.IsInstructorAssignedToCourse(instructorid, courseid);
+            if (instructor == null)
+            {
+                return null;
+            }
+            if (isjointocourse == null)
+            {
+                return null;
+            }
            
-            var announcement = await _announcementRepository.GetByIdAsync(id);
+            var announcement = await _announcementRepository.GetByIdAsync(announcementid);
             return ConvertToDto(announcement);
         }
 

@@ -41,31 +41,41 @@ namespace Eduology.Controllers
             return CreatedAtAction(nameof(GetAnnouncement), new { id = createdAnnouncement.Id }, createdAnnouncement);
         }
 
-        [HttpGet("GetById/{id}")]
-        [Authorize(Roles = "Instructor, Student")]
-        public async Task<ActionResult<AnnouncementDto>> GetAnnouncement(int id)
+        [HttpGet("GetById/{announcemmentid}/{courseid}")]
+        [Authorize(Roles = "Instructor")]
+        public async Task<ActionResult<AnnouncementDto>> GetAnnouncement(int announcemmentid,string courseid)
         {
-          
-            var announcement = await _announcementService.GetByIdAsync(id);
+            var userId = GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User ID not found in the token" });
+            }
+
+            var announcement = await _announcementService.GetByIdAsync(userId, announcemmentid, courseid);
             if (announcement == null)
             {
-                return NotFound(new { message = $"Announcement with id {id} not found." });
+                return NotFound(new { message = $"Announcement with id {announcemmentid} not found." });
             }
             return Ok(announcement);
         }
 
         [HttpDelete("Delete/{id}")]
         [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> DeleteAnnouncement(int id)
+        public async Task<IActionResult> DeleteAnnouncement(int announcemmentid, string courseid)
         {
-           
-            var announcement = await _announcementService.GetByIdAsync(id);
-            if (announcement == null)
+            var userId = GetUserId();
+            if (userId == null)
             {
-                return NotFound(new { message = $"Announcement with id {id} not found." });
+                return Unauthorized(new { message = "User ID not found in the token" });
             }
 
-            await _announcementService.DeleteAsync(id);
+            var announcement = await _announcementService.GetByIdAsync(userId, announcemmentid, courseid);
+            if (announcement == null)
+            {
+                return NotFound(new { message = $"Announcement with id {announcemmentid} not found." });
+            }
+
+            await _announcementService.DeleteAsync(announcemmentid);
             return Ok(new { message = "Announcement deleted successfully." });
         }
 
