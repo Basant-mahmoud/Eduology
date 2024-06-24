@@ -21,7 +21,7 @@ namespace Eduology.Controllers
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
             if (userId == null)
             {
@@ -36,7 +36,7 @@ namespace Eduology.Controllers
         [HttpPost("Submit")]
         public async Task<IActionResult> SubmitAsync([FromBody] SubmissionDto submissionDto)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
             if (userId == null)
             {
@@ -63,7 +63,7 @@ namespace Eduology.Controllers
         [HttpDelete("DeleteSubmission")]
         public async Task<IActionResult> DeleteSubmission([FromBody] DeleteSubmissionDto deleteSubmissionDto)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
             if (userId == null)
             {

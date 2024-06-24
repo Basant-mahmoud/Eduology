@@ -39,7 +39,7 @@ namespace Eduology.Controllers
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetCourseById(String id)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
             if (userId == null)
@@ -58,7 +58,7 @@ namespace Eduology.Controllers
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
@@ -79,7 +79,7 @@ namespace Eduology.Controllers
         [HttpGet("GetByName/{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
             if (userId == null)

@@ -21,7 +21,7 @@ namespace Eduology.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult> Create([FromBody] AssignmentDto assignment)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
@@ -38,7 +38,7 @@ namespace Eduology.Controllers
         [HttpGet("GetById/{id}")]
         public async Task<ActionResult> GetById(int id)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
             if (userId == null)
@@ -56,7 +56,7 @@ namespace Eduology.Controllers
         [HttpGet("GetByName/{name}")]
         public async Task<ActionResult> GetByName(String name)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
             if (userId == null)
@@ -74,7 +74,7 @@ namespace Eduology.Controllers
         [HttpDelete("courses/{courseId}/assignments/{assignmentId}")]
         public async Task<ActionResult> Delete(int assignmentId,string courseId)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
@@ -90,7 +90,7 @@ namespace Eduology.Controllers
         [HttpPut("Update/{id}")]
         public async Task<ActionResult> Udate(int id,AssignmentDto assignment)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
@@ -106,7 +106,7 @@ namespace Eduology.Controllers
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst("uid")?.Value;
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
             if (userId == null)
