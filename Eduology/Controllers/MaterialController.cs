@@ -1,10 +1,11 @@
 ﻿using Eduology.Application.Interface;
+using Eduology.Application.Services;
 using Eduology.Domain.DTO;
 using Eduology.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-
+using Microsoft.AspNetCore.Hosting;
 namespace Eduology.Controllers
 {
     [Route("api/[controller]")]
@@ -12,10 +13,13 @@ namespace Eduology.Controllers
     public class MaterialController : ControllerBase
     {
         private readonly IMaterialService _materialService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public MaterialController(IMaterialService materialService)
+        public MaterialController(IMaterialService materialService, IWebHostEnvironment webHostEnvironment)
         {
             _materialService = materialService;
+          
+            _webHostEnvironment = webHostEnvironment;
         }
 
         private string GetUserId()
