@@ -88,7 +88,8 @@ namespace Eduology.Infrastructure.Repositories
                 CourseName = course.Name,
                 CourseCode = course.CourseCode,
                 Instructors = course.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
-                students = course.StudentCourses.Select(sc => sc.Student.Name).ToList()
+                students = course.StudentCourses.Select(sc => sc.Student.Name).ToList(),
+                assignments = course.Assignments
             };
 
         }
