@@ -40,11 +40,13 @@ namespace Eduology.Controllers
         public async Task<IActionResult> GetCourseById(String id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
             }
-            var course = await _courseService.GetByIdAsync(id,userId);
+            var course = await _courseService.GetByIdAsync(id,userId,role);
 
             if (course == null)
             {
@@ -78,11 +80,13 @@ namespace Eduology.Controllers
         public async Task<IActionResult> GetByName(string name)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
             }
-            CourseDetailsDto course = await _courseService.GetByNameAsync(name,userId);
+            CourseDetailsDto course = await _courseService.GetByNameAsync(name,userId,role);
             if (course == null)
                 return NotFound();
             return Ok(course);

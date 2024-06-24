@@ -14,11 +14,11 @@ namespace Eduology.Infrastructure.Repositories
     public class SubmissionRepository : ISubmissionRepository
     {
         private readonly EduologyDBContext Context;
-        private readonly IAsignmentServices _assignmentservice;
-        public SubmissionRepository(EduologyDBContext eduologyDBContext, IAsignmentServices asignmentServices)
+        private readonly IAssignmentRepository assignmentRepository;
+        public SubmissionRepository(EduologyDBContext eduologyDBContext, IAssignmentRepository _assignmentRepository)
         {
             Context = eduologyDBContext;
-            _assignmentservice = asignmentServices;
+            assignmentRepository = _assignmentRepository;
         }
         public async Task<SubmissionDto> CreateAsync(SubmissionDto submission)
         {
@@ -28,7 +28,7 @@ namespace Eduology.Infrastructure.Repositories
                 StudentId = submission.StudentId,
                 TimeStamp = DateTime.Now,
                 URL = submission.URL,
-                Assignment = await _assignmentservice.GetByIdAsync(submission.AssignmentId),
+                Assignment = await assignmentRepository.GetByIdAsync(submission.AssignmentId),
             };
             await Context.submissions.AddAsync(_submission);
             await Context.SaveChangesAsync();

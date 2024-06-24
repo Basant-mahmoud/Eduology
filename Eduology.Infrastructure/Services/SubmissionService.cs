@@ -16,16 +16,24 @@ namespace Eduology.Infrastructure.Services
         private readonly ISubmissionRepository _submissionRepository;
         private readonly IAsignmentServices _assignmentService;
         private readonly IStudentService _studentService;
-        public SubmissionService(ISubmissionRepository submissionRepository, IAsignmentServices assignmentService,IStudentService studentService)
+        private readonly ICourseRepository _courseRepository;
+
+        public SubmissionService(ISubmissionRepository submissionRepository, IAsignmentServices assignmentService,IStudentService studentService, ICourseRepository courseRepository)
         {
             _submissionRepository = submissionRepository;
             _assignmentService = assignmentService;
             _studentService = studentService;
+            _courseRepository = courseRepository;
         }
 
-        public async Task<SubmissionDto> CreateAsync(SubmissionDto submission)
+        public async Task<SubmissionDto> CreateAsync(SubmissionDto submission,string userId, string role)
         {
-            var assignment = await _assignmentService.GetByIdAsync(submission.AssignmentId);
+            bool IsRegistered =  await _courseRepository.IStudentAssignedToCourse(userId, role);
+            if (!IsRegistered)
+            {
+                throw new Exception("You Not Registered In This Course");
+            }
+            var assignment = await _assignmentService.GetByIdAsync(submission.AssignmentId,userId,role);
             if (assignment == null)
             {
                 throw new ArgumentException("Invalid assignment ID.");
@@ -42,10 +50,14 @@ namespace Eduology.Infrastructure.Services
             }
             return await _submissionRepository.CreateAsync(submission);
         }
-        /// basant 
-        public async Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deletesubmission)
+        public async Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deletesubmission,string userId, string role)
         {
-            var assigment = await _assignmentService.GetByIdAsync(deletesubmission.AssigmentId);
+            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, role);
+            if (!IsRegistered)
+            {
+                throw new Exception("Not Vaild Operation");
+            }
+            var assigment = await _assignmentService.GetByIdAsync(deletesubmission.AssigmentId,userId, role);
             var submission= await _submissionRepository.GetByIdAsync(deletesubmission.SubmissionId);
             var student = await _studentService.GetStudentByIdAsync(deletesubmission.StudentId);
             if (student == null)
@@ -75,8 +87,13 @@ namespace Eduology.Infrastructure.Services
             return await _submissionRepository.DeleteAsync(deletesubmission);
 
         }
-        public async Task<SubmissionDto> GetByIdAsync(int id)
+        public async Task<SubmissionDto> GetByIdAsync(int id, string userId, string role)
         {
+            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, role);
+            if (!IsRegistered)
+            {
+                throw new Exception("You Not Registered In This Course");
+            }
             var submission = await _submissionRepository.GetByIdAsync(id);
             if (submission == null)
             {

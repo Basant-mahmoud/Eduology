@@ -11,22 +11,28 @@ using Eduology.Infrastructure.Repositories;
 using Eduology.Domain.DTO;
 using Eduology.Application.Interface;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 namespace Eduology.Infrastructure.Services
 {
     public class AssignmentServices : IAsignmentServices
     {
         private readonly IAssignmentRepository _asignmentRepository;
         private readonly IInstructorService _instructorService;
-        private readonly ICourseService _courseService; 
-        public AssignmentServices(IAssignmentRepository asignmentRepository,IInstructorService instructorService,ICourseService courseService)
+        private readonly ICourseRepository _courseRepository;
+        private readonly ICourseService _courseService;
+        public AssignmentServices(IAssignmentRepository asignmentRepository, IInstructorService instructorService, ICourseRepository courseRepository, ICourseService courseService)
         {
             _asignmentRepository = asignmentRepository;
             _instructorService = instructorService;
             _courseService = courseService;
+            _courseRepository = courseRepository;
         }
 
-        public async Task<AssignmentDto> CreateAsync(AssignmentDto assignment)
+        public async Task<AssignmentDto> CreateAsync(AssignmentDto assignment, string userId)
         {
+            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, assignment.CourseId);
+            if (!IsRegistered)
+                throw new Exception("Not Vaild");
             var _assignment = await _asignmentRepository.CreateAsync(assignment);
             if (assignment == null)
             {
@@ -37,7 +43,7 @@ namespace Eduology.Infrastructure.Services
                 throw new ArgumentException("Invalid InstructorId.");
             }
             return new AssignmentDto
-            { 
+            {
                 Title = assignment.Title,
                 AssignmentFile = assignment.AssignmentFile,
                 CourseId = assignment.CourseId,
@@ -48,8 +54,11 @@ namespace Eduology.Infrastructure.Services
             };
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id, string courseId, string userId)
         {
+            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, courseId);
+            if (!IsRegistered)
+                return false;
             var isDeleted = await _asignmentRepository.DeleteAsync(id);
 
             if (isDeleted)
@@ -60,43 +69,65 @@ namespace Eduology.Infrastructure.Services
             return false;
         }
 
-        public async Task<Assignment> GetByIdAsync(int id)
+        public async Task<Assignment> GetByIdAsync(int id, string userId,string role)
         {
-            var _assignment = await _asignmentRepository.GetByIdAsync(id);
-            if (_assignment == null)
+            var assignment = await _asignmentRepository.GetByIdAsync(id);
+            if (assignment == null)
                 return null;
-            return _assignment;
+
+            bool isAssigned = await _courseRepository.IsUserAssignedToCourseAsync(userId, assignment.CourseId, role);
+            if (!isAssigned)
+                return null;
+
+            return assignment;
         }
 
-        public async Task<Assignment> GetByNameAsync(string name)
+        public async Task<Assignment> GetByNameAsync(string name, string userId,string role)
         {
-            var _assignment = await _asignmentRepository.GetByNameAsync(name);
-            if (_assignment == null)
+            var assignment = await _asignmentRepository.GetByNameAsync(name);
+            if (assignment == null)
                 return null;
-            return _assignment;
-        }
 
-        public async Task<Assignment> UpdateAsync(int id, AssignmentDto assignment)
-        {
-            var _assignment = await _asignmentRepository.UpdateAsync(id,assignment);
-            if (_assignment == null)
+            bool isAssigned = await _courseRepository.IsUserAssignedToCourseAsync(userId, assignment.CourseId, role);
+            if (!isAssigned)
                 return null;
+
+            return assignment;
+        }
+        public async Task<bool> UpdateAsync(int id, AssignmentDto assignment, string userId)
+        {
+            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(assignment.InstructorId, assignment.CourseId);
+            if (!IsRegistered)
+                return false;
+            var _assignment = await _asignmentRepository.UpdateAsync(id, assignment);
+            if (_assignment == null)
+                return false;
             if (_instructorService.GetInstructorByIdAsync(assignment.InstructorId).ToString() == null)
             {
                 throw new ArgumentException("Invalid InstructorId.");
             }
-            var course =  _courseService.GetByIdAsync(assignment.CourseId,assignment.InstructorId);
+            var course = _courseRepository.GetByIdAsync(assignment.CourseId);
             if (course == null)
             {
                 throw new ArgumentException("Invalid CourseId.");
             }
-            return _assignment;
+            return true;
         }
-        public async Task<List<AssignmentDto>> GetAllAsync()
+        public async Task<List<AssignmentDto>> GetAllAsync(string userId,string role)
         {
-            var assignments =  await _asignmentRepository.GetAllAsync();
-            return assignments;
-        }
+            var assignments = await _asignmentRepository.GetAllAsync();
+            var assignedAssignments = new List<AssignmentDto>();
 
+            foreach (var assignment in assignments)
+            {
+                bool isAssigned = await _courseRepository.IsUserAssignedToCourseAsync(userId, assignment.CourseId, role);
+                if (isAssigned)
+                {
+                    assignedAssignments.Add(assignment);
+                }
+            }
+
+            return assignedAssignments;
+        }
     }
 }

@@ -22,5 +22,9 @@ namespace Eduology.Domain.Interfaces
         Task<bool> IStudentAssignedToCourse(string instructorId, string courseId);
         Task<bool> IsInstructorAssignedToCourseByName(string instructorId, string Name);
         Task<bool> IStudentAssignedToCourseByName(string instructorId, string Name);
+        Task<bool> IsUserAssignedToCourseAsync(string userId, string courseId, string role);
+        Task<bool> IsUserAssignedToCourseAsyncByNmae(string userId, string name, string role);
+
+
     }
 }
