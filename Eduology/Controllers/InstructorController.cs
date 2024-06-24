@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Security.Claims;
 
 namespace Eduology.Controllers
 {
@@ -103,32 +104,48 @@ namespace Eduology.Controllers
 
             return Ok(new { message = "Instructor deleted successfully" });
         }
+        /// 
         [HttpPost("RegisterToCourse")]
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> RegisterToCourse([FromBody] RegisterInstructorToCourseDto model)
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User ID not found in the token");
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var success = await _instructorService.RegisterToCourseAsync(model.InstructorId, model.CourseCode);
+            var success = await _instructorService.RegisterToCourseAsync(userId, model.CourseCode);
             if (success)
-                return Ok("Instructor added to the course successfully.");
+                return Ok(new { message = "Instructor added to the course successfully." });
             else
                 return BadRequest("Failed to add instructor to the course.");
         }
         [HttpGet("AllCoursetoInstructor/{instructorid}")]
         [Authorize(Roles = "Instructor")]
-        public async Task<ActionResult<CourseUserDto>> AllCoursetoInstructor(string instructorid)
+        public async Task<ActionResult<CourseUserDto>> AllCoursetoInstructor()
         {
-            var instructor = await _instructorService.GetAllCourseToSpecificInstructorAsync(instructorid);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User ID not found in the token");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var instructor = await _instructorService.GetAllCourseToSpecificInstructorAsync(userId);
             if (instructor == null)
             {
-                return NotFound(new { message = $"Instructor Id {instructorid} not found" });
+                return NotFound(new { message = $"Instructor Id {userId} not found" });
             }
 
             return Ok(instructor);
         }
+       
     }
 }

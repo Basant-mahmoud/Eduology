@@ -34,57 +34,70 @@ namespace Eduology.Application.Services
         }
 
         public async Task<AuthModel> RegisterAsync(RegisterModel model)
+{
+    if (model.OrganizationId > 0)
+    {
+        if (!await _authRepository.OrganizationExistsAsync(model.OrganizationId))
         {
-            if (model.OrganizationId > 0)
-            {
-                if (!await _authRepository.OrganizationExistsAsync(model.OrganizationId))
-                {
-                    return new AuthModel { Message = "Invalid OrganizationId provided." };
-                }
-            }
-
-            if (await _authRepository.EmailExistsAsync(model.Email))
-                return new AuthModel { Message = "Email is already registered!" };
-
-            if (await _authRepository.UsernameExistsAsync(model.Username))
-                return new AuthModel { Message = "Username is already registered!" };
-
-            var user = new ApplicationUser
-            {
-                UserName = model.Username,
-                Email = model.Email,
-                Name = model.Name,
-                OrganizationId = model.OrganizationId
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            if (!result.Succeeded)
-            {
-                var errors = string.Join(",", result.Errors.Select(e => e.Description));
-                return new AuthModel { Message = errors };
-            }
-
-            if (!string.IsNullOrEmpty(model.Role))
-            {
-                await _userManager.AddToRoleAsync(user, model.Role);
-            }
-
-            var jwtSecurityToken = await CreateJwtToken(user);
-
-           // await _emailSender.SendEmailAsync(user.Email, "Registration Successful", $"You have successfully registered to Eduology LMS. Your Email is {model.Email} and Your password is: {model.Password}");
-
-            return new AuthModel
-            {
-                OrganizationId = model.OrganizationId,
-                Email = user.Email,
-                ExpiresOn = jwtSecurityToken.ValidTo,
-                IsAuthenticated = true,
-                Roles = new List<string> { model.Role },
-                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-                Username = user.UserName
-            };
+            return new AuthModel { Message = "Invalid OrganizationId provided." };
         }
+    }
+
+    if (await _authRepository.EmailExistsAsync(model.Email))
+        return new AuthModel { Message = "Email is already registered!" };
+
+    if (await _authRepository.UsernameExistsAsync(model.Username))
+        return new AuthModel { Message = "Username is already registered!" };
+
+    var user = new ApplicationUser
+    {
+        UserName = model.Username,
+        Email = model.Email,
+        Name = model.Name,
+        OrganizationId = model.OrganizationId
+    };
+
+    // Create JWT token
+    var jwtSecurityToken = await CreateJwtToken(user);
+
+    // Attempt to send the email first
+    /*
+    try
+    {
+        await _emailSender.SendEmailAsync(user.Email, "Registration Successful", 
+            $"You have successfully registered to Eduology LMS. Your Email is {model.Email} and Your password is: {model.Password}");
+    }
+    catch (Exception ex)
+    {
+        var cleanedMessage = "Failed to send registration email: Transaction failed.";
+        return new AuthModel { Message = cleanedMessage };
+    }
+    */
+    var result = await _userManager.CreateAsync(user, model.Password);
+
+    if (!result.Succeeded)
+    {
+        var errors = string.Join(",", result.Errors.Select(e => e.Description));
+        return new AuthModel { Message = errors };
+    }
+
+    if (!string.IsNullOrEmpty(model.Role))
+    {
+        await _userManager.AddToRoleAsync(user, model.Role);
+    }
+
+    return new AuthModel
+    {
+        OrganizationId = model.OrganizationId,
+        Email = user.Email,
+        ExpiresOn = jwtSecurityToken.ValidTo,
+        IsAuthenticated = true,
+        Roles = new List<string> { model.Role },
+        Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+        Username = user.UserName
+    };
+}
+
 
         public async Task<AuthModel> LoginAsync(LoginModel model)
         {
