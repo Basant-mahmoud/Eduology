@@ -2,7 +2,6 @@
 using Eduology.Domain.DTO;
 using Eduology.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -18,11 +17,17 @@ namespace Eduology.Controllers
         {
             _materialService = materialService;
         }
+
+        private string GetUserId()
+        {
+            return User.FindFirst("uid")?.Value;
+        }
+
         [HttpPost("AddMaterial")]
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> AddMaterial([FromBody] MaterialDto materialDto)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -35,18 +40,17 @@ namespace Eduology.Controllers
             var success = await _materialService.AddMaterialAsync(userId, materialDto);
             if (!success)
             {
-                return NotFound(new { message = "Failed to add material  input is not correct." });
+                return NotFound(new { message = "Failed to add material. Input is not correct." });
             }
 
             return Ok(new { message = "Material added successfully." });
         }
 
-
-        [HttpPost("GetmaterialsToInstructor")]
+        [HttpPost("GetMaterialsToInstructor")]
         [Authorize(Roles = "Instructor")]
-        public async Task<ActionResult<List<GetMaterialDto>>> GetmaterialsToInstructor([FromBody] CourseUserRequestDto requestDto)
+        public async Task<ActionResult<List<GetMaterialDto>>> GetMaterialsToInstructor([FromBody] CourseUserRequestDto requestDto)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -64,11 +68,12 @@ namespace Eduology.Controllers
 
             return Ok(result);
         }
-        [HttpPost("GetmaterialsToStudent")]
+
+        [HttpPost("GetMaterialsToStudent")]
         [Authorize(Roles = "Student")]
-        public async Task<ActionResult<List<GetMaterialDto>>> GetmaterialsToStudent([FromBody] CourseUserRequestDto requestDto)
+        public async Task<ActionResult<List<GetMaterialDto>>> GetMaterialsToStudent([FromBody] CourseUserRequestDto requestDto)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -77,7 +82,7 @@ namespace Eduology.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result = await _materialService.GetMaterialToStudentAsync(userId,requestDto);
+            var result = await _materialService.GetMaterialToStudentAsync(userId, requestDto);
             if (result == null)
             {
                 return BadRequest(new { message = "Failed to retrieve modules and materials." });
@@ -90,7 +95,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> DeleteFile([FromBody] DeleteFileDto file)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -100,15 +105,13 @@ namespace Eduology.Controllers
                 return BadRequest(ModelState);
             }
 
-            var success = await _materialService.DeleteFileAsync(userId,file);
+            var success = await _materialService.DeleteFileAsync(userId, file);
             if (!success)
             {
-                return NotFound(new { message = $"File with Id {file.fileId} not found in  Module {file.Module}." });
+                return NotFound(new { message = $"File with Id {file.fileId} not found in Module {file.Module}." });
             }
 
-            return Ok(new { message = "File deleted successfully." }); 
+            return Ok(new { message = "File deleted successfully." });
         }
-        
-
     }
 }

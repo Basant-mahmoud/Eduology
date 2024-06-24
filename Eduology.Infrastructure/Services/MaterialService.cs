@@ -60,7 +60,7 @@ namespace Eduology.Infrastructure.Services
             // Create a new Material entity
             var material = new Material
             {
-                Title = materialDto.Title,
+               // Title = materialDto.Title,
                 InstructorId = instructorid,
                 CourseId = materialDto.CourseId,
                 ModuleId = existingModule.ModuleId, 

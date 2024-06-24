@@ -16,11 +16,15 @@ namespace Eduology.Controllers
         {
             _ModuleService = moduleService;
         }
+        private string GetUserId()
+        {
+            return User.FindFirst("uid")?.Value;
+        }
         [HttpPost("AddModule")]
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> AddModule([FromBody] ModuleDto module)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -48,7 +52,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> UpdateModule([FromBody] UpdateModuleDto module)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -69,7 +73,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> DeleteModule([FromBody] ModuleDto module)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });

@@ -22,6 +22,10 @@ namespace Eduology.Controllers
         {
             _instructorService = instructorService;
         }
+        private string GetUserId()
+        {
+            return User.FindFirst("uid")?.Value;
+        }
 
         [HttpGet("GetAllInstructors")]
         [Authorize(Roles = "Admin")]
@@ -109,7 +113,7 @@ namespace Eduology.Controllers
        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> RegisterToCourse([FromBody] RegisterInstructorToCourseDto model)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -129,7 +133,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<ActionResult<CourseUserDto>> AllCoursetoInstructor()
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
