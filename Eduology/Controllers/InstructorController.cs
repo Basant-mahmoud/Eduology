@@ -125,7 +125,7 @@ namespace Eduology.Controllers
             else
                 return BadRequest(new { message = "Failed to add instructor to the course." });
         }
-        [HttpGet("AllCoursetoInstructor/{instructorid}")]
+        [HttpGet("AllCoursetoInstructor")]
         [Authorize(Roles = "Instructor")]
         public async Task<ActionResult<CourseUserDto>> AllCoursetoInstructor()
         {
