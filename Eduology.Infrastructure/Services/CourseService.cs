@@ -94,10 +94,8 @@ namespace Eduology.Infrastructure.Services
 
         public async Task<CourseDetailsDto> GetByIdAsync(string ID, string UserID,string role)
         {
-            bool isEnrolledStudent = await _courseRepository.ISStudentAssignedToCourse(UserID, ID);
-            bool isEnrolledInstructor = await _courseRepository.IsInstructorAssignedToCourse(UserID, ID);
-
-            if (!isEnrolledStudent && !isEnrolledInstructor)
+            bool IsRegisterd = await _courseRepository.IsUserAssignedToCourseAsyncByNmae(UserID,ID, role);
+            if (!IsRegisterd)
             {
                 return null;
             }
