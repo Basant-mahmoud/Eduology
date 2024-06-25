@@ -37,6 +37,7 @@ namespace Eduology.Infrastructure.Repositories
             {
                 AssignmentId = submission.AssignmentId,
                 URL = submission.URL,
+                courseId = submission.courseId,
             };
         }
 
