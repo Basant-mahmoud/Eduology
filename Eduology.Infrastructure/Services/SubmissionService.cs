@@ -58,7 +58,7 @@ namespace Eduology.Infrastructure.Services
                 throw new Exception("Not Vaild Operation");
             }
             var assigment = await _assignmentService.GetByIdAsync(deletesubmission.AssigmentId,userId, deletesubmission.CourseId);
-            var submission= await _submissionRepository.GetByIdAsync(deletesubmission.SubmissionId);
+            var submission= await _submissionRepository.GetByIdAsync(deletesubmission.SubmissionId,deletesubmission.CourseId);
             var student = await _studentService.GetStudentByIdAsync(userId);
             if (student == null)
             {
@@ -97,7 +97,7 @@ namespace Eduology.Infrastructure.Services
             {
                 throw new Exception("You Not Registered In This Course");
             }
-            var submission = await _submissionRepository.GetByIdAsync(id);
+            var submission = await _submissionRepository.GetByIdAsync(id,courseId);
             if (submission == null)
             {
                 throw new KeyNotFoundException("Submission not found.");

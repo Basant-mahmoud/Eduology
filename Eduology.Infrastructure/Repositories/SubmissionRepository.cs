@@ -41,7 +41,7 @@ namespace Eduology.Infrastructure.Repositories
             };
         }
 
-        public async Task<SubmissionDto> GetByIdAsync(int id)
+        public async Task<SubmissionDto> GetByIdAsync(int id,string _courseId)
         {
             var submission = await Context.submissions.FirstOrDefaultAsync(e=>e.SubmissionId==id);
             if (submission == null)
@@ -49,7 +49,8 @@ namespace Eduology.Infrastructure.Repositories
             return new SubmissionDto
             {
                 AssignmentId = submission.AssignmentId,
-                URL = submission.URL
+                URL = submission.URL,
+                courseId = _courseId
             };
         }
         public async Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deleteSubmissionDto)
