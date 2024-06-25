@@ -49,6 +49,10 @@ namespace Eduology.Infrastructure.Repositories
             {
                 return false;
             }
+            if (DeltedModule == null)
+            {
+                return false; 
+            }
 
             _context.Modules.Remove(DeltedModule);
             await _context.SaveChangesAsync();

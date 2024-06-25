@@ -3,6 +3,7 @@ using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
 using Eduology.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,8 +68,19 @@ namespace Eduology.Infrastructure.Repositories
             return deleteSubmissionDto;
         }
 
-/*        public async Task<List<SubmissionDto>> GetAllAsync()
+        public async Task<List<SubmissionDto>> GetSubmissionsByCourseAndAssignmentAsync(string courseId, int assignmentId)
         {
-        }*/
+            var submissions = await Context.submissions
+                .Where(s => s.Assignment.CourseId == courseId && s.AssignmentId == assignmentId)
+                .ToListAsync();
+
+            return submissions.Select(s => new SubmissionDto
+            {
+                SubmissionId = s.SubmissionId,
+                StudentId = s.StudentId,
+                AssignmentId = s.AssignmentId,
+                URL = s.URL
+            }).ToList();
+        }
     }
 }

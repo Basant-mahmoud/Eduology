@@ -86,5 +86,26 @@ namespace Eduology.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Instructor")]
+        [HttpPost("GetAllSubmission")]
+        public async Task<IActionResult> GetAllSubmission([FromBody] GetAllSubmisionDto getSubmissionDto)
+        {
+            var userId = User.FindFirst("uid")?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User ID not found in the token");
+            }
+            if (getSubmissionDto == null)
+            {
+                return BadRequest(new { message = "Submission data is null." });
+            }
+
+                var submissions = await _submissionService.GetAllSubmission(userId, getSubmissionDto);
+                if (submissions == null || !submissions.Any())
+                {
+                    return NotFound(new { message = "No submissions found for the given course and assignment." });
+                }
+                return Ok(submissions);
+        }
     }
 }
