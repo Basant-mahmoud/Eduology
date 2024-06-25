@@ -18,8 +18,8 @@ namespace Eduology.Controllers
             _submissionService = submissionService;
         }
         [Authorize(Roles = "Instructor")]
-        [HttpGet("GetById/{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("courses/{courseId}/Submissions/GetById/{submistionId}")]
+        public async Task<IActionResult> GetById(string courseId, int submistionId)
         {
             var userId = User.FindFirst("uid")?.Value;
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
@@ -27,7 +27,7 @@ namespace Eduology.Controllers
             {
                 return Unauthorized("User ID not found in the token");
             }
-            var submission = await _submissionService.GetByIdAsync(id,userId,role);
+            var submission = await _submissionService.GetByIdAsync(submistionId, userId, courseId);
             if (submission == null)
                 return NotFound();
             return Ok(submission);
@@ -59,7 +59,7 @@ namespace Eduology.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [Authorize(Roles = "Student")]
+        [Authorize(Roles = "Instructor")]
         [HttpDelete("DeleteSubmission")]
         public async Task<IActionResult> DeleteSubmission([FromBody] DeleteSubmissionDto deleteSubmissionDto)
         {
@@ -74,7 +74,7 @@ namespace Eduology.Controllers
 
             try
             {
-                var deletesubmission = await _submissionService.DeleteAsync(deleteSubmissionDto,userId,role);
+                var deletesubmission = await _submissionService.DeleteAsync(deleteSubmissionDto,userId);
                 return Ok(deleteSubmissionDto);
             }
             catch (ArgumentException ex)

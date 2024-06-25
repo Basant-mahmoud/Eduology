@@ -50,14 +50,14 @@ namespace Eduology.Infrastructure.Services
             }
             return await _submissionRepository.CreateAsync(submission,userId);
         }
-        public async Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deletesubmission,string userId, string role)
+        public async Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deletesubmission,string userId)
         {
-            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, role);
+            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, deletesubmission.CourseId);
             if (!IsRegistered)
             {
                 throw new Exception("Not Vaild Operation");
             }
-            var assigment = await _assignmentService.GetByIdAsync(deletesubmission.AssigmentId,userId, role);
+            var assigment = await _assignmentService.GetByIdAsync(deletesubmission.AssigmentId,userId, deletesubmission.CourseId);
             var submission= await _submissionRepository.GetByIdAsync(deletesubmission.SubmissionId);
             var student = await _studentService.GetStudentByIdAsync(userId);
             if (student == null)
@@ -90,9 +90,9 @@ namespace Eduology.Infrastructure.Services
 
       
 
-        public async Task<SubmissionDto> GetByIdAsync(int id, string userId, string role)
+        public async Task<SubmissionDto> GetByIdAsync(int id, string userId,string courseId)
         {
-            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, role);
+            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, courseId);
             if (!IsRegistered)
             {
                 throw new Exception("You Not Registered In This Course");
@@ -107,7 +107,7 @@ namespace Eduology.Infrastructure.Services
         }
         public async Task<List<SubmissionDto>> GetAllSubmission(string userId, GetAllSubmisionDto submissionDto)
         {
-            if (submissionDto == null || string.IsNullOrEmpty(submissionDto.CourseId) || string.IsNullOrEmpty(userId) || submissionDto.AssignmentId == null || submissionDto.SubmissionId == null)
+            if (submissionDto == null || string.IsNullOrEmpty(submissionDto.CourseId) || string.IsNullOrEmpty(userId) || submissionDto.AssignmentId == null )
             {
                 return new List<SubmissionDto>();
             }
@@ -124,7 +124,7 @@ namespace Eduology.Infrastructure.Services
                 return new List<SubmissionDto>();
             }
 
-            return await _submissionRepository.GetSubmissionsByCourseAndAssignmentAsync(submissionDto.CourseId, submissionDto.SubmissionId);
+            return await _submissionRepository.GetSubmissionsByCourseAndAssignmentAsync(submissionDto.CourseId, submissionDto.AssignmentId);
         }
 
     }

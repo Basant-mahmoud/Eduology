@@ -42,7 +42,7 @@ namespace Eduology.Infrastructure.Repositories
 
         public async Task<SubmissionDto> GetByIdAsync(int id)
         {
-            var submission = await Context.submissions.FindAsync(id);
+            var submission = await Context.submissions.FirstOrDefaultAsync(e=>e.SubmissionId==id);
             if (submission == null)
                 return null;
             return new SubmissionDto
@@ -72,6 +72,7 @@ namespace Eduology.Infrastructure.Repositories
 
             return submissions.Select(s => new SubmissionDto
             {
+                courseId= courseId,
                 AssignmentId = s.AssignmentId,
                 URL = s.URL
             }).ToList();
