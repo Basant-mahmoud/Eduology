@@ -105,16 +105,27 @@ namespace Eduology.Infrastructure.Services
 
             return submission;
         }
-       /* public async Task<List<SubmissionDto>> GetAllAsync(string userId, string role)
+        public async Task<List<SubmissionDto>> GetAllSubmission(string userId, GetAllSubmisionDto submissionDto)
         {
-            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, role);
-            if (!IsRegistered)
+            if (submissionDto == null || string.IsNullOrEmpty(submissionDto.CourseId) || string.IsNullOrEmpty(userId) || submissionDto.AssignmentId == null || submissionDto.SubmissionId == null)
             {
-                throw new Exception("You Not Registered In This Course");
+                return new List<SubmissionDto>();
             }
-            var submissions = _submissionRepository.GetAll();
-            return submissions;
-        }*/
+
+            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(userId, submissionDto.CourseId);
+            if (!isInstructorAssigned)
+            {
+                return new List<SubmissionDto>();
+            }
+
+            var isCourseExist = await _courseRepository.GetByIdAsync(submissionDto.CourseId);
+            if (isCourseExist == null)
+            {
+                return new List<SubmissionDto>();
+            }
+
+            return await _submissionRepository.GetSubmissionsByCourseAndAssignmentAsync(submissionDto.CourseId, submissionDto.SubmissionId);
+        }
 
     }
 }
