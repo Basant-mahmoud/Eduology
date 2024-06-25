@@ -56,7 +56,7 @@ namespace Eduology.Infrastructure.Repositories
         public async Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deleteSubmissionDto)
         {
            
-            var submission = await Context.submissions.FindAsync(deleteSubmissionDto.SubmissionId);
+            var submission = await Context.submissions.FirstOrDefaultAsync(e=>e.SubmissionId== deleteSubmissionDto.SubmissionId);
             if (submission == null)
                 return null;
 
