@@ -16,7 +16,7 @@ namespace Eduology.Application.Utilities
         }
         public static bool IsValidPhoneNumber(string phoneNumber)
         {
-            return !string.IsNullOrWhiteSpace(phoneNumber) && Regex.IsMatch(phoneNumber, @"^\+[0-9]\d{1,11}$");
+            return !string.IsNullOrWhiteSpace(phoneNumber) && Regex.IsMatch(phoneNumber, @"^\+[0-9]\d{10,15}$");
         }
 
         public static bool IsValidPassword(string password)

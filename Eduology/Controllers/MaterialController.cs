@@ -13,13 +13,13 @@ namespace Eduology.Controllers
     public class MaterialController : ControllerBase
     {
         private readonly IMaterialService _materialService;
-      //  private readonly IWebHostEnvironment _webHostEnvironment;
+       private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public MaterialController(IMaterialService materialService)
+        public MaterialController(IMaterialService materialService, IWebHostEnvironment webHostEnvironment)
         {
             _materialService = materialService;
           
-           // _webHostEnvironment = webHostEnvironment;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         private string GetUserId()
@@ -27,30 +27,58 @@ namespace Eduology.Controllers
             return User.FindFirst("uid")?.Value;
         }
 
-        [HttpPost("AddMaterial")]
+        [HttpPost("AddMaterail")]
         [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> AddMaterial([FromBody] MaterialDto materialDto)
+        public async Task<IActionResult> AddMaterail([FromForm] IFormFile file, [FromForm] string courseId, [FromForm] string moduleId)
         {
             var userId = GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
             }
-            if (!ModelState.IsValid)
+
+            if (file == null || file.Length == 0)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new { message = "No file uploaded" });
             }
+
+            var uploadsFolderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+            if (!Directory.Exists(uploadsFolderPath))
+            {
+                Directory.CreateDirectory(uploadsFolderPath);
+            }
+
+            var filePath = Path.Combine(uploadsFolderPath, file.FileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var fileUrl = Path.Combine("uploads", file.FileName);
+            var fileDto = new FileDto
+            {
+                URL = fileUrl,
+                Title = file.FileName
+            };
+
+            var materialDto = new MaterialDto
+            {
+                CourseId = courseId,
+                Module = moduleId,
+                FileURLs = new List<FileDto> { fileDto }
+            };
 
             var success = await _materialService.AddMaterialAsync(userId, materialDto);
             if (!success)
             {
-                return NotFound(new { message = "Failed to add material. Input is not correct." });
+                return BadRequest(new { message = "Failed to add material" });
             }
 
-            return Ok(new { message = "Material added successfully." });
+            return Ok(new { message = "File uploaded and material added successfully", fileUrl });
         }
+    
 
-        [HttpPost("GetMaterialsToInstructor")]
+    [HttpPost("GetMaterialsToInstructor")]
         [Authorize(Roles = "Instructor")]
         public async Task<ActionResult<List<GetMaterialDto>>> GetMaterialsToInstructor([FromBody] CourseUserRequestDto requestDto)
         {
