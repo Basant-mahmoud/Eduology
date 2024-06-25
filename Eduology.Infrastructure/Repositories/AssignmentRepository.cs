@@ -82,7 +82,7 @@ namespace Eduology.Infrastructure.Repositories
                 return null;
             return assignment;
         }
-        async Task<Assignment> IAssignmentRepository.UpdateAsync(int id, AssignmentDto assignment)
+        public async Task<Assignment> UpdateAsync(int id, AssignmentDto assignment)
         {
             var _assignment = await _context.Assignments.FindAsync(id);
             if (_assignment == null)
@@ -96,6 +96,8 @@ namespace Eduology.Infrastructure.Repositories
             _assignment.Deadline = assignment.Deadline;
             _assignment.CourseId = assignment.CourseId;
              _context.Assignments.Update(_assignment);
+            await _context.SaveChangesAsync();
+
             return _assignment;
         }
         public async Task<bool> DeleteAsync(int id)
