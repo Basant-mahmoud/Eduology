@@ -12,7 +12,7 @@ namespace Eduology.Domain.Models
     public class Course
     {
         public String  id { get; set; }
-        public string courseName { get; set; }
+        public string Name { get; set; }
         [Required]
         public string? CourseCode { get; set; }
         public string? Description { get; set; }

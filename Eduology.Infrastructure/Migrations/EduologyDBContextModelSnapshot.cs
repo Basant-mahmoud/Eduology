@@ -214,15 +214,15 @@ namespace Eduology.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("OrganizationID")
                         .HasColumnType("int");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
-
-                    b.Property<string>("courseName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 

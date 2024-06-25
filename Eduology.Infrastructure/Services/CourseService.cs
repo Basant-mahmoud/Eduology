@@ -34,7 +34,7 @@ namespace Eduology.Infrastructure.Services
             Course course = new Course
             {
                 id = Guid.NewGuid().ToString(),
-                courseName = courseDto.Name,
+                Name = courseDto.Name,
                 CourseCode = courseCode,
                 Year = courseDto.Year,
                 OrganizationID = courseDto.OrganizationId,
@@ -64,7 +64,7 @@ namespace Eduology.Infrastructure.Services
             var courseDetails = courses.Select(c => new CourseDetailsDto
             {
                 CourseId = c.id,
-                CourseName = c.courseName,
+                CourseName = c.Name,
                 CourseCode = c.CourseCode,
                 Instructors = c.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
                 students = c.StudentCourses.Select(sc => sc.Student.Name).ToList()

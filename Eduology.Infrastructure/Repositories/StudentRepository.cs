@@ -117,7 +117,7 @@ namespace Eduology.Infrastructure.Repositories
             {
                 CourseId = course.id,
                 Name = student.Name,
-                CourseName = course.courseName,
+                CourseName = course.Name,
                 CourseDescription = course.Description,
                 year = course.Year
             }).ToList();
