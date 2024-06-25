@@ -111,7 +111,11 @@ namespace Eduology.Infrastructure.Services
                 return null;
             }
             var announcements = await _announcementRepository.GetByCourseIdAsync(courseId);
-            return announcements.Select(ConvertToDto); 
+            if (announcements == null || !announcements.Any())
+            {
+                return new List<AnnouncementDto>();
+            }
+            return announcements.Select(ConvertToDto);
         }
         public async Task<IEnumerable<AnnouncementDto>> GetAnnouncementsToByStudentCourseIdAsync(string studentid, string courseId)
         {
@@ -131,6 +135,10 @@ namespace Eduology.Infrastructure.Services
                 return null;
             }
             var announcements = await _announcementRepository.GetByCourseIdAsync(courseId);
+            if (announcements == null || !announcements.Any())
+            {
+                return new List<AnnouncementDto>();
+            }
             return announcements.Select(ConvertToDto);
         }
 
