@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Eduology.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class inti : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -184,8 +184,8 @@ namespace Eduology.Infrastructure.Migrations
                 name: "Courses",
                 columns: table => new
                 {
-                    CourseId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    courseName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CourseCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Year = table.Column<int>(type: "int", nullable: false),
@@ -194,7 +194,7 @@ namespace Eduology.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Courses", x => x.CourseId);
+                    table.PrimaryKey("PK_Courses", x => x.id);
                     table.ForeignKey(
                         name: "FK_Courses_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
@@ -233,7 +233,7 @@ namespace Eduology.Infrastructure.Migrations
                         name: "FK_Announcements_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
-                        principalColumn: "CourseId",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.NoAction);
                 });
 
@@ -263,7 +263,7 @@ namespace Eduology.Infrastructure.Migrations
                         name: "FK_Assignments_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
-                        principalColumn: "CourseId",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.NoAction);
                 });
 
@@ -287,7 +287,7 @@ namespace Eduology.Infrastructure.Migrations
                         name: "FK_courseInstructors_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
-                        principalColumn: "CourseId",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.NoAction);
                 });
 
@@ -307,7 +307,7 @@ namespace Eduology.Infrastructure.Migrations
                         name: "FK_Modules_Courses_courseId",
                         column: x => x.courseId,
                         principalTable: "Courses",
-                        principalColumn: "CourseId",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -331,7 +331,7 @@ namespace Eduology.Infrastructure.Migrations
                         name: "FK_StudentCourses_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
-                        principalColumn: "CourseId",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.NoAction);
                 });
 
@@ -408,7 +408,7 @@ namespace Eduology.Infrastructure.Migrations
                         name: "FK_Materials_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
-                        principalColumn: "CourseId",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Materials_Modules_ModuleId",

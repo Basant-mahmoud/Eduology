@@ -153,7 +153,7 @@ namespace Eduology.Infrastructure.Services
             }
             return announcements.Select(a => new AllAnnoncemetDto
             {
-                coursename = a.Course.Name,
+                coursename = a.Course.courseName,
                 instructorname = a.Instructor.Name, 
                 Content = a.Content,
                 CreatedAT = a.CreatedAT

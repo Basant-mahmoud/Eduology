@@ -33,8 +33,8 @@ namespace Eduology.Infrastructure.Services
 
             Course course = new Course
             {
-                CourseId = Guid.NewGuid().ToString(),
-                Name = courseDto.Name,
+                id = Guid.NewGuid().ToString(),
+                courseName = courseDto.Name,
                 CourseCode = courseCode,
                 Year = courseDto.Year,
                 OrganizationID = courseDto.OrganizationId,
@@ -44,7 +44,7 @@ namespace Eduology.Infrastructure.Services
             courseCreationDetailsDto details = new courseCreationDetailsDto
             {
                 CourseCode = courseCode,
-                Id = course.CourseId,
+                Id = course.id,
             };
             return details;
         }
@@ -63,8 +63,8 @@ namespace Eduology.Infrastructure.Services
                 return Enumerable.Empty<CourseDetailsDto>();
             var courseDetails = courses.Select(c => new CourseDetailsDto
             {
-                CourseId = c.CourseId,
-                CourseName = c.Name,
+                CourseId = c.id,
+                CourseName = c.courseName,
                 CourseCode = c.CourseCode,
                 Instructors = c.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
                 students = c.StudentCourses.Select(sc => sc.Student.Name).ToList()

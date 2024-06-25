@@ -31,7 +31,7 @@ namespace Eduology.Infrastructure.Repositories
             {
                 return null;
             }
-            var courseExists = await _context.Courses.AnyAsync(c => c.CourseId == announcement.CourseId);
+            var courseExists = await _context.Courses.AnyAsync(c => c.id == announcement.CourseId);
             if (!courseExists)
             {
                 return null;
@@ -42,7 +42,7 @@ namespace Eduology.Infrastructure.Repositories
         }
         public async Task<bool> CourseExistsAsync(string courseId)
         {
-            return await _context.Courses.AnyAsync(c => c.CourseId == courseId);
+            return await _context.Courses.AnyAsync(c => c.id == courseId);
         }
         public async Task<bool> DeleteAsync(int id)
         {

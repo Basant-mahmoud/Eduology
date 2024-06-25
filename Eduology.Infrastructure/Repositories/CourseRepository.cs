@@ -79,13 +79,13 @@ namespace Eduology.Infrastructure.Repositories
                 .ThenInclude(ci => ci.Instructor)
                 .Include(c => c.StudentCourses)
                 .ThenInclude(sc => sc.Student)
-                .FirstOrDefaultAsync(c => c.CourseId == id);
+                .FirstOrDefaultAsync(c => c.id == id);
             if (course == null)
                 return null;
             return new CourseDetailsDto
             {
-                CourseId = course.CourseId,
-                CourseName = course.Name,
+                CourseId = course.id,
+                CourseName = course.courseName,
                 CourseCode = course.CourseCode,
                 Instructors = course.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
                 students = course.StudentCourses.Select(sc => sc.Student.Name).ToList(),
@@ -98,7 +98,7 @@ namespace Eduology.Infrastructure.Repositories
             var _course = await _context.Courses.FindAsync(id);
             if (_course == null)
                 return null;
-            _course.Name = course.Name;
+            _course.courseName = course.Name;
             _course.Year = course.Year;
             _context.SaveChanges();
             return _course;
@@ -110,13 +110,13 @@ namespace Eduology.Infrastructure.Repositories
                     .ThenInclude(ci => ci.Instructor)
                 .Include(c => c.StudentCourses)
                     .ThenInclude(sc => sc.Student)
-                .FirstOrDefaultAsync(c => c.Name == name);
+                .FirstOrDefaultAsync(c => c.courseName == name);
             if (course == null)
                 return null;
             return new CourseDetailsDto
             {
-                CourseId = course.CourseId,
-                CourseName = course.Name,
+                CourseId = course.id,
+                CourseName = course.courseName,
                 CourseCode = course.CourseCode,
                 Description = course.Description,
                 Instructors = course.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
@@ -148,7 +148,7 @@ namespace Eduology.Infrastructure.Repositories
             var courseInstructor = await _context.courseInstructors
                 .Include(ci => ci.Instructor)
                 .Include(ci => ci.course)
-        .FirstOrDefaultAsync(ci => ci.InstructorId == instructorId && ci.course.Name == courseName);
+        .FirstOrDefaultAsync(ci => ci.InstructorId == instructorId && ci.course.courseName == courseName);
 
             return courseInstructor != null;
         }
@@ -158,7 +158,7 @@ namespace Eduology.Infrastructure.Repositories
             var studentCourse = await _context.StudentCourses
                 .Include(sc => sc.Student)
                 .Include(sc => sc.Course)
-                .FirstOrDefaultAsync(sc => sc.Student.Id == studentId && sc.Course.Name == courseName);
+                .FirstOrDefaultAsync(sc => sc.Student.Id == studentId && sc.Course.courseName == courseName);
 
             return studentCourse != null;
         }

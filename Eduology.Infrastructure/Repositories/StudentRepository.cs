@@ -91,7 +91,7 @@ namespace Eduology.Infrastructure.Repositories
             var courseStudent = new StudentCourse
             {
                 StudentId = studentId,
-                CourseId = course.CourseId
+                CourseId = course.id
             };
 
             _context.StudentCourses.Add(courseStudent);
@@ -115,9 +115,9 @@ namespace Eduology.Infrastructure.Repositories
 
             var courseDtos = courseStudents.Select(course => new CourseUserDto
             {
-                CourseId = course.CourseId,
+                CourseId = course.id,
                 Name = student.Name,
-                CourseName = course.Name,
+                CourseName = course.courseName,
                 CourseDescription = course.Description,
                 year = course.Year
             }).ToList();
