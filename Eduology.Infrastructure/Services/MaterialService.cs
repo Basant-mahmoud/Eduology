@@ -30,23 +30,18 @@ namespace Eduology.Infrastructure.Services
     
         public async Task<bool> AddMaterialAsync(string instructorId, MaterialDto materialDto)
         {
-            if (materialDto == null ||
-                string.IsNullOrEmpty(materialDto.CourseId) ||
-                string.IsNullOrEmpty(instructorId) ||
-                string.IsNullOrEmpty(materialDto.Module) ||
-                materialDto.FileURLs == null || materialDto.FileURLs.Count == 0)
+            var exsitingcourse = await _courseRepository.GetByIdAsync(materialDto.CourseId);
+            if (exsitingcourse == null)
             {
-                return false;
+                throw new Exception(" course not  found.");
             }
 
-            // Check if the instructor is assigned to the course
             var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(instructorId, materialDto.CourseId);
             if (!isInstructorAssigned)
             {
-                return false;
+                throw new Exception(" Instructor not register to this course.");
             }
-
-            // Get the module by name within the course 
+           
             var moduleDto = new ModuleDto
             {
                 CourseId = materialDto.CourseId,
@@ -55,7 +50,7 @@ namespace Eduology.Infrastructure.Services
             var existingModule = await _moduleRepository.GetModuleByNameAsync(moduleDto);
             if (existingModule == null)
             {
-                return false;
+                throw new Exception("Module not found plz add module frist");
             }
 
             var material = new Material
@@ -71,13 +66,11 @@ namespace Eduology.Infrastructure.Services
                 var fileId = Guid.NewGuid().ToString(); 
                 var filePath = "/uploads/"; 
 
-                // Save the file to the server
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await fileDto.File.CopyToAsync(stream);
                 }
 
-                // Create File entity
                 var file = new File
                 {
                     FileId = fileId,
