@@ -47,7 +47,7 @@ namespace Eduology.Infrastructure.Repositories
             if (submission == null)
                 return null;
             return new SubmissionDto
-            {
+            { 
                 AssignmentId = submission.AssignmentId,
                 URL = submission.URL
             };
