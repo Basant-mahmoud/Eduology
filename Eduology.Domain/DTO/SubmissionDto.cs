@@ -8,9 +8,8 @@ namespace Eduology.Domain.DTO
 {
     public class SubmissionDto
     {
-        public int SubmissionId { get; set; }
         public string URL { get; set; }
-        public string StudentId { get; set; }
         public int AssignmentId { get; set; } 
+        public string courseId { get; set; }
     }
 }

@@ -21,12 +21,12 @@ namespace Eduology.Infrastructure.Repositories
             Context = eduologyDBContext;
             assignmentRepository = _assignmentRepository;
         }
-        public async Task<SubmissionDto> CreateAsync(SubmissionDto submission)
+        public async Task<SubmissionDto> CreateAsync(SubmissionDto submission,string userId)
         {
             Submission _submission = new Submission
             {
                 AssignmentId = submission.AssignmentId,
-                StudentId = submission.StudentId,
+                StudentId = userId,
                 TimeStamp = DateTime.Now,
                 URL = submission.URL,
                 Assignment = await assignmentRepository.GetByIdAsync(submission.AssignmentId),
@@ -35,8 +35,6 @@ namespace Eduology.Infrastructure.Repositories
             await Context.SaveChangesAsync();
             return new SubmissionDto
             {
-                SubmissionId = _submission.SubmissionId,
-                StudentId = _submission.StudentId,
                 AssignmentId = submission.AssignmentId,
                 URL = submission.URL,
             };
@@ -50,8 +48,6 @@ namespace Eduology.Infrastructure.Repositories
             return new SubmissionDto
             {
                 AssignmentId = submission.AssignmentId,
-                StudentId = submission.StudentId,
-                SubmissionId = submission.SubmissionId,
                 URL = submission.URL
             };
         }
@@ -76,8 +72,6 @@ namespace Eduology.Infrastructure.Repositories
 
             return submissions.Select(s => new SubmissionDto
             {
-                SubmissionId = s.SubmissionId,
-                StudentId = s.StudentId,
                 AssignmentId = s.AssignmentId,
                 URL = s.URL
             }).ToList();

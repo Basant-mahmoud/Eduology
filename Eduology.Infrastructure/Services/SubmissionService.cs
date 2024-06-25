@@ -26,9 +26,9 @@ namespace Eduology.Infrastructure.Services
             _courseRepository = courseRepository;
         }
 
-        public async Task<SubmissionDto> CreateAsync(SubmissionDto submission,string userId, string role)
+        public async Task<SubmissionDto> CreateAsync(SubmissionDto submission,string userId,string role)
         {
-            bool IsRegistered =  await _courseRepository.ISStudentAssignedToCourse(userId, role);
+            bool IsRegistered =  await _courseRepository.ISStudentAssignedToCourse(userId,submission.courseId);
             if (!IsRegistered)
             {
                 throw new Exception("You Not Registered In This Course");
@@ -44,11 +44,11 @@ namespace Eduology.Infrastructure.Services
                 throw new InvalidOperationException("The assignment deadline has passed.");
             }
 
-            if (_studentService.GetStudentByIdAsync(submission.StudentId) == null)
+            if (_studentService.GetStudentByIdAsync(userId) == null)
             {
                 throw new ArgumentException("Invalid student ID.");
             }
-            return await _submissionRepository.CreateAsync(submission);
+            return await _submissionRepository.CreateAsync(submission,userId);
         }
         public async Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deletesubmission,string userId, string role)
         {
