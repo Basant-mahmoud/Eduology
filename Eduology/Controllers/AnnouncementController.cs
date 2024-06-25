@@ -93,10 +93,10 @@ namespace Eduology.Controllers
                 return BadRequest(new { message = "Course ID cannot be null or empty." });
             }
             var announcements = await _announcementService.GetAnnouncementsToInstructorByCourseIdAsync(userId, courseId);
-            if (announcements == null || !announcements.Any())
-            {
-                return NotFound(new { message = $"Course with ID {courseId} not found." });
-            }
+            //if (announcements == null || !announcements.Any())
+            //{
+            //    return NotFound(new { message = $"Course with ID {courseId} not found." });
+            //}
             return Ok(announcements);
         }
         [HttpGet("GetAnnouncementsToStudentByCourseId/{courseId}")]
@@ -113,10 +113,10 @@ namespace Eduology.Controllers
                 return BadRequest(new { message = "Course ID cannot be null or empty." });
             }
             var announcements = await _announcementService.GetAnnouncementsToByStudentCourseIdAsync(userId, courseId);
-            if (announcements == null || !announcements.Any())
-            {
-                return NotFound(new { message = $"Course with ID {courseId} not found." });
-            }
+            //if (announcements == null || !announcements.Any())
+            //{
+            //    return NotFound(new { message = $"Course with ID {courseId} not found." });
+            //}
             return Ok(announcements);
         }
 
@@ -130,10 +130,10 @@ namespace Eduology.Controllers
                 return Unauthorized(new { message = "User ID not found in the token" });
             }
             var announcement = await _announcementService.GetAllAnnouncementsForStudentAsync(userId);
-            if (announcement == null)
-            {
-                return NotFound(new { message = $"Student with id {userId} not found." });
-            }
+            //if (announcement == null)
+            //{
+            //    return NotFound(new { message = $"Student with id {userId} not found." });
+            //}
             return Ok(announcement);
         }
     }
