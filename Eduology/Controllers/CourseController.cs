@@ -117,5 +117,14 @@ namespace Eduology.Controllers
                 return NotFound(new { message = $"Course with id {id} not found." });
             return Ok(new { message = "Course deleted successfully" });
         }
+        [Authorize(Roles = "Admin")]
+        [HttpGet("GetByOrganizationId/{id}")]
+        public async Task<IActionResult> GetByOrganizationId(int id)
+        {
+            var courses = await _courseService.GetAllByOrganizationIdAsync(id);
+            if (courses == null)
+                return NotFound(new { message = $"Organization with id {id} not found." });
+            return Ok(courses);
+        }
     }
 }
