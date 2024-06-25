@@ -11,7 +11,7 @@ namespace Eduology.Domain.Interfaces
     {
         public Task<SubmissionDto> CreateAsync(SubmissionDto submission,string userId);
         public Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deletesubmision);
-        public Task<SubmissionDto> GetByIdAsync(int id);
+        public Task<SubmissionDto> GetByIdAsync(int id,string _courseId);
         Task<List<SubmissionDto>> GetSubmissionsByCourseAndAssignmentAsync(string courseId, int assignmentId);
 
     }
