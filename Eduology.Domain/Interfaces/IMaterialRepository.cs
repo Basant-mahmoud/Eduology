@@ -12,6 +12,6 @@ namespace Eduology.Domain.Interfaces
     public interface IMaterialRepository
     {
         Task<bool> AddMaterialAsync(Material material);
-        Task<bool> DeleteMatrialAsync(DeleteFileDto deletedfile);
+        Task<bool> DeleteMaterialAsync(DeleteFileDto deletedfile);
     }
 }

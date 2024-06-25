@@ -196,27 +196,28 @@ namespace Eduology.Infrastructure.Services
 
             return moduleWithMaterialsList;
         }
-        public async Task<bool> DeleteFileAsync(string instructorIid,DeleteFileDto deletefile)
+        public async Task<bool> DeleteFileAsync(string instructorId, DeleteFileDto deleteFile)
         {
-            if (deletefile == null ||
-                string.IsNullOrEmpty(deletefile.courseId) ||
-                string.IsNullOrEmpty(instructorIid) || string.IsNullOrEmpty(deletefile.Module)|| string.IsNullOrEmpty(deletefile.fileId))
+            if (deleteFile == null ||
+                string.IsNullOrEmpty(deleteFile.courseId) ||
+                string.IsNullOrEmpty(instructorId) ||
+                string.IsNullOrEmpty(deleteFile.Module) ||
+                string.IsNullOrEmpty(deleteFile.fileId))
             {
                 return false;
             }
-            // Check if the instructor is assigned to the course
-            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(instructorIid, deletefile.courseId);
+
+            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(instructorId, deleteFile.courseId);
             if (!isInstructorAssigned)
             {
                 return false;
             }
-            var iscourseexist = _courseRepository.GetByIdAsync(deletefile.courseId);
-            if (iscourseexist == null) { return false; }
-            var success = await _matrialRepository.DeleteMatrialAsync(deletefile);
+
+            var success = await _matrialRepository.DeleteMaterialAsync(deleteFile);
             return success;
         }
 
-       
+
     }
 }
 
