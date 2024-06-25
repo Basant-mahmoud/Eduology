@@ -16,6 +16,7 @@ namespace Eduology.Application.Interface
         Task<CourseDetailsDto> GetByNameAsync(string name,string UserID,string role);
         Task<IEnumerable<CourseDetailsDto>> GetAllAsync(string UserID,string role);
         Task<bool> UpdateAsync(String id, CourseDto course);
+        Task<List<Course>> GetAllByOrganizationIdAsync(int organizationId);
 
     }
 }

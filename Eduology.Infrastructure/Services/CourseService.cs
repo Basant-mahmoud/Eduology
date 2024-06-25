@@ -119,5 +119,14 @@ namespace Eduology.Infrastructure.Services
                 return null;
             return course;
         }
+
+        public async Task<List<Course>> GetAllByOrganizationIdAsync(int organizationId)
+        {
+            bool isExist = await _courseRepository.OrganizationExistsAsync(organizationId);
+            if (!isExist)
+                return null;
+            var courses = await _courseRepository.GetAllByOrganizationIdAsync(organizationId);
+            return courses;
+        }
     }
 }

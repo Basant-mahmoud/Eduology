@@ -186,6 +186,15 @@ namespace Eduology.Infrastructure.Repositories
             }
             return false;
         }
+
+        public async Task<List<Course>> GetAllByOrganizationIdAsync(int organizationId)
+        {
+            var courseList = await _context.Courses
+                                           .Where(c => c.OrganizationID == organizationId)
+                                           .ToListAsync();
+            return courseList;
+        }
+
     }
 
 }
