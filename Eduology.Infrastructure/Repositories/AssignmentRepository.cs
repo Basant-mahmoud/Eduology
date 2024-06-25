@@ -84,15 +84,25 @@ namespace Eduology.Infrastructure.Repositories
         }
         public async Task<Assignment> UpdateAsync(int id, AssignmentDto assignment)
         {
-            var _assignment = await _context.Assignments.FindAsync(id);
-            if (_assignment == null)
+            var _assignment = await _context.Assignments
+                                                .Include(a => a.File) 
+                                                .FirstOrDefaultAsync(a => a.AssignmentId == id); if (_assignment == null)
                 throw new KeyNotFoundException($"Assignment with Id {id} not found.");
             _assignment.Description = assignment.Description;
-            _assignment.File = new AssignmentFile
+            if (_assignment.File != null)
             {
-                Title = assignment.fileURLs.Title,
-                URL = assignment.fileURLs.URL,
-            };
+                _assignment.File.Title = assignment.fileURLs.Title;
+                _assignment.File.URL = assignment.fileURLs.URL;
+            }
+            else
+            {
+                _assignment.File = new AssignmentFile
+                {
+                    Title = assignment.fileURLs.Title,
+                    URL = assignment.fileURLs.URL,
+                };
+            }
+
             _assignment.Deadline = assignment.Deadline;
             _assignment.CourseId = assignment.CourseId;
              _context.Assignments.Update(_assignment);
