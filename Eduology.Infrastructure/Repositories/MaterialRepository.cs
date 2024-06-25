@@ -49,12 +49,14 @@ namespace Eduology.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> DeleteMatrialAsync(DeleteFileDto deletedfile)
+        public async Task<bool> DeleteMaterialAsync(DeleteFileDto deletedfile)
         {
             var file = await _context.Files
                 .Include(f => f.Material)
                 .ThenInclude(m => m.Module)
-                .FirstOrDefaultAsync(f => f.FileId == deletedfile.fileId && f.Material.CourseId == deletedfile.courseId && f.Material.Module.Name.ToLower() == deletedfile.Module.ToLower());
+                .FirstOrDefaultAsync(f => f.FileId == deletedfile.fileId &&
+                                           f.Material.CourseId == deletedfile.courseId &&
+                                           f.Material.Module.Name.ToLower() == deletedfile.Module.ToLower());
 
             if (file == null)
             {
@@ -62,10 +64,19 @@ namespace Eduology.Infrastructure.Repositories
             }
 
             _context.Files.Remove(file);
-            await _context.SaveChangesAsync();
-            return true;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
+
     }
-    }
+}
 
 

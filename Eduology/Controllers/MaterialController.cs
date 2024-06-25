@@ -13,13 +13,13 @@ namespace Eduology.Controllers
     public class MaterialController : ControllerBase
     {
         private readonly IMaterialService _materialService;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+      //  private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public MaterialController(IMaterialService materialService, IWebHostEnvironment webHostEnvironment)
+        public MaterialController(IMaterialService materialService)
         {
             _materialService = materialService;
           
-            _webHostEnvironment = webHostEnvironment;
+           // _webHostEnvironment = webHostEnvironment;
         }
 
         private string GetUserId()
@@ -97,25 +97,26 @@ namespace Eduology.Controllers
 
         [HttpDelete("DeleteFile")]
         [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> DeleteFile([FromBody] DeleteFileDto file)
+        public async Task<IActionResult> DeleteFile([FromBody] DeleteFileDto deleteFileDto)
         {
-            var userId = GetUserId();
+            var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
-                return Unauthorized(new { message = "User ID not found in the token" });
+                return Unauthorized("User ID not found in the token");
             }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var success = await _materialService.DeleteFileAsync(userId, file);
+            var success = await _materialService.DeleteFileAsync(userId, deleteFileDto);
             if (!success)
             {
-                return NotFound(new { message = $"File with Id {file.fileId} not found in Module {file.Module}." });
+                return NotFound(new { message = $"File with Id {deleteFileDto.fileId} not found in Module {deleteFileDto.Module}." });
             }
 
             return Ok(new { message = "File deleted successfully." });
         }
+
     }
 }
