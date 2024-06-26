@@ -28,7 +28,6 @@ namespace Eduology.Controllers
         {
             return User.FindFirst("uid")?.Value;
         }
-
         [HttpPost("AddMaterial")]
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> AddMaterial([FromForm] MaterialDto materialDto)
@@ -63,8 +62,21 @@ namespace Eduology.Controllers
                 {
                     await materialDto.File.CopyToAsync(stream);
                 }
-                //////////
-              //  var fileUrl = Path.Combine(filePath, materialDto.File.FileName);
+
+                // Open and read the file to ensure it was uploaded correctly
+                try
+                {
+                    using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                    {
+                        byte[] buffer = new byte[stream.Length];
+                        await stream.ReadAsync(buffer, 0, buffer.Length);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new { message = $"Failed to open and read the file: {ex.Message}" });
+                }
+
                 var fileDto = new FileDto { Title = materialDto.File.FileName, URL = filePath };
                 var success = await _materialService.AddMaterialAsync(userId, materialDto, fileDto);
 
@@ -80,6 +92,7 @@ namespace Eduology.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
 
 
         [HttpPost("GetMaterialsToInstructor")]
