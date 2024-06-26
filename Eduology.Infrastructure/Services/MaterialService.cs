@@ -27,64 +27,75 @@ namespace Eduology.Infrastructure.Services
             _courseRepository = courseRepository;
             _moduleRepository = moduleRepository;
         }
-    
+
+
+
         public async Task<bool> AddMaterialAsync(string instructorId, MaterialDto materialDto)
         {
-            var exsitingcourse = await _courseRepository.GetByIdAsync(materialDto.CourseId);
-            if (exsitingcourse == null)
+            try
             {
-                throw new Exception(" course not  found.");
-            }
-
-            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(instructorId, materialDto.CourseId);
-            if (!isInstructorAssigned)
-            {
-                throw new Exception(" Instructor not register to this course.");
-            }
-           
-            var moduleDto = new ModuleDto
-            {
-                CourseId = materialDto.CourseId,
-                Name = materialDto.Module.ToLower(),
-            };
-            var existingModule = await _moduleRepository.GetModuleByNameAsync(moduleDto);
-            if (existingModule == null)
-            {
-                throw new Exception("Module not found plz add module frist");
-            }
-
-            var material = new Material
-            {
-                InstructorId = instructorId,
-                CourseId = materialDto.CourseId,
-                ModuleId = existingModule.ModuleId,
-                Files = new List<File>()
-            };
-
-            foreach (var fileDto in materialDto.FileURLs)
-            {
-                var fileId = Guid.NewGuid().ToString(); 
-                var filePath = "/uploads/"; 
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                var existingCourse = await _courseRepository.GetByIdAsync(materialDto.CourseId);
+                if (existingCourse == null)
                 {
-                    await fileDto.File.CopyToAsync(stream);
+                    throw new Exception("Course not found.");
                 }
 
-                var file = new File
+                var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(instructorId, materialDto.CourseId);
+                if (!isInstructorAssigned)
                 {
-                    FileId = fileId,
-                    Title = fileDto.Title,
-                    URL = filePath + fileDto.File.FileName, // Adjust URL as per your file storage
-                    MaterialId = material.MaterialId // Ensure MaterialId is set correctly
+                    throw new Exception("Instructor is not assigned to this course.");
+                }
+
+                var moduleDto = new ModuleDto
+                {
+                    CourseId = materialDto.CourseId,
+                    Name = materialDto.Module.ToLower(),
+                };
+                var existingModule = await _moduleRepository.GetModuleByNameAsync(moduleDto);
+                if (existingModule == null)
+                {
+                    throw new Exception("Module not found. Please add the module first.");
+                }
+
+                var material = new Material
+                {
+                    InstructorId = instructorId,
+                    CourseId = materialDto.CourseId,
+                    ModuleId = existingModule.ModuleId,
+                    Files = new List<File>()
                 };
 
-                material.Files.Add(file);
+                foreach (var fileDto in materialDto.FileURLs)
+                {
+                    var fileId = Guid.NewGuid().ToString();
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads"); // Adjust the path as per your server setup
+                    var filePath = Path.Combine(uploadsFolder, fileDto.File.FileName);
+
+                    // Save the file to the server
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await fileDto.File.CopyToAsync(stream);
+                    }
+
+                    var file = new File
+                    {
+                        FileId = fileId,
+                        Title = fileDto.Title,
+                        URL = filePath, // Save the full path to access the file later
+                        MaterialId = material.MaterialId // Ensure MaterialId is set correctly
+                    };
+
+                    material.Files.Add(file);
+                }
+
+                var success = await _matrialRepository.AddMaterialAsync(material);
+                return success;
             }
+            catch (Exception ex)
+            {
 
-            var success = await _matrialRepository.AddMaterialAsync(material);
-
-            return success;
+                throw ex;
+              }
         }
 
         public async Task<ICollection<GetMaterialDto>> GetMaterialToInstructorsAsync(string instructorid,CourseUserRequestDto requestDto)
