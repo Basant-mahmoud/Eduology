@@ -25,12 +25,17 @@ namespace Eduology.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CourseDto course)
         {
+            var userId = User.FindFirst("uid")?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User ID not found in the token");
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var createdCourse = await _courseService.CreateAsync(course);
+            var createdCourse = await _courseService.CreateAsync(course,userId);
             if (createdCourse == null)
                 return BadRequest(ModelState);
             return CreatedAtAction(nameof(GetCourseById), new { id = createdCourse }, createdCourse);
@@ -91,7 +96,7 @@ namespace Eduology.Controllers
                 return NotFound();
             return Ok(course);
         }
-        [Authorize(Roles = "Instructor")]
+        [Authorize(Roles = "Admin")]
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> UpdateAsync(String id,[FromBody] CourseDto courseDto)
         {
@@ -101,7 +106,7 @@ namespace Eduology.Controllers
             }
 
             var updated = await _courseService.UpdateAsync(id,courseDto);
-            if (updated == null)
+            if (!updated) 
             {
                 return NotFound();
             }
@@ -125,6 +130,22 @@ namespace Eduology.Controllers
             if (courses == null)
                 return NotFound(new { message = $"Organization with id {id} not found." });
             return Ok(courses);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpGet("GetByIdForAdmin/{id}")]
+        public async Task<IActionResult> GetByIdForAdmin(string id)
+        {
+            var userId = User.FindFirst("uid")?.Value;
+            if (userId == null) return Unauthorized("Admin ID not found in the token");
+            try
+            {
+                CourseDetailsDto course = await _courseService.GetByIdForAdminAsync(id, userId);
+                return Ok(course);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
