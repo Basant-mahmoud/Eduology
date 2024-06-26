@@ -5,6 +5,7 @@ using Eduology.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace Eduology.Infrastructure.Services
@@ -21,7 +22,7 @@ namespace Eduology.Infrastructure.Services
             var student = await _studentRepository.GetStudentByIdAsync(studentId);
             if (student == null)
             {
-                return null;
+                throw new KeyNotFoundException($"Student with id {studentId} not found.");
             }
             return student;
         }
@@ -35,13 +36,13 @@ namespace Eduology.Infrastructure.Services
         {
             if (string.IsNullOrEmpty(userDto.Name) || string.IsNullOrEmpty(userDto.UserName) || string.IsNullOrEmpty(userDto.Email))
             {
-                return false;
+                throw new ValidationException("Name, UserName, and Email are required.");
             }
 
             var success = await _studentRepository.UpdateStudentAsync(studentId, userDto);
             if (!success)
             {
-                return false;
+                throw new InvalidOperationException($"Failed to update student with id {studentId}.");
             }
             return success;
         }
@@ -50,7 +51,7 @@ namespace Eduology.Infrastructure.Services
             var success = await _studentRepository.DeleteStudentAsync(studentId);
             if (!success)
             {
-                return false;
+                throw new KeyNotFoundException($"Student with id {studentId} not found.");
             }
             return success;
         }
@@ -58,20 +59,22 @@ namespace Eduology.Infrastructure.Services
         {
             var student = await _studentRepository.RegisterToCourseAsync(studentId, courseCode);
             if (student == null || student == false)
-                return false;
+            {
+                throw new ValidationException($"Failed to register student with id {studentId} to course {courseCode}.");
+            }
             return student;
         }
         public async Task<List<CourseUserDto>> GetAllCourseToSpecificStudentAsync(string studentId)
         {
             if (string.IsNullOrEmpty(studentId))
             {
-                return null;
+                throw new ValidationException("Student ID is required.");
             }
 
             var student = await _studentRepository.GetStudentByIdAsync(studentId);
             if (student == null)
             {
-                return null;
+                throw new KeyNotFoundException($"Student with id {studentId} not found.");
             }
 
             var courses = await _studentRepository.GetAllCourseToSpecificStudentAsync(studentId);
