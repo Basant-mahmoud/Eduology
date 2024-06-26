@@ -54,6 +54,10 @@ namespace Eduology.Infrastructure.Repositories
         {
             return await _context.Organizations.FirstOrDefaultAsync(o => o.Email == email);
         }
+        public async Task<Organization> GetByNameAsync(string name)
+        {
+            return await _context.Organizations.FirstOrDefaultAsync(o => o.Name == name);
+        }
         public async Task<List<ApplicationUser>> GetStudentsByOrganizationIdAsync(int organizationId)
         {
             var organization = await _context.Organizations

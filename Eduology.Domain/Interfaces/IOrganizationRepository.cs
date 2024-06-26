@@ -15,6 +15,7 @@ namespace Eduology.Domain.Interfaces
         Task DeleteAsync(int id);
         Task<bool> ExistsAsync(int id);
         Task<Organization> GetByEmailAsync(string email);
+        Task<Organization> GetByNameAsync(string name);
         Task<List<ApplicationUser>> GetStudentsByOrganizationIdAsync(int organizationId);
         Task<List<ApplicationUser>> GetInstructorToOrganizationIdAsync(int organizationId);
     }

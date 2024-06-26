@@ -2,8 +2,10 @@
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Infrastructure.Repositories;
+using Eduology.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace Eduology.Controllers
 {
@@ -34,12 +36,21 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetStudentById(string studentId)
         {
-            var student = await _StudentService.GetStudentByIdAsync(studentId);
-            if (student == null)
+            try
             {
-                 return NotFound(new { message = $"Student id{studentId} exists." });
+                var student = await _StudentService.GetStudentByIdAsync(studentId);
+                return Ok(student);
             }
-            return Ok(student);
+
+            catch (ValidationException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
 
         [HttpPut("Update/{studentId}")]
@@ -51,26 +62,30 @@ namespace Eduology.Controllers
                 return BadRequest(ModelState);
             }
 
-            var updated = await _StudentService.UpdateStudentAsync(studentId, studentDto);
-            if (!updated)
+            try
             {
-                return NotFound(new { message = $"Failed to update student with id {studentId} ." });
+                var updated = await _StudentService.UpdateStudentAsync(studentId, studentDto);
+                return Ok(new { message = "Student updated successfully" });
             }
-
-            return Ok(new { message = "Student updated successfully" });
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("delete/{studentId}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteStudentAsync(string studentId)
         {
-            var student = await _StudentService.DeleteStudentAsync(studentId);
-            if (!student)
+            try
             {
-                return NotFound(new { message = $"Student id{studentId} Not exists." });
+                var deleted = await _StudentService.DeleteStudentAsync(studentId);
+                return Ok(new { message = "Student deleted successfully" });
             }
-
-            return Ok(new { message = "Student deleted successfully" });
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
 
         [HttpPost("RegisterToCourse")]
@@ -88,11 +103,15 @@ namespace Eduology.Controllers
                 return BadRequest(ModelState);
             }
 
-            var success = await _StudentService.RegisterToCourseAsync(userId, model.CourseCode);
-            if (success)
+            try
+            {
+                var success = await _StudentService.RegisterToCourseAsync(userId, model.CourseCode);
                 return Ok(new { message = "Student added to the course successfully." });
-            else
-                return NotFound(new { message = "Failed to add student to the course." });
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpGet("AllCoursestoStudent")]
@@ -104,13 +123,20 @@ namespace Eduology.Controllers
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
             }
-            var student = await _StudentService.GetAllCourseToSpecificStudentAsync(userId);
-            if (student == null)
-            {
-                return NotFound(new { message = $"Student id {userId} not exists." });
-            }
 
-            return Ok(student);
+            try
+            {
+                var courses = await _StudentService.GetAllCourseToSpecificStudentAsync(userId);
+                return Ok(courses);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
         private string GetUserId()
         {

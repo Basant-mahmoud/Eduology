@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting;
+using Eduology.Domain.Models;
+
 namespace Eduology.Controllers
 {
     [Route("api/[controller]")]
@@ -13,21 +15,23 @@ namespace Eduology.Controllers
     public class MaterialController : ControllerBase
     {
         private readonly IMaterialService _materialService;
-        
 
-        public MaterialController(IMaterialService materialService)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public MaterialController(IMaterialService materialService, IWebHostEnvironment webHostEnvironment)
         {
             _materialService = materialService;
-          
-        }
 
+             _webHostEnvironment = webHostEnvironment;
+        }
         private string GetUserId()
         {
             return User.FindFirst("uid")?.Value;
         }
+
         [HttpPost("AddMaterial")]
         [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> AddMaterial([FromForm] MaterialDto materialDto)
+        public async Task<IActionResult> AddMaterial([FromForm] IFormFile file, [FromForm] string courseId, [FromForm] string moduleName)
         {
             try
             {
@@ -36,16 +40,47 @@ namespace Eduology.Controllers
                 {
                     return Unauthorized(new { message = "User ID not found in the token" });
                 }
+
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
 
-                // Ensure the file is included in the request
-                if (materialDto.FileURLs == null || materialDto.FileURLs.Count == 0 || materialDto.FileURLs.Any(f => f.File == null))
+                if (file == null || file.Length == 0)
                 {
-                    return BadRequest(new { message = "Files are required." });
+                    return BadRequest(new { message = "No file uploaded" });
                 }
+
+                if (string.IsNullOrEmpty(_webHostEnvironment.WebRootPath))
+                {
+                    return StatusCode(500, new { message = "WebRootPath is not configured" });
+                }
+
+                var uploadsFolderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+                if (!Directory.Exists(uploadsFolderPath))
+                {
+                    Directory.CreateDirectory(uploadsFolderPath);
+                }
+
+                var filePath = Path.Combine(uploadsFolderPath, file.FileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                var fileUrl = Path.Combine("uploads", file.FileName);
+                var fileDto = new FileDto
+                {
+                    File = fileUrl,
+                    Title = file.FileName
+                };
+
+                var materialDto = new MaterialDto
+                {
+                    CourseId = courseId,
+                    Module = moduleName,
+                    FileURLs = new List<FileDto> { fileDto }
+                };
 
                 var success = await _materialService.AddMaterialAsync(userId, materialDto);
                 if (!success)
@@ -53,13 +88,15 @@ namespace Eduology.Controllers
                     return NotFound(new { message = "Failed to add material. Input is not correct." });
                 }
 
-                return Ok(new { message = "Material added successfully." });
+                return Ok(new { message = "File uploaded and material added successfully", fileUrl });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                // Log the exception here
+                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
             }
         }
+
 
         [HttpPost("GetMaterialsToInstructor")]
         [Authorize(Roles = "Instructor")]
