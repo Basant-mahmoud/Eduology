@@ -31,14 +31,15 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetInstructors()
         {
-            var instructors = await _instructorService.GetAllInstructorsAsync();
-            if (instructors == null || !instructors.Any())
+            try
             {
-                return Ok(new List<UserDto>());
+                var instructors = await _instructorService.GetAllInstructorsAsync();
+                return Ok(instructors);
+
             }
-            else
+            catch (Exception ex)
             {
-                return Ok(instructors); 
+                return BadRequest(new { message = ex.Message });
             }
         }
        
@@ -47,66 +48,93 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetInstructorById(string id)
         {
-            var instructor = await _instructorService.GetInstructorByIdAsync(id);
-            if (instructor == null)
+            try
             {
-                return NotFound(new { message = $"Instructor id {id} not found" });
+                var instructor = await _instructorService.GetInstructorByIdAsync(id);
+                return Ok(instructor);
             }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+           
 
-            return Ok(instructor);
+           
         }
 
         [HttpGet("SearchInstructorByName/{name}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetInstructorByName(string name)
         {
-            var instructor = await _instructorService.GetInstructorByNameAsync(name);
-            if (instructor == null)
+            try
             {
-                return NotFound(new { message = $"Instructor name {name} not found" });
+                var instructor = await _instructorService.GetInstructorByNameAsync(name);
+
+                return Ok(instructor);
+
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+
             }
 
-            return Ok(instructor);
         }
 
         [HttpGet("SearchInstructorByUserName/{username}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetInstructorByUserName(string username)
         {
-            var instructor = await _instructorService.GetInstructorByUserNameAsync(username);
-            if (instructor == null)
+            try
             {
-                return NotFound(new { message = $"Instructor user name {username} not found" });
+                var instructor = await _instructorService.GetInstructorByUserNameAsync(username);
+                return Ok(instructor);
+
+
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+
             }
 
-            return Ok(instructor);
         }
 
         [HttpPut("UpdateInstructor/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateInstructor(string id, [FromBody] UserDto updateInstructorDto)
         {
-            var result = await _instructorService.UpdateInstructorAsync(id, updateInstructorDto);
-            if (!result)
+            try
             {
-                return NotFound(new { message = $"Instructor Id {id} not found" });
-            }
+                var result = await _instructorService.UpdateInstructorAsync(id, updateInstructorDto);
+                var updatedInstructor = await _instructorService.GetInstructorByIdAsync(id);
+                return Ok(updatedInstructor);
 
-            var updatedInstructor = await _instructorService.GetInstructorByIdAsync(id);
-            return Ok(updatedInstructor);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+
+            }
         }
 
         [HttpDelete("DeleteInstructor/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteInstructor(string id)
         {
-            var result = await _instructorService.DeleteInstructorAsync(id);
-            if (!result)
+            try
             {
-                return NotFound(new { message = $"Instructor Id {id} not found" });
+                var result = await _instructorService.DeleteInstructorAsync(id);
+                return Ok(new { message = "Instructor deleted successfully" });
+
             }
 
-            return Ok(new { message = "Instructor deleted successfully" });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+
+            }
+
         }
         /// 
         [HttpPost("RegisterToCourse")]
@@ -122,12 +150,19 @@ namespace Eduology.Controllers
             {
                 return BadRequest(ModelState);
             }
+            try
+            {
+                var success = await _instructorService.RegisterToCourseAsync(userId, model.CourseCode);
+                    return Ok(new { message = "Instructor added to the course successfully." });
 
-            var success = await _instructorService.RegisterToCourseAsync(userId, model.CourseCode);
-            if (success)
-                return Ok(new { message = "Instructor added to the course successfully." });
-            else
-                return BadRequest(new { message = "Failed to add instructor to the course." });
+   
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+
+            }
+           
         }
         [HttpGet("AllCoursetoInstructor")]
         [Authorize(Roles = "Instructor")]
@@ -142,13 +177,19 @@ namespace Eduology.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var instructor = await _instructorService.GetAllCourseToSpecificInstructorAsync(userId);
-            if (instructor == null)
+            try
             {
-                return NotFound(new { message = $"Instructor Id {userId} not found" });
+                var instructor = await _instructorService.GetAllCourseToSpecificInstructorAsync(userId);
+                return Ok(instructor);
+
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+
             }
 
-            return Ok(instructor);
         }
        
        

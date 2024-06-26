@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting;
+using Eduology.Domain.Models;
 
 namespace Eduology.Controllers
 {
@@ -15,27 +16,26 @@ namespace Eduology.Controllers
     {
         private readonly IMaterialService _materialService;
 
-        private readonly ILogger<MaterialController> _logger;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public MaterialController(IMaterialService materialService, ILogger<MaterialController> logger)
+        public MaterialController(IMaterialService materialService, IWebHostEnvironment webHostEnvironment)
         {
             _materialService = materialService;
-            _logger = logger;
-          
-        }
 
+             _webHostEnvironment = webHostEnvironment;
+        }
         private string GetUserId()
         {
             return User.FindFirst("uid")?.Value;
         }
-      
+
         [HttpPost("AddMaterial")]
         [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> AddMaterial(IFormFile file, [FromBody] CourseModuleDto coursemodule)
+        public async Task<IActionResult> AddMaterial([FromForm] IFormFile file, [FromForm] string courseId, [FromForm] string moduleName)
         {
             try
             {
-                var userId = GetUserId(); // Implement your user ID retrieval method
+                var userId = GetUserId();
                 if (userId == null)
                 {
                     return Unauthorized(new { message = "User ID not found in the token" });
@@ -46,12 +46,40 @@ namespace Eduology.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var fileDto = await WriteFile(file);
+                if (file == null || file.Length == 0)
+                {
+                    return BadRequest(new { message = "No file uploaded" });
+                }
+
+                if (string.IsNullOrEmpty(_webHostEnvironment.WebRootPath))
+                {
+                    return StatusCode(500, new { message = "WebRootPath is not configured" });
+                }
+
+                var uploadsFolderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+                if (!Directory.Exists(uploadsFolderPath))
+                {
+                    Directory.CreateDirectory(uploadsFolderPath);
+                }
+
+                var filePath = Path.Combine(uploadsFolderPath, file.FileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                var fileUrl = Path.Combine("uploads", file.FileName);
+                var fileDto = new FileDto
+                {
+                    File = fileUrl,
+                    Title = file.FileName
+                };
+
                 var materialDto = new MaterialDto
                 {
-                    CourseId = coursemodule.CourseId,
-                    FileURLs = new List<FileDto> { fileDto },
-                    Module = coursemodule.ModuleName,
+                    CourseId = courseId,
+                    Module = moduleName,
+                    FileURLs = new List<FileDto> { fileDto }
                 };
 
                 var success = await _materialService.AddMaterialAsync(userId, materialDto);
@@ -60,41 +88,12 @@ namespace Eduology.Controllers
                     return NotFound(new { message = "Failed to add material. Input is not correct." });
                 }
 
-                return Ok(new { message = "Material added successfully." });
+                return Ok(new { message = "File uploaded and material added successfully", fileUrl });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-
-        private async Task<FileDto> WriteFile(IFormFile file)
-        {
-            string filename = "";
-            try
-            {
-                var extension = "." + file.FileName.Split('.')[file.FileName.Split('.').Length - 1];
-                filename = DateTime.Now.Ticks.ToString() + extension;
-
-                var filepath = Path.Combine(Directory.GetCurrentDirectory(), "Upload\\Files");
-
-                if (!Directory.Exists(filepath))
-                {
-                    Directory.CreateDirectory(filepath);
-                }
-
-                var exactpath = Path.Combine(filepath, filename);
-                using (var stream = new FileStream(exactpath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-
-                return new FileDto { Title = filename,  File= exactpath };
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"File upload failed: {ex.Message}");
+                // Log the exception here
+                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
             }
         }
 
