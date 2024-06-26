@@ -1,4 +1,4 @@
-﻿using Eduology.Domain.Interfaces;
+﻿ using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
 using Eduology.Infrastructure.Persistence;
 using System;

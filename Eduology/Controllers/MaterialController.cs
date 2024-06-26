@@ -63,9 +63,9 @@ namespace Eduology.Controllers
                 {
                     await materialDto.File.CopyToAsync(stream);
                 }
-
-                var fileUrl = Path.Combine(filePath, materialDto.File.FileName);
-                var fileDto = new FileDto { Title = materialDto.File.FileName, URL = fileUrl };
+                //////////
+              //  var fileUrl = Path.Combine(filePath, materialDto.File.FileName);
+                var fileDto = new FileDto { Title = materialDto.File.FileName, URL = filePath };
                 var success = await _materialService.AddMaterialAsync(userId, materialDto, fileDto);
 
                 if (!success)
@@ -73,12 +73,11 @@ namespace Eduology.Controllers
                     return NotFound(new { message = "Failed to add material. Input is not correct." });
                 }
 
-                return Ok(new { message = "File uploaded and material added successfully", fileUrl });
+                return Ok(new { message = "File uploaded and material added successfully", materialDto.File.FileName, filePath });
             }
             catch (Exception ex)
             {
-                // Log the exception here
-                return StatusCode(500, new { message = "Internal server error", details = ex.Message });
+                return BadRequest(new { message = ex.Message });
             }
         }
 
@@ -97,13 +96,17 @@ namespace Eduology.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result = await _materialService.GetMaterialToInstructorsAsync(userId, requestDto);
-            if (result == null)
+            try
             {
-                return BadRequest(new { message = "Failed to retrieve modules and materials." });
+                var result = await _materialService.GetMaterialToInstructorsAsync(userId, requestDto);
+                return Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
 
-            return Ok(result);
         }
 
         [HttpPost("GetMaterialsToStudent")]
@@ -119,13 +122,16 @@ namespace Eduology.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result = await _materialService.GetMaterialToStudentAsync(userId, requestDto);
-            if (result == null)
+            try
+            {
+                var result = await _materialService.GetMaterialToStudentAsync(userId, requestDto);
+                return Ok(result);
+
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new { message = "Failed to retrieve modules and materials." });
             }
-
-            return Ok(result);
         }
 
         [HttpDelete("DeleteFile")]
