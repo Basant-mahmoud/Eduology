@@ -153,7 +153,7 @@ namespace Eduology.Infrastructure.Repositories
         }
 
 
-        public async Task<List<CourseUserDto>> GetAllCourseToSpecificInstructorAsync(string InstructorId)
+        public async Task<List<Course>> GetAllCourseToSpecificInstructorAsync(string InstructorId)
         {
             var instructor = await _context.Users.FindAsync(InstructorId);
             if (instructor == null)
@@ -163,20 +163,18 @@ namespace Eduology.Infrastructure.Repositories
 
             var courseInstructors = await _context.courseInstructors
                 .Where(ci => ci.InstructorId == InstructorId)
-                .Include(ci => ci.course) 
-                .Select(ci => ci.course)
-                .ToListAsync();
-
-            var courseDtos = courseInstructors.Select(course => new CourseUserDto
+                .Include(sc => sc.course.CourseInstructors)
+                   .ThenInclude(ci => ci.Instructor)
+               .Include(sc => sc.course.StudentCourses)
+                   .ThenInclude(sc => sc.Student)
+               .Select(sc => sc.course)
+               .ToListAsync();
+            if (courseInstructors == null || !courseInstructors.Any())
             {
-                CourseId = course.CourseId,
-                Name = instructor.Name,
-                CourseName = course.Name,
-                CourseDescription = course.Description,
-                year = course.Year 
-            }).ToList();
+                return new List<Course>();
+            }
 
-            return courseDtos;
+            return courseInstructors;
         }
 
        

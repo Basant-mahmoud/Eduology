@@ -82,11 +82,13 @@ namespace Eduology.Infrastructure.Services
 
             var courseDtos = courses.Select(course => new CourseUserDto
             {
-                CourseId = course.CourseId,
+                CourseId = course.id,
                 Name = student.Name,
-                CourseName = course.CourseName,
-                CourseDescription = course.CourseDescription,
-                year = course.year
+                CourseName = course.Name,
+                CourseDescription = course.Description,
+                year = course.Year,
+                Instructors = course.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
+                Students = course.StudentCourses.Select(sc => sc.Student.Name).ToList()
             }).ToList();
 
             return courseDtos;
