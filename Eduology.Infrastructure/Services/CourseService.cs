@@ -77,6 +77,7 @@ namespace Eduology.Infrastructure.Services
                 students = c.StudentCourses.Select(sc => sc.Student.Name).ToList() ?? new List<string>(),
                 assignments = c.Assignments.Select(a => new AssignmentDto
                 {
+                    Id = a.AssignmentId,
                     Description = a.Description,
                     Title = a.Title,
                     Deadline = a.Deadline,
@@ -154,6 +155,7 @@ namespace Eduology.Infrastructure.Services
                     CourseId = courseId,
                     assignments = course.Assignments.Select(a => new AssignmentDto
                     {
+                        Id = a.AssignmentId,
                         CourseId = a.CourseId,
                         Title = a.Title,
                         Description = a.Description,
