@@ -45,6 +45,7 @@ namespace Eduology.Infrastructure.Services
                 CourseId = assignment.CourseId,
                 Deadline = assignment.Deadline,
                 Description = assignment.Description,
+                File = assignment.File,
             };
         }
 
