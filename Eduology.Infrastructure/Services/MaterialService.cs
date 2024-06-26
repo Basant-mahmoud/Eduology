@@ -93,7 +93,7 @@ namespace Eduology.Infrastructure.Services
             }
             catch (Exception ex)
             {
-
+                
                 throw ex;
               }
         }
