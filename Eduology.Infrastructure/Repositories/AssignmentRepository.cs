@@ -51,19 +51,9 @@ namespace Eduology.Infrastructure.Repositories
             assignment.File = file;
 
             await _context.Assignments.AddAsync(assignment);
-            var course = await _courseRepository.GetByIdAsync(assignmentDto.CourseId);
-            if (course == null)
-            {
-                throw new KeyNotFoundException($"Course with ID {assignmentDto.CourseId} not found.");
-            }
-
-            course.assignments ??= new List<Assignment>(); 
-            course.assignments.Add(assignment);
-
-            await _courseRepository.UpdateAsync(course.CourseId, new CourseDto 
-            {
-                Name = course.CourseName,
-            });
+            var course = await _context.Courses.FindAsync(assignmentDto.CourseId);
+            course.Assignments.Add(assignment);
+            _context.Courses.Update(course);
             await _context.SaveChangesAsync();
             return assignmentDto;
         }
@@ -82,27 +72,14 @@ namespace Eduology.Infrastructure.Repositories
                 return null;
             return assignment;
         }
-        public async Task<Assignment> UpdateAsync(int id, AssignmentDto assignment)
+        public async Task<Assignment> UpdateAsync(int id, UpdateAssignmemtDto assignment)
         {
             var _assignment = await _context.Assignments
                                                 .Include(a => a.File) 
-                                                .FirstOrDefaultAsync(a => a.AssignmentId == id); if (_assignment == null)
-                throw new KeyNotFoundException($"Assignment with Id {id} not found.");
+                                                .FirstOrDefaultAsync(a => a.AssignmentId == id);
+            if (_assignment == null)
+                throw new KeyNotFoundException($"Asssignment with Id {id} not found.");
             _assignment.Description = assignment.Description;
-            if (_assignment.File != null)
-            {
-                _assignment.File.Title = assignment.fileURLs.Title;
-                _assignment.File.URL = assignment.fileURLs.URL;
-            }
-            else
-            {
-                _assignment.File = new AssignmentFile
-                {
-                    Title = assignment.fileURLs.Title,
-                    URL = assignment.fileURLs.URL,
-                };
-            }
-
             _assignment.Deadline = assignment.Deadline;
             _assignment.CourseId = assignment.CourseId;
              _context.Assignments.Update(_assignment);
@@ -121,24 +98,6 @@ namespace Eduology.Infrastructure.Repositories
             _context.Assignments.Remove(assignment);
             await _context.SaveChangesAsync();
             return true;
-        }
-        public async Task<List<AssignmentDto>> GetAllAsync()
-        {
-            var assignments = await _context.Assignments
-                .ToListAsync();
-
-            return assignments.Select(a => new AssignmentDto
-            {
-                Title = a.Title,
-                CourseId = a.CourseId,
-                Deadline = a.Deadline,
-                Description = a.Description,
-                fileURLs = a.File != null ? new AssignmentFileDto
-                {
-                    Title = a.File.Title,
-                    URL = a.File.URL
-                } : null
-            }).ToList();
         }
 
     }

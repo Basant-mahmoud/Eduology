@@ -73,9 +73,21 @@ namespace Eduology.Infrastructure.Services
                 CourseId = c.id,
                 CourseName = c.Name,
                 CourseCode = c.CourseCode,
-                Instructors = c.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
-                students = c.StudentCourses.Select(sc => sc.Student.Name).ToList(),
-                assignments = c.Assignments
+                Instructors = c.CourseInstructors.Select(ci => ci.Instructor.Name).ToList() ?? new List<string>(),
+                students = c.StudentCourses.Select(sc => sc.Student.Name).ToList() ?? new List<string>(),
+                assignments = c.Assignments.Select(a => new AssignmentDto
+                {
+                    Description = a.Description,
+                    Title = a.Title,
+                    Deadline = a.Deadline,
+                    CourseId = a.CourseId,
+                    
+                    fileURLs = a.File == null ? null : new AssignmentFileDto
+                    {
+                        URL = a.File.URL,
+                        Title = a.File.Title
+                    },
+                }).ToList()?? new List<AssignmentDto> ()
             }).ToList();
 
             return courseDetails;
@@ -140,7 +152,18 @@ namespace Eduology.Infrastructure.Services
                 return new CourseDetailsDto
                 {
                     CourseId = courseId,
-                    assignments = course.Assignments,
+                    assignments = course.Assignments.Select(a => new AssignmentDto
+                    {
+                        CourseId = a.CourseId,
+                        Title = a.Title,
+                        Description = a.Description,
+                        Deadline = a.Deadline,
+                        fileURLs = a.File == null ? null : new AssignmentFileDto
+                        {
+                            URL = a.File.URL,
+                            Title = a.File.Title
+                        }
+                    }).ToList(),
                     Instructors = course.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
                     students = course.StudentCourses.Select(sc => sc.Student.Name).ToList(),
                     CourseCode = course.CourseCode,

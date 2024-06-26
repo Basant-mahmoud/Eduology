@@ -16,7 +16,7 @@ namespace Eduology.Domain.DTO
         public string Description { get; set; }
         public ICollection<string> students { get; set; }
         public ICollection<string> Instructors { get; set; }
-        public ICollection<Assignment> assignments { get; set; }
+        public ICollection<AssignmentDto> assignments { get; set; }
 
     }
 }
