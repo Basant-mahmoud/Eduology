@@ -41,6 +41,12 @@ namespace Eduology.Controllers
                 var student = await _StudentService.GetStudentByIdAsync(studentId);
                 return Ok(student);
             }
+
+            catch (ValidationException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
