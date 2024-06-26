@@ -71,6 +71,10 @@ namespace Eduology.Controllers
             {
                 return NotFound(new { message = ex.Message });
             }
+            catch (ValidationException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("delete/{studentId}")]
