@@ -31,7 +31,7 @@ namespace Eduology.Controllers
       
         [HttpPost("AddMaterial")]
         [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> AddMaterial(IFormFile file, [FromBody] string courseid, [FromBody] string modulename)
+        public async Task<IActionResult> AddMaterial(IFormFile file, [FromBody] CourseModuleDto coursemodule)
         {
             try
             {
@@ -49,9 +49,9 @@ namespace Eduology.Controllers
                 var fileDto = await WriteFile(file);
                 var materialDto = new MaterialDto
                 {
-                    CourseId = courseid,
+                    CourseId = coursemodule.CourseId,
                     FileURLs = new List<FileDto> { fileDto },
-                    Module = modulename,
+                    Module = coursemodule.ModuleName,
                 };
 
                 var success = await _materialService.AddMaterialAsync(userId, materialDto);
