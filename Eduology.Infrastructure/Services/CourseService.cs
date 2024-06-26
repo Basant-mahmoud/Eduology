@@ -36,7 +36,7 @@ namespace Eduology.Infrastructure.Services
                 id = Guid.NewGuid().ToString(),
                 Name = courseDto.Name,
                 CourseCode = courseCode,
-                Year = courseDto.Year,
+                Year = DateTime.Now.Year,
                 OrganizationID = courseDto.OrganizationId,
                 
             };

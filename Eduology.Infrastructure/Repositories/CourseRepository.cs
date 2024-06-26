@@ -116,7 +116,6 @@ namespace Eduology.Infrastructure.Repositories
             if (_course == null)
                 return null;
             _course.Name = course.Name;
-            _course.Year = course.Year;
             await _context.SaveChangesAsync();
             return _course;
         }
