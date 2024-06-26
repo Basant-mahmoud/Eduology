@@ -10,6 +10,7 @@ using Type = Eduology.Domain.Models.Module;
 using Microsoft.EntityFrameworkCore;
 using Eduology.Domain.DTO;
 using System.Reflection;
+using File = Eduology.Domain.Models.File;
 namespace Eduology.Infrastructure.Repositories
 {
     public class MaterialRepository: IMaterialRepository
@@ -46,31 +47,24 @@ namespace Eduology.Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> DeleteMaterialAsync(DeleteFileDto deletedfile)
+        public async Task<File> GetFileByIdAsync(string fileId)
         {
-            var file = await _context.Files
+            return await _context.Files
                 .Include(f => f.Material)
-                .ThenInclude(m => m.Module)
-                .FirstOrDefaultAsync(f => f.FileId == deletedfile.fileId &&
-                                           f.Material.CourseId == deletedfile.courseId &&
-                                           f.Material.Module.Name.ToLower() == deletedfile.Module.ToLower());
+                .FirstOrDefaultAsync(f => f.FileId == fileId);
+        }
 
+        public async Task<bool> DeleteFileAsync(string fileId)
+        {
+            var file = await _context.Files.FindAsync(fileId);
             if (file == null)
             {
                 return false;
             }
 
             _context.Files.Remove(file);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            await _context.SaveChangesAsync();
+            return true;
         }
 
     }

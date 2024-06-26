@@ -4,6 +4,7 @@ using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
 using Eduology.Infrastructure.Repositories;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol.Core.Types;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Printing;
@@ -199,25 +200,22 @@ namespace Eduology.Infrastructure.Services
 
             return moduleWithMaterialsList;
         }
-        public async Task<bool> DeleteFileAsync(string instructorId, DeleteFileDto deleteFile)
+        public async Task<bool> DeleteFileAsync(string userId, DeleteFileDto deleteFileDto)
         {
-            if (deleteFile == null ||
-                string.IsNullOrEmpty(deleteFile.courseId) ||
-                string.IsNullOrEmpty(instructorId) ||
-                string.IsNullOrEmpty(deleteFile.Module) ||
-                string.IsNullOrEmpty(deleteFile.fileId))
+            var file = await _matrialRepository.GetFileByIdAsync(deleteFileDto.fileId);
+
+            if (file == null || file.Material.InstructorId != userId)
             {
                 return false;
             }
 
-            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(instructorId, deleteFile.courseId);
-            if (!isInstructorAssigned)
+            var filePath = file.URL;
+            if (System.IO.File.Exists(filePath))
             {
-                return false;
+                System.IO.File.Delete(filePath);
             }
 
-            var success = await _matrialRepository.DeleteMaterialAsync(deleteFile);
-            return success;
+            return await _matrialRepository.DeleteFileAsync(deleteFileDto.fileId);
         }
 
 

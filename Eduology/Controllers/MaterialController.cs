@@ -146,16 +146,16 @@ namespace Eduology.Controllers
                 return BadRequest(new { message = "Failed to retrieve modules and materials." });
             }
         }
-
         [HttpDelete("DeleteFile")]
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> DeleteFile([FromBody] DeleteFileDto deleteFileDto)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = GetUserId();
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new { message = "User ID not found in the token" });
             }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -164,11 +164,12 @@ namespace Eduology.Controllers
             var success = await _materialService.DeleteFileAsync(userId, deleteFileDto);
             if (!success)
             {
-                return NotFound(new { message = $"File with Id {deleteFileDto.fileId} not found in Module {deleteFileDto.Module}." });
+                return NotFound(new { message = $"File with Id {deleteFileDto.fileId} not found or you don't have permission to delete it." });
             }
 
             return Ok(new { message = "File deleted successfully." });
         }
+
 
     }
 }
