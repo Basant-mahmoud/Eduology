@@ -141,7 +141,7 @@ namespace Eduology.Infrastructure.Repositories
             var courseInstructor = new CourseInstructor
             {
                 InstructorId = instructorId,
-                CourseId = course.id
+                CourseId = course.CourseId
             };
 
             _context.courseInstructors.Add(courseInstructor);
@@ -169,7 +169,7 @@ namespace Eduology.Infrastructure.Repositories
 
             var courseDtos = courseInstructors.Select(course => new CourseUserDto
             {
-                CourseId = course.id,
+                CourseId = course.CourseId,
                 Name = instructor.Name,
                 CourseName = course.Name,
                 CourseDescription = course.Description,

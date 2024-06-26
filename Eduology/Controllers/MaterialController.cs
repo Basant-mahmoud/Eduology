@@ -13,41 +13,52 @@ namespace Eduology.Controllers
     public class MaterialController : ControllerBase
     {
         private readonly IMaterialService _materialService;
-      //  private readonly IWebHostEnvironment _webHostEnvironment;
+        
 
         public MaterialController(IMaterialService materialService)
         {
             _materialService = materialService;
           
-           // _webHostEnvironment = webHostEnvironment;
         }
 
         private string GetUserId()
         {
             return User.FindFirst("uid")?.Value;
         }
-
         [HttpPost("AddMaterial")]
         [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> AddMaterial([FromBody] MaterialDto materialDto)
+        public async Task<IActionResult> AddMaterial([FromForm] MaterialDto materialDto)
         {
-            var userId = GetUserId();
-            if (userId == null)
+            try
             {
-                return Unauthorized(new { message = "User ID not found in the token" });
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+                var userId = GetUserId();
+                if (userId == null)
+                {
+                    return Unauthorized(new { message = "User ID not found in the token" });
+                }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            var success = await _materialService.AddMaterialAsync(userId, materialDto);
-            if (!success)
-            {
-                return NotFound(new { message = "Failed to add material. Input is not correct." });
-            }
+                // Ensure the file is included in the request
+                if (materialDto.FileURLs == null || materialDto.FileURLs.Count == 0 || materialDto.FileURLs.Any(f => f.File == null))
+                {
+                    return BadRequest(new { message = "Files are required." });
+                }
 
-            return Ok(new { message = "Material added successfully." });
+                var success = await _materialService.AddMaterialAsync(userId, materialDto);
+                if (!success)
+                {
+                    return NotFound(new { message = "Failed to add material. Input is not correct." });
+                }
+
+                return Ok(new { message = "Material added successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
 
         [HttpPost("GetMaterialsToInstructor")]

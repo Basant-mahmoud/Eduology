@@ -18,6 +18,7 @@ using Eduology.Application.Interface;
 using Microsoft.IdentityModel.Tokens;
 using Eduology.Application.Services.Helper;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace Eduology
 {
@@ -106,9 +107,14 @@ namespace Eduology
                 options.AddPolicy("InstructorPolicy", policy => policy.RequireRole("Instructor"));
                 options.AddPolicy("StudentPolicy", policy => policy.RequireRole("Student"));
             });
-        
-        // Add controllers and Swagger
-        builder.Services.AddControllers();
+            // File upload configuration
+            builder.Services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 60000000; // Adjust as per your needs
+            });
+
+            // Add controllers and Swagger
+            builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -125,7 +131,7 @@ namespace Eduology
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseStaticFiles();
             app.MapControllers();
 
             app.Run();

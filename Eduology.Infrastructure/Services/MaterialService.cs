@@ -27,59 +27,61 @@ namespace Eduology.Infrastructure.Services
             _courseRepository = courseRepository;
             _moduleRepository = moduleRepository;
         }
-        public async Task<bool> AddMaterialAsync(string instructorid,MaterialDto materialDto)
+    
+        public async Task<bool> AddMaterialAsync(string instructorId, MaterialDto materialDto)
         {
-            if (materialDto == null ||
-                string.IsNullOrEmpty(materialDto.CourseId) ||
-                string.IsNullOrEmpty(instructorid) ||
-                string.IsNullOrEmpty(materialDto.Module) ||
-                materialDto.FileURLs == null || materialDto.FileURLs.Count == 0)
+            var exsitingcourse = await _courseRepository.GetByIdAsync(materialDto.CourseId);
+            if (exsitingcourse == null)
             {
-                return false;
+                throw new Exception(" course not  found.");
             }
 
-            // Check if the instructor is assigned to the course
-            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(instructorid, materialDto.CourseId);
+            var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(instructorId, materialDto.CourseId);
             if (!isInstructorAssigned)
             {
-                return false;
+                throw new Exception(" Instructor not register to this course.");
             }
-
-            // Get the module by name within the course
+           
             var moduleDto = new ModuleDto
             {
                 CourseId = materialDto.CourseId,
-                Name = materialDto.Module
+                Name = materialDto.Module.ToLower(),
             };
             var existingModule = await _moduleRepository.GetModuleByNameAsync(moduleDto);
             if (existingModule == null)
             {
-                return false; 
+                throw new Exception("Module not found plz add module frist");
             }
 
-            // Create a new Material entity
             var material = new Material
             {
-                InstructorId = instructorid,
+                InstructorId = instructorId,
                 CourseId = materialDto.CourseId,
-                ModuleId = existingModule.ModuleId, 
+                ModuleId = existingModule.ModuleId,
                 Files = new List<File>()
             };
 
-            // Add files to the material
             foreach (var fileDto in materialDto.FileURLs)
             {
+                var fileId = Guid.NewGuid().ToString(); 
+                var filePath = "/uploads/"; 
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await fileDto.File.CopyToAsync(stream);
+                }
+
                 var file = new File
                 {
-                    FileId = Guid.NewGuid().ToString(),
-                    URL = fileDto.URL,
-                    Title = $"File for {fileDto.Title}",
-                    MaterialId = material.MaterialId
+                    FileId = fileId,
+                    Title = fileDto.Title,
+                    URL = filePath + fileDto.File.FileName, // Adjust URL as per your file storage
+                    MaterialId = material.MaterialId // Ensure MaterialId is set correctly
                 };
+
                 material.Files.Add(file);
             }
 
-            // Call repository method to add the material
             var success = await _matrialRepository.AddMaterialAsync(material);
 
             return success;
