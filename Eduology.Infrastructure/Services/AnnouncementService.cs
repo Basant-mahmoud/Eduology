@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace Eduology.Infrastructure.Services
 {
@@ -36,18 +37,17 @@ namespace Eduology.Infrastructure.Services
             var courseExists = await _announcementRepository.CourseExistsAsync(createannouncementDto.CourseId);
             if (!courseExists)
             {
-                return null;
+                throw new Exception($"Course with ID '{createannouncementDto.CourseId}' not found.");
             }
             if (instructor == null)
             {
-                return null;
+                throw new Exception($"Instructor with ID '{instructorid}' not found.");
             }
             if (isjointocourse == null)
             {
-                return null;
+                throw new Exception($"Instructor with ID '{instructorid}' is not assigned to course '{createannouncementDto.CourseId}'.");
             }
             
-
             var announcement = new Announcement
             {
                 Title = createannouncementDto.Title,
@@ -66,19 +66,23 @@ namespace Eduology.Infrastructure.Services
             var courseExists = await _announcementRepository.CourseExistsAsync(courseid);
             if (!courseExists)
             {
-                return null;
+                throw new Exception($"Course with ID '{courseid}' not found.");
             }
             var isjointocourse = await _courseRepository.IsInstructorAssignedToCourse(instructorid, courseid);
             if (instructor == null)
             {
-                return null;
+                throw new Exception($"Instructor with ID '{instructorid}' not found.");
             }
             if (isjointocourse == null)
             {
-                return null;
+                throw new Exception($"Instructor with ID '{instructorid}' is not assigned to course '{courseid}'.");
             }
            
             var announcement = await _announcementRepository.GetByIdAsync(announcementid);
+            if (announcement == null)
+            {
+                throw new Exception($"Announcement with ID '{announcementid}' not found.");
+            }
             return ConvertToDto(announcement);
         }
 
@@ -87,7 +91,7 @@ namespace Eduology.Infrastructure.Services
             var announcementToDelete = await _announcementRepository.GetByIdAsync(id);
             if (announcementToDelete == null)
             {
-                return false; 
+                throw new Exception($"Announcement with ID '{id}' not found.");
             }
 
             await _announcementRepository.DeleteAsync(id);
@@ -99,16 +103,16 @@ namespace Eduology.Infrastructure.Services
             var courseExists = await _announcementRepository.CourseExistsAsync(courseId);
             if (!courseExists)
             {
-                return null;
+                throw new Exception($"Course with ID '{courseId}' not found.");
             }
             var isjointocourse = await _courseRepository.IsInstructorAssignedToCourse(instructorId, courseId);
             if (instructor == null)
             {
-                return null;
+                throw new Exception($"Instructor with ID '{instructorId}' not found.");
             }
             if (isjointocourse == null)
             {
-                return null;
+                throw new Exception($"Instructor with ID '{instructorId}' is not assigned to course '{courseId}'.");
             }
             var announcements = await _announcementRepository.GetByCourseIdAsync(courseId);
             if (announcements == null || !announcements.Any())
@@ -119,20 +123,20 @@ namespace Eduology.Infrastructure.Services
         }
         public async Task<IEnumerable<AnnouncementDto>> GetAnnouncementsToByStudentCourseIdAsync(string studentid, string courseId)
         {
-            var instructor = await _userManager.FindByIdAsync(studentid);
+            var student = await _userManager.FindByIdAsync(studentid);
             var courseExists = await _announcementRepository.CourseExistsAsync(courseId);
             if (!courseExists)
             {
-                return null;
+                throw new Exception($"Course with ID '{courseId}' not found.");
             }
             var isjointocourse = await _courseRepository.ISStudentAssignedToCourse(studentid, courseId);
-            if (instructor == null)
+            if (student == null)
             {
-                return null;
+                throw new Exception($"Student with ID '{studentid}' not found.");
             }
             if (isjointocourse == null)
             {
-                return null;
+                throw new Exception($"Student with ID '{studentid}' is not assigned to course '{courseId}'.");
             }
             var announcements = await _announcementRepository.GetByCourseIdAsync(courseId);
             if (announcements == null || !announcements.Any())
@@ -147,12 +151,12 @@ namespace Eduology.Infrastructure.Services
         {
             if (string.IsNullOrEmpty(studentid))
             {
-                return null;
+                throw new Exception("Student ID is required.");
             }
-            var isjoin= await _studentRepository.GetStudentByIdAsync(studentid);
-            if (isjoin == null)
+            var student= await _studentRepository.GetStudentByIdAsync(studentid);
+            if (student == null)
             {
-                return null;
+                throw new Exception($"Student with ID '{studentid}' not found.");
             }
             var announcements = await _announcementRepository.GetAllAnnouncementsForStudentAsync(studentid);
             if (announcements == null || !announcements.Any())

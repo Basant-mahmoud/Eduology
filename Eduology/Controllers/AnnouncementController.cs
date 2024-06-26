@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using System.ComponentModel.DataAnnotations;
 
 namespace Eduology.Controllers
 {
@@ -19,10 +20,6 @@ namespace Eduology.Controllers
         {
             _announcementService = announcementService;
         }
-        private string GetUserId()
-        {
-            return User.FindFirst("uid")?.Value;
-        }
 
         [HttpPost("Create")]
         [Authorize(Roles = "Instructor")]
@@ -33,12 +30,17 @@ namespace Eduology.Controllers
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
             }
-            var createdAnnouncement = await _announcementService.CreateAsync(userId, announcementDto);
-            if (createdAnnouncement == null)
+            try
             {
-                return BadRequest();
+                var createdAnnouncement = await _announcementService.CreateAsync(userId, announcementDto);
+                return CreatedAtAction(nameof(GetAnnouncement), new { announcemmentId = createdAnnouncement.Id, courseId = createdAnnouncement.CourseId }, createdAnnouncement);
             }
-            return CreatedAtAction(nameof(GetAnnouncement), new { announcemmentId = createdAnnouncement.Id, courseId = createdAnnouncement.CourseId }, createdAnnouncement);
+
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+
         }
 
         [HttpGet("GetWithCourseID/{courseId}/AnnouncementID/{announcemmentId}")]
@@ -50,13 +52,16 @@ namespace Eduology.Controllers
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
             }
-
-            var announcement = await _announcementService.GetByIdAsync(userId, announcemmentId, courseId);
-            if (announcement == null)
+            try
             {
-                return NotFound(new { message = $"Announcement with id {announcemmentId} or course id  {courseId} not found." });
+                var announcement = await _announcementService.GetByIdAsync(userId, announcemmentId, courseId);
+                return Ok(announcement);
             }
-            return Ok(announcement);
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+
         }
 
         [HttpDelete("DeleteWithCourseID/{courseId}/AnnouncemmentID/{announcemmentId}")]
@@ -69,14 +74,16 @@ namespace Eduology.Controllers
                 return Unauthorized(new { message = "User ID not found in the token" });
             }
 
-            var announcement = await _announcementService.GetByIdAsync(userId, announcemmentId, courseId);
-            if (announcement == null)
+            try
             {
-                return NotFound(new { message = $"Announcement with id {announcemmentId} not found." });
+                var announcement = await _announcementService.GetByIdAsync(userId, announcemmentId, courseId);
+                await _announcementService.DeleteAsync(announcemmentId);
+                return Ok(new { message = "Announcement deleted successfully." });
             }
-
-            await _announcementService.DeleteAsync(announcemmentId);
-            return Ok(new { message = "Announcement deleted successfully." });
+            catch (Exception ex) 
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
 
         [HttpGet("GetAnnouncementsToInstructorByCourseId/{courseId}")]
@@ -92,12 +99,16 @@ namespace Eduology.Controllers
             {
                 return BadRequest(new { message = "Course ID cannot be null or empty." });
             }
-            var announcements = await _announcementService.GetAnnouncementsToInstructorByCourseIdAsync(userId, courseId);
-            //if (announcements == null || !announcements.Any())
-            //{
-            //    return NotFound(new { message = $"Course with ID {courseId} not found." });
-            //}
-            return Ok(announcements);
+            try
+            {
+                var announcements = await _announcementService.GetAnnouncementsToInstructorByCourseIdAsync(userId, courseId);
+                return Ok(announcements);
+            }
+
+            catch (Exception ex) 
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
         [HttpGet("GetAnnouncementsToStudentByCourseId/{courseId}")]
         [Authorize(Roles = "Student")]
@@ -112,12 +123,16 @@ namespace Eduology.Controllers
             {
                 return BadRequest(new { message = "Course ID cannot be null or empty." });
             }
-            var announcements = await _announcementService.GetAnnouncementsToByStudentCourseIdAsync(userId, courseId);
-            //if (announcements == null || !announcements.Any())
-            //{
-            //    return NotFound(new { message = $"Course with ID {courseId} not found." });
-            //}
-            return Ok(announcements);
+            try
+            {
+                var announcements = await _announcementService.GetAnnouncementsToByStudentCourseIdAsync(userId, courseId);
+                return Ok(announcements);
+            }
+
+            catch(Exception ex) 
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
 
         [HttpGet("GetAllCourseAnnouncementsToStudent")]
@@ -129,12 +144,22 @@ namespace Eduology.Controllers
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
             }
-            var announcement = await _announcementService.GetAllAnnouncementsForStudentAsync(userId);
-            //if (announcement == null)
-            //{
-            //    return NotFound(new { message = $"Student with id {userId} not found." });
-            //}
-            return Ok(announcement);
+
+            try
+            {
+                var announcement = await _announcementService.GetAllAnnouncementsForStudentAsync(userId);
+                return Ok(announcement);
+            }
+
+            catch (Exception ex) 
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
+        private string GetUserId()
+        {
+            return User.FindFirst("uid")?.Value;
         }
     }
 }
