@@ -21,7 +21,7 @@ namespace Eduology.Infrastructure.Repositories
         {
             _context = context;
         }
-        public async Task<Course> CreateAsync(Course course)
+        public async Task<Course> CreateAsync(Course course,string adminId)
         {
             // Check if the organization exists
             if (!await OrganizationExistsAsync(course.OrganizationID))
@@ -31,6 +31,14 @@ namespace Eduology.Infrastructure.Repositories
             var organization = await _context.Organizations
                                                  .Include(o => o.Courses)
                                                  .FirstOrDefaultAsync(o => o.OrganizationID == course.OrganizationID);
+            var admin = await _context.Users
+                             .FirstOrDefaultAsync(u => u.Id == adminId);
+
+            if (admin == null)
+            {
+                throw new KeyNotFoundException("Admin user not found.");
+            }
+            admin.Courses.Add(course);
             organization.Courses.Add(course);
             await _context.Courses.AddAsync(course);
             await _context.SaveChangesAsync();
@@ -100,7 +108,7 @@ namespace Eduology.Infrastructure.Repositories
                 return null;
             _course.Name = course.Name;
             _course.Year = course.Year;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return _course;
         }
         async Task<CourseDetailsDto> ICourseRepository.GetByNameAsync(string name)
@@ -194,6 +202,31 @@ namespace Eduology.Infrastructure.Repositories
                                            .ToListAsync();
             return courseList;
         }
+        public async Task<Course> GetByIdForAdminAsync(string courseId,string adminId)
+        {
+            var admin = await _context.Users
+                                      .Include(a => a.Courses)
+                                      .ThenInclude(c => c.CourseInstructors)
+                                      .ThenInclude(ci => ci.Instructor)
+                                      .Include(a => a.Courses)
+                                      .ThenInclude(c => c.StudentCourses)
+                                      .ThenInclude(sc => sc.Student)
+                                      .FirstOrDefaultAsync(a => a.Id == adminId);
+
+            if (admin == null)
+            {
+                throw new Exception("Admin not found");
+            }
+
+            var course = admin.Courses.FirstOrDefault(c => c.id == courseId);
+            if (course == null)
+            {
+                throw new Exception("Course not found for this admin");
+            }
+
+            return course;
+        }
+
 
     }
 

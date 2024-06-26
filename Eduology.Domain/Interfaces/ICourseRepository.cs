@@ -10,7 +10,7 @@ namespace Eduology.Domain.Interfaces
 {
     public interface ICourseRepository
     {
-        Task<Course> CreateAsync(Course course);
+        Task<Course> CreateAsync(Course course,string adminId);
         Task<bool> ExistsByCourseCodeAsync(string courseCode);
         Task<bool> OrganizationExistsAsync(int organizationId);
         Task<bool> DeleteAsync(String id);
@@ -25,6 +25,6 @@ namespace Eduology.Domain.Interfaces
         Task<bool> IsUserAssignedToCourseAsync(string userId, string courseId, string role);
         Task<bool> IsUserAssignedToCourseAsyncByNmae(string userId, string name, string role);
         Task<List<Course>> GetAllByOrganizationIdAsync(int organizationId);
-
+        Task<Course> GetByIdForAdminAsync(string courseId,string adminId); 
     }
 }

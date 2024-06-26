@@ -22,7 +22,7 @@ namespace Eduology.Infrastructure.Services
             _instructorService = instructorService;
         }
 
-        public async Task<courseCreationDetailsDto> CreateAsync(CourseDto courseDto)
+        public async Task<courseCreationDetailsDto> CreateAsync(CourseDto courseDto,string adminId)
         {
             // Generate a unique course code
             string courseCode;
@@ -38,15 +38,22 @@ namespace Eduology.Infrastructure.Services
                 CourseCode = courseCode,
                 Year = courseDto.Year,
                 OrganizationID = courseDto.OrganizationId,
-               
+                
             };
-            await _courseRepository.CreateAsync(course);
-            courseCreationDetailsDto details = new courseCreationDetailsDto
+            try
             {
-                CourseCode = courseCode,
-                Id = course.id,
-            };
-            return details;
+                await _courseRepository.CreateAsync(course, adminId);
+                courseCreationDetailsDto details = new courseCreationDetailsDto
+                {
+                    CourseCode = courseCode,
+                    Id = course.id,
+                };
+                return details;
+            }
+            catch (Exception ex) {
+                throw new Exception("An error occurred while Creating the course " + ex.Message);
+            }
+
         }
 
         private string GenerateCourseCode()
@@ -67,7 +74,8 @@ namespace Eduology.Infrastructure.Services
                 CourseName = c.Name,
                 CourseCode = c.CourseCode,
                 Instructors = c.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
-                students = c.StudentCourses.Select(sc => sc.Student.Name).ToList()
+                students = c.StudentCourses.Select(sc => sc.Student.Name).ToList(),
+                assignments = c.Assignments
             }).ToList();
 
             return courseDetails;
@@ -75,13 +83,8 @@ namespace Eduology.Infrastructure.Services
 
         public async Task<bool> UpdateAsync(String id, CourseDto course)
         {
-            bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourseByName(course.Name, id);
-            if (!IsRegistered)
-                return false;
             var updatedCourse = await _courseRepository.UpdateAsync(id, course);
-            if (updatedCourse == null)
-                return false;
-            return true;
+            return updatedCourse != null;
         }
         public async Task<bool> DeleteAsync(string id)
         {
@@ -128,5 +131,28 @@ namespace Eduology.Infrastructure.Services
             var courses = await _courseRepository.GetAllByOrganizationIdAsync(organizationId);
             return courses;
         }
+        public async Task<CourseDetailsDto> GetByIdForAdminAsync(string courseId,string adminId)
+        {
+            try
+            {
+                var course = await _courseRepository.GetByIdForAdminAsync(courseId, adminId);
+
+                return new CourseDetailsDto
+                {
+                    CourseId = courseId,
+                    assignments = course.Assignments,
+                    Instructors = course.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
+                    students = course.StudentCourses.Select(sc => sc.Student.Name).ToList(),
+                    CourseCode = course.CourseCode,
+                    CourseName = course.Name,
+                    Description = course.Description
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while fetching course details " + ex.Message);
+            }
+        }
+
     }
 }
