@@ -112,6 +112,7 @@ namespace Eduology.Infrastructure.Repositories
                 students = course.StudentCourses.Select(sc => sc.Student.Name).ToList() ?? new List<string>(),
                 assignments = course.Assignments.Select(a => new AssignmentDto
                 {
+                    Id = a.AssignmentId,
                     Description = a.Description,
                     Title = a.Title,
                     Deadline = a.Deadline,
@@ -155,6 +156,7 @@ namespace Eduology.Infrastructure.Repositories
                 students = course.StudentCourses.Select(sc => sc.Student.Name).ToList() ?? new List<string>(),
                 assignments = course.Assignments.Select(a => new AssignmentDto
                 {
+                    Id = a.AssignmentId,
                     Description = a.Description,
                     Title = a.Title,
                     Deadline = a.Deadline,

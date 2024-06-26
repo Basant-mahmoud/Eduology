@@ -54,7 +54,6 @@ namespace Eduology.Controllers
             }
             var __assignment = new AssignmentDto
             {
-
                 CourseId = assignment.CourseId,
                 Deadline = assignment.Deadline,
                 Description = assignment.Description,

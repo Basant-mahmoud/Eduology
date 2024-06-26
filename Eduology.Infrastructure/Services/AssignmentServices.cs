@@ -40,6 +40,7 @@ namespace Eduology.Infrastructure.Services
             }
             return new AssignmentDto
             {
+                Id = assignment.Id,
                 Title = assignment.Title,
                 fileURLs = assignment.fileURLs,
                 CourseId = assignment.CourseId,
