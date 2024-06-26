@@ -64,15 +64,15 @@ namespace Eduology.Controllers
                 {
                     if (file.Length > 0)
                     {
-                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                        var filePath = Path.Combine(uploadsPath, fileName);
+                        //var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        var filePath = Path.Combine(uploadsPath, file.Name);
 
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
                             await file.CopyToAsync(stream);
                         }
-
-                        fileUrls.Add(Path.Combine("/uploads", fileName)); 
+                      
+                        fileUrls.Add(Path.Combine(uploadsPath, filePath)); 
                     }
                 }
 
