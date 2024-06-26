@@ -1,6 +1,7 @@
 ﻿using Eduology.Application.Interface;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Models;
+using Eduology.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
@@ -13,13 +14,16 @@ namespace Eduology.Controllers
     public class AssignmentController : Controller
     {
         private readonly IAsignmentServices _asignmentServices;
-        public AssignmentController(IAsignmentServices asignmentServices)
+        private readonly IWebHostEnvironment _environment;
+
+        public AssignmentController(IAsignmentServices asignmentServices, IWebHostEnvironment environment)
         {
             _asignmentServices = asignmentServices;
+            _environment = environment;
         }
         [Authorize(Roles = "Instructor")]
         [HttpPost("Create")]
-        public async Task<ActionResult> Create([FromBody] AssignmentDto assignment)
+        public async Task<ActionResult> Create([FromForm] AssignmentCreationDto assignment)
         {
             var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
@@ -30,10 +34,46 @@ namespace Eduology.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var _assignment = await _asignmentServices.CreateAsync(assignment,userId);
+
+            if (assignment.File == null || assignment.File.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
+
+            var uploadsPath = Path.Combine(_environment.ContentRootPath, "uploads");
+            if (!Directory.Exists(uploadsPath))
+            {
+                Directory.CreateDirectory(uploadsPath);
+            }
+
+            var filePath = Path.Combine(uploadsPath, assignment.File.FileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await assignment.File.CopyToAsync(stream);
+            }
+            var __assignment = new AssignmentDto
+            {
+               
+                CourseId = assignment.CourseId,
+                Deadline = assignment.Deadline,
+                Description = assignment.Description,
+                File = assignment.File,
+                Title = assignment.Title,
+                fileURLs = new AssignmentFileDto
+                {
+                    URL = filePath,
+                    Title = assignment.File.FileName
+                },
+               
+            };
+
+
+            var _assignment = await _asignmentServices.CreateAsync(__assignment, userId);
 
             return CreatedAtAction(nameof(GetById), new { id = _assignment.CourseId }, _assignment);
         }
+
         [Authorize(Roles = "Instructor,Student")]
         [HttpGet("GetById/{id}")]
         public async Task<ActionResult> GetById(int id)
@@ -71,8 +111,8 @@ namespace Eduology.Controllers
             return Ok(_assignment);
         }
         [Authorize(Roles = "Instructor")]
-        [HttpDelete("courses/{courseId}/assignments/{assignmentId}/Delete")]
-        public async Task<ActionResult> Delete(int assignmentId,string courseId)
+        [HttpDelete("Delete/{assignmentId}")]
+        public async Task<ActionResult> Delete(int assignmentId, [FromBody] string courseId)
         {
             var userId = User.FindFirst("uid")?.Value;
             if (userId == null)

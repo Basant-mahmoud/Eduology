@@ -19,6 +19,10 @@ namespace Eduology.Infrastructure.Services
         }
         public async Task<UserDto> GetStudentByIdAsync(string studentId)
         {
+            if (string.IsNullOrEmpty(studentId))
+            {
+                throw new ValidationException("Student ID is required.");
+            }
             var student = await _studentRepository.GetStudentByIdAsync(studentId);
             if (student == null)
             {
