@@ -54,7 +54,7 @@ namespace Eduology.Controllers
             }
             var __assignment = new AssignmentDto
             {
-               
+
                 CourseId = assignment.CourseId,
                 Deadline = assignment.Deadline,
                 Description = assignment.Description,
@@ -65,7 +65,7 @@ namespace Eduology.Controllers
                     URL = filePath,
                     Title = assignment.File.FileName
                 },
-               
+
             };
 
 
@@ -85,7 +85,7 @@ namespace Eduology.Controllers
             {
                 return Unauthorized("User ID not found in the token");
             }
-            var _assignment = await _asignmentServices.GetByIdAsync(id,userId,userRole);
+            var _assignment = await _asignmentServices.GetByIdAsync(id, userId, userRole);
             if (_assignment == null)
             {
                 return BadRequest(ModelState);
@@ -103,7 +103,7 @@ namespace Eduology.Controllers
             {
                 return Unauthorized("User ID not found in the token");
             }
-            var _assignment = await _asignmentServices.GetByNameAsync(name,userId,userRole);
+            var _assignment = await _asignmentServices.GetByNameAsync(name, userId, userRole);
             if (_assignment == null)
             {
                 return BadRequest(ModelState);
@@ -125,47 +125,28 @@ namespace Eduology.Controllers
                 return Ok();
 
             }
-           catch (Exception ex) 
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
         [Authorize(Roles = "Instructor")]
         [HttpPut("Update/{id}")]
-        public async Task<ActionResult> Update(int id,AssignmentDto assignment)
+        public async Task<ActionResult> Update(int id, UpdateAssignmemtDto assignment)
         {
             var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
             }
-            var _assignment = await _asignmentServices.UpdateAsync(id,assignment,userId);
+            var _assignment = await _asignmentServices.UpdateAsync(id, assignment, userId);
             if (_assignment == null)
             {
                 return BadRequest("Assignment update failed.");
             }
             return Ok(new { Message = "Assignment Updated Successfully" });
         }
-        [Authorize(Roles = "Instructor,Student")]
-        [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll()
-        {
-            var userId = User.FindFirst("uid")?.Value;
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-
-            if (userId == null)
-            {
-                return Unauthorized("User ID not found in the token");
-            }
-
-            var assignments = await _asignmentServices.GetAllAsync(userId, userRole);
-            if (assignments == null || !assignments.Any())
-            {
-                return NotFound("No assignments found or user not authorized.");
-            }
-
-            return Ok(assignments);
-        }
-
     }
+     
+    
 }

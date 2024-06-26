@@ -11,11 +11,10 @@ namespace Eduology.Application.Interface
     public interface IAsignmentServices
     {
         public Task<AssignmentDto> CreateAsync(AssignmentDto assignment,string userId);
-        public Task<Assignment> UpdateAsync(int id,AssignmentDto assignment, string userId);
+        public Task<Assignment> UpdateAsync(int id,UpdateAssignmemtDto assignment, string userId);
         public Task<bool> DeleteAsync(int id,string courseId, string userId);
         public Task<Assignment> GetByIdAsync(int id, string userId, string role);
         public Task<Assignment> GetByNameAsync(string name, string userId,string role);
-        public Task<List<AssignmentDto>> GetAllAsync(string userId,string role);
 
     }
 }
