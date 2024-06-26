@@ -151,14 +151,14 @@ namespace Eduology.Infrastructure.Services
                 string.IsNullOrEmpty(requestDto.CourseId) ||
                 string.IsNullOrEmpty(studentid))
             {
-                return null;
+                throw new Exception("input cant be empty ");
             }
 
             // Check if the instructor is assigned to the course
             var isStudentAssigned = await _courseRepository.ISStudentAssignedToCourse(studentid, requestDto.CourseId);
             if (!isStudentAssigned)
             {
-                return null;
+                throw new Exception("student not join to course plz join to course frist");
             }
 
             // Get all modules for the course
@@ -204,11 +204,14 @@ namespace Eduology.Infrastructure.Services
         {
             var file = await _matrialRepository.GetFileByIdAsync(deleteFileDto.fileId);
 
-            if (file == null || file.Material.InstructorId != userId)
+            if (file == null) 
             {
-                return false;
+                throw new Exception("invalid file id not found");
             }
-
+            if (file.Material.InstructorId != userId)
+            {
+                throw new Exception("instructor file id not found");
+            }
             var filePath = file.URL;
             if (System.IO.File.Exists(filePath))
             {

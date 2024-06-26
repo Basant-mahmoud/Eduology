@@ -22,7 +22,7 @@ namespace Eduology.Infrastructure.Services
         {
             if (moduleDto == null || string.IsNullOrEmpty(moduleDto.Name) || string.IsNullOrEmpty(moduleDto.CourseId)|| string.IsNullOrEmpty(instructorid))
             {
-                throw new ValidationException("Name CourseId and instructorid");
+                throw new ValidationException("Name or CourseId and instructorid");
             }
 
             var courseExists = await _courseRepository.GetByIdAsync(moduleDto.CourseId);
@@ -56,12 +56,17 @@ namespace Eduology.Infrastructure.Services
         {
             if (string.IsNullOrEmpty(moduleDto.Name) || string.IsNullOrEmpty(moduleDto.CourseId))
             {
-                return false;
+                throw new Exception("Module name or course id cant be null");
+            }
+            var existingCourse = await _courseRepository.GetByIdAsync(moduleDto.CourseId);
+            if (existingCourse == null)
+            {
+                throw new Exception("Course not found.");
             }
             var instructorExist = await _courseRepository.IsInstructorAssignedToCourse(instructorid, moduleDto.CourseId);
             if (instructorExist == false)
             {
-                return false ;
+                throw new Exception("Instructor is not join to this course.");
             }
 
             var success = await _moduleRepository.DeleteModuleAsync(moduleDto);
