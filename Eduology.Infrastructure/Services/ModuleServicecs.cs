@@ -2,6 +2,7 @@
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Infrastructure.Repositories;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace Eduology.Infrastructure.Services
@@ -21,7 +22,7 @@ namespace Eduology.Infrastructure.Services
         {
             if (moduleDto == null || string.IsNullOrEmpty(moduleDto.Name) || string.IsNullOrEmpty(moduleDto.CourseId)|| string.IsNullOrEmpty(instructorid))
             {
-                return (false, false);
+                throw new ValidationException("Name CourseId and instructorid");
             }
 
             var courseExists = await _courseRepository.GetByIdAsync(moduleDto.CourseId);

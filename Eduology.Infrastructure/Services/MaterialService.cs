@@ -3,6 +3,7 @@ using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
 using Eduology.Infrastructure.Repositories;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Printing;
@@ -28,10 +29,18 @@ namespace Eduology.Infrastructure.Services
             _moduleRepository = moduleRepository;
         }
 
-        public async Task<bool> AddMaterialAsync(string instructorId, MaterialDto materialDto, List<FileDto> fileDtos)
+        public async Task<bool> AddMaterialAsync(string instructorId, MaterialDto materialDto, FileDto fileDto)
         {
             try
             {
+                if (string.IsNullOrEmpty(materialDto.CourseId))
+                {
+                    throw new Exception("invalid course id ");
+                }
+                if (string.IsNullOrEmpty(materialDto.Module))
+                {
+                    throw new Exception("invald module name Module cant be empty ");
+                }
                 var existingCourse = await _courseRepository.GetByIdAsync(materialDto.CourseId);
                 if (existingCourse == null)
                 {
@@ -63,18 +72,15 @@ namespace Eduology.Infrastructure.Services
                     Files = new List<File>()
                 };
 
-                foreach (var fileDto in fileDtos)
+                var file = new File
                 {
-                    var file = new File
-                    {
-                        FileId = Guid.NewGuid().ToString(),
-                        Title = fileDto.Title,
-                        URL = fileDto.URL,
-                        MaterialId = material.MaterialId // Ensure MaterialId is correctly set
-                    };
+                    FileId = Guid.NewGuid().ToString(),
+                    Title = fileDto.Title,
+                    URL = fileDto.URL,
+                    MaterialId = material.MaterialId
+                };
 
-                    material.Files.Add(file);
-                }
+                material.Files.Add(file);
 
                 var success = await _matrialRepository.AddMaterialAsync(material);
                 return success;
@@ -89,17 +95,16 @@ namespace Eduology.Infrastructure.Services
         public async Task<ICollection<GetMaterialDto>> GetMaterialToInstructorsAsync(string instructorid, CourseUserRequestDto requestDto)
         {
             if (requestDto == null ||
-                string.IsNullOrEmpty(requestDto.CourseId) ||
-                string.IsNullOrEmpty(instructorid))
+                string.IsNullOrEmpty(requestDto.CourseId) 
+               )
             {
-                return null;
+                throw new Exception("course id cant be null ");
             }
 
-            // Check if the instructor is assigned to the course
             var isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(instructorid, requestDto.CourseId);
             if (!isInstructorAssigned)
             {
-                return null;
+                throw new Exception("instructor not join to course plz join to course frist");
             }
 
             // Get all modules for the course
@@ -113,7 +118,6 @@ namespace Eduology.Infrastructure.Services
 
             foreach (var module in modules)
             {
-                // Aggregate files for the current module
                 var files = module.Materials.SelectMany(m => m.Files).Select(f => new GetFileDto
                 {
                     FileId = f.FileId,
@@ -121,11 +125,9 @@ namespace Eduology.Infrastructure.Services
                     URL = f.URL
                 }).ToList();
 
-                // Check if the module already exists in the list
                 var existingModule = moduleWithMaterialsList.FirstOrDefault(m => m.Module == module.Name);
                 if (existingModule != null)
                 {
-                    // Add files to the existing module
                     existingModule.FileURLs.AddRange(files);
                 }
                 else

@@ -12,12 +12,8 @@ namespace Eduology.Domain.DTO
         {
             public string Module { get; set; }
             public string CourseId { get; set; }
-            public List<IFormFile> FileURLs { get; set; } // List of file URLs
+        public IFormFile File { get; set; }
 
-            public MaterialDto()
-            {
-                FileURLs = new List<IFormFile>();
-            }
-        }
+    }
     
 }

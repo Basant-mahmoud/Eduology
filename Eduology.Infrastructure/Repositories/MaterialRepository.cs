@@ -1,4 +1,4 @@
-﻿using Eduology.Domain.Interfaces;
+﻿ using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
 using Eduology.Infrastructure.Persistence;
 using System;
@@ -26,7 +26,6 @@ namespace Eduology.Infrastructure.Repositories
                 var course = await _context.Courses.FindAsync(material.CourseId);
                 if (course == null)
                 {
-                    // Course not found
                     return false;
                 }
 
@@ -37,14 +36,12 @@ namespace Eduology.Infrastructure.Repositories
                 }
 
                 _context.Materials.Add(material);
-
                 await _context.SaveChangesAsync();
 
                 return true;
             }
             catch
             {
-                
                 return false;
             }
         }
