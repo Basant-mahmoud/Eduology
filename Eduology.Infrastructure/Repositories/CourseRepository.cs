@@ -38,6 +38,15 @@ namespace Eduology.Infrastructure.Repositories
             {
                 throw new KeyNotFoundException("Admin user not found.");
             }
+            if (admin.Courses == null)
+            {
+                admin.Courses = new List<Course>();
+            }
+
+            if (organization.Courses == null)
+            {
+                organization.Courses = new List<Course>();
+            }
             admin.Courses.Add(course);
             organization.Courses.Add(course);
             await _context.Courses.AddAsync(course);
