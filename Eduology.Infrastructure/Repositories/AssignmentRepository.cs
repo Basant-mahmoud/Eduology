@@ -35,7 +35,7 @@ namespace Eduology.Infrastructure.Repositories
                 CreatedDate = DateTime.Now,
                 Deadline = assignmentDto.Deadline,
                 InstructorId = instructorId,
-                Description = assignmentDto.Description
+                Description = assignmentDto.Description,
             };
             if (assignmentDto.fileURLs == null)
             {
@@ -70,7 +70,7 @@ namespace Eduology.Infrastructure.Repositories
 
         public async Task<Assignment> GetByIdAsync(int id)
         {
-            var assignment = await _context.Assignments.FindAsync(id);
+            var assignment = await _context.Assignments.FirstOrDefaultAsync(e => e.AssignmentId == id);
             if (assignment == null)
                 return null;
             return assignment;

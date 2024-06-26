@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 
 namespace Eduology.Domain.DTO
 {
-    public class FileDto
+    public class AssignmentCreationDto
     {
+        public string Description { get; set; }
         public string Title { get; set; }
-        public string URL { get; set; }
+        public DateTime Deadline { get; set; }
+        public String CourseId { get; set; }
+        public IFormFile File { get; set; }
     }
 }

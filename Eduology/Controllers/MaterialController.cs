@@ -31,7 +31,7 @@ namespace Eduology.Controllers
 
         [HttpPost("AddMaterial")]
         [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> AddMaterial([FromForm] IFormFile file, [FromForm] string courseId, [FromForm] string moduleName)
+        public async Task<IActionResult> AddMaterial([FromForm] MaterialDto materialDto)
         {
             try
             {
@@ -46,49 +46,46 @@ namespace Eduology.Controllers
                     return BadRequest(ModelState);
                 }
 
-                if (file == null || file.Length == 0)
+                if (materialDto.FileURLs == null || materialDto.FileURLs.Count == 0)
                 {
                     return BadRequest(new { message = "No file uploaded" });
                 }
 
-                if (string.IsNullOrEmpty(_webHostEnvironment.WebRootPath))
+                // Save files to server
+                var uploadsPath = Path.Combine(_webHostEnvironment.ContentRootPath, "uploads");
+                if (!Directory.Exists(uploadsPath))
                 {
-                    return StatusCode(500, new { message = "WebRootPath is not configured" });
+                    Directory.CreateDirectory(uploadsPath);
                 }
 
-                var uploadsFolderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
-                if (!Directory.Exists(uploadsFolderPath))
+                var fileUrls = new List<string>();
+
+                foreach (var file in materialDto.FileURLs)
                 {
-                    Directory.CreateDirectory(uploadsFolderPath);
+                    if (file.Length > 0)
+                    {
+                        //var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        var filePath = Path.Combine(uploadsPath, file.Name);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+                      
+                        fileUrls.Add(Path.Combine(uploadsPath, filePath)); 
+                    }
                 }
 
-                var filePath = Path.Combine(uploadsFolderPath, file.FileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
+                // Prepare FileDto with file URLs (metadata)
+                var fileDtos = fileUrls.Select(url => new FileDto { Title = "", URL = url }).ToList();
 
-                var fileUrl = Path.Combine("uploads", file.FileName);
-                var fileDto = new FileDto
-                {
-                    File = fileUrl,
-                    Title = file.FileName
-                };
-
-                var materialDto = new MaterialDto
-                {
-                    CourseId = courseId,
-                    Module = moduleName,
-                    FileURLs = new List<FileDto> { fileDto }
-                };
-
-                var success = await _materialService.AddMaterialAsync(userId, materialDto);
+                var success = await _materialService.AddMaterialAsync(userId, materialDto, fileDtos);
                 if (!success)
                 {
                     return NotFound(new { message = "Failed to add material. Input is not correct." });
                 }
 
-                return Ok(new { message = "File uploaded and material added successfully", fileUrl });
+                return Ok(new { message = "Files uploaded and material added successfully", fileUrls });
             }
             catch (Exception ex)
             {
