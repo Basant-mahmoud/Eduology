@@ -70,18 +70,22 @@ namespace Eduology.Infrastructure.Services
             }
 
             var success = await _moduleRepository.DeleteModuleAsync(moduleDto);
+            if (!success)
+            {
+                throw new Exception("Fail to delete module");
+            }
             return success;
         }
         public async Task<bool> UpdateModuleAsync(string instructorid,UpdateModuleDto updatemodule)
         {
             if (updatemodule == null || string.IsNullOrEmpty(updatemodule.Name) || string.IsNullOrEmpty(updatemodule.CourseId))
             {
-                return false;
+                throw new Exception("empty input");
             }
             var instructorExist = await _courseRepository.IsInstructorAssignedToCourse(instructorid, updatemodule.CourseId);
             if (instructorExist == false)
             {
-                return false;
+                throw new Exception("Instructor is not join to this course.");
             }
 
             var module = new ModuleDto
@@ -92,11 +96,15 @@ namespace Eduology.Infrastructure.Services
             var existingModule = await _moduleRepository.GetModuleByNameAsync(module);
             if (existingModule == null)
             {
-                return false; // Module not found
+                throw new Exception("not found this module");
             }
 
             
             var success = await _moduleRepository.UpdateModuleAsync(updatemodule);
+            if (!success)
+            {
+                throw new Exception("Fail to update module");
+            }
             return success;
         }
         
