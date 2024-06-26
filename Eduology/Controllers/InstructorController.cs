@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
 namespace Eduology.Controllers
@@ -31,16 +32,12 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetInstructors()
         {
-            try
+            var instructors = await _instructorService.GetAllInstructorsAsync();
+            if (instructors == null || !instructors.Any())
             {
-                var instructors = await _instructorService.GetAllInstructorsAsync();
-                return Ok(instructors);
-
+                return Ok(new List<UserDto>());
             }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return Ok(instructors);
         }
        
 
@@ -53,13 +50,15 @@ namespace Eduology.Controllers
                 var instructor = await _instructorService.GetInstructorByIdAsync(id);
                 return Ok(instructor);
             }
-            catch (Exception ex)
+            catch (ValidationException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return NotFound(new { message = ex.Message });
             }
-           
 
-           
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
 
         [HttpGet("SearchInstructorByName/{name}")]
@@ -73,10 +72,14 @@ namespace Eduology.Controllers
                 return Ok(instructor);
 
             }
-            catch(Exception ex)
+            catch (ValidationException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return NotFound(new { message = ex.Message });
+            }
 
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
 
         }
@@ -89,13 +92,15 @@ namespace Eduology.Controllers
             {
                 var instructor = await _instructorService.GetInstructorByUserNameAsync(username);
                 return Ok(instructor);
-
-
             }
-            catch(Exception ex)
+            catch (ValidationException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return NotFound(new { message = ex.Message });
+            }
 
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
 
         }
@@ -111,10 +116,14 @@ namespace Eduology.Controllers
                 return Ok(updatedInstructor);
 
             }
-            catch(Exception ex)
+            catch (ValidationException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return NotFound(new { message = ex.Message });
+            }
 
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
         }
 
@@ -126,17 +135,20 @@ namespace Eduology.Controllers
             {
                 var result = await _instructorService.DeleteInstructorAsync(id);
                 return Ok(new { message = "Instructor deleted successfully" });
-
             }
 
-            catch (Exception ex)
+            catch (ValidationException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return NotFound(new { message = ex.Message });
+            }
 
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
 
         }
-        /// 
+
         [HttpPost("RegisterToCourse")]
        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> RegisterToCourse([FromBody] RegisterUserToCourseDto model)
@@ -154,15 +166,13 @@ namespace Eduology.Controllers
             {
                 var success = await _instructorService.RegisterToCourseAsync(userId, model.CourseCode);
                     return Ok(new { message = "Instructor added to the course successfully." });
-
-   
             }
-            catch(Exception ex)
+
+            catch (ValidationException ex)
             {
                 return BadRequest(new { message = ex.Message });
-
             }
-           
+
         }
         [HttpGet("AllCoursetoInstructor")]
         [Authorize(Roles = "Instructor")]
@@ -181,13 +191,14 @@ namespace Eduology.Controllers
             {
                 var instructor = await _instructorService.GetAllCourseToSpecificInstructorAsync(userId);
                 return Ok(instructor);
-
-
             }
-            catch (Exception ex)
+            catch (ValidationException ex)
             {
                 return BadRequest(new { message = ex.Message });
-
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
 
         }
