@@ -19,6 +19,8 @@ using Microsoft.IdentityModel.Tokens;
 using Eduology.Application.Services.Helper;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting.Internal;
 
 namespace Eduology
 {
@@ -27,13 +29,15 @@ namespace Eduology
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            ////
+            ///
 
             // Build the IConfiguration instance
             var Configuration = new ConfigurationBuilder()
                 .SetBasePath(builder.Environment.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
-
+            //////
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowWebApp",
@@ -117,15 +121,18 @@ namespace Eduology
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            // builder.Services.AddSingleton<IWebHostEnvironment>(hostingEnvironment);
+ 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
 
             app.UseCors("AllowWebApp");
 

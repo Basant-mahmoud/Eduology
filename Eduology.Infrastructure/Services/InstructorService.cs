@@ -35,16 +35,17 @@ namespace Eduology.Infrastructure.Services
             
                 if (string.IsNullOrEmpty(id))
                 {
-                    return null;
+                 throw new Exception("invalid input.");
                     
                 }
 
                 var instructor = await _instructorRepository.GetInstructorByIdAsync(id);
                 if (instructor == null)
                 {
-                    return null;
-                   
-                }
+                 throw new Exception("instructor id not found.");
+                
+
+            }
 
                 return instructor;
             
@@ -56,14 +57,15 @@ namespace Eduology.Infrastructure.Services
  
                 if (string.IsNullOrEmpty(name))
                 {
-                    return null;
-                   
-                }
+                 throw new Exception("invalid input.");
+                
+
+            }
 
                 var instructor = await _instructorRepository.GetInstructorByNameAsync(name);
                 if (instructor == null)
                 {
-                    return null;
+                throw new Exception("instructor Name not found."); 
                 }
 
                 return instructor;
@@ -75,16 +77,16 @@ namespace Eduology.Infrastructure.Services
             
                 if (string.IsNullOrEmpty(userName))
                 {
-                    return null;
-                    
-                }
+                throw new Exception("invalid input.");
+
+            }
 
                 var instructor = await _instructorRepository.GetInstructorByUserNameAsync(userName);
                 if (instructor == null)
                 {
-                    return null;
-                   
-                }
+                throw new Exception("instructor userName not found.");
+
+            }
 
                 return instructor;
             
@@ -96,16 +98,16 @@ namespace Eduology.Infrastructure.Services
            
                 if (string.IsNullOrEmpty(id))
                 {
-                    return false;
-                   
-                }
+                throw new Exception("invalid input.");
+
+            }
 
                 var instructor = await _instructorRepository.GetInstructorByIdAsync(id);
                 if (instructor == null)
                 {
-                    return false;
-                    
-                }
+                throw new Exception("instructor not found."); ;
+
+            }
 
                 return await _instructorRepository.DeleteInstructorAsync(id);
            
@@ -116,24 +118,24 @@ namespace Eduology.Infrastructure.Services
             
                 if (string.IsNullOrEmpty(id))
                 {
-                    return false;
-                }
+                throw new Exception(" invalid input.");
+            }
 
                 if (updateInstructorDto == null)
                 {
-                    return false;
-                }
+                 throw new Exception("you should input data to update it."); 
+            }
 
                 if (string.IsNullOrEmpty(updateInstructorDto.Name) || string.IsNullOrEmpty(updateInstructorDto.UserName) || string.IsNullOrEmpty(updateInstructorDto.Email))
                 {
-                    return false ;
-                }
+                throw new Exception("some field in input is empty."); ;
+            }
 
                 var instructor = await _instructorRepository.GetInstructorByIdAsync(id);
                 if (instructor == null)
                 {
-                    return false; 
-                }
+                throw new Exception("instructor not found."); ;
+            }
 
                 return await _instructorRepository.UpdateInstructorAsync(id, updateInstructorDto);
             
@@ -145,22 +147,22 @@ namespace Eduology.Infrastructure.Services
             
                 if (string.IsNullOrEmpty(instructorId) || string.IsNullOrEmpty(courseCode))
                 {
-                    return false;
+                throw new Exception("some field of input is empty"); ; ;
                 }
 
                 var instructorExists = await _instructorRepository.GetInstructorByIdAsync(instructorId);
                 if (instructorExists == null)
                 {
-                    return false;   
-                }
+                throw new Exception("instructor not found."); ;
+            }
 
-                var success = await _instructorRepository.RegisterToCourseAsync(instructorId, courseCode);
+            var success = await _instructorRepository.RegisterToCourseAsync(instructorId, courseCode);
                 if (!success)
                 {
-                    return false;
-                }
+                throw new Exception("instructor should register in course frist."); ;
+            }
 
-                return true;
+            return true;
             }
             
         
@@ -170,16 +172,16 @@ namespace Eduology.Infrastructure.Services
             
                 if (string.IsNullOrEmpty(instructorId))
                 {
-                return null;
-                }
+                throw new Exception("instructor id is empty."); ;
+            }
 
-                var instructor = await _instructorRepository.GetInstructorByIdAsync(instructorId);
+            var instructor = await _instructorRepository.GetInstructorByIdAsync(instructorId);
                 if (instructor == null)
                 {
-                return null;
-                }
+                throw new Exception("instructor not found."); ;
+            }
 
-                var courses = await _instructorRepository.GetAllCourseToSpecificInstructorAsync(instructorId);
+            var courses = await _instructorRepository.GetAllCourseToSpecificInstructorAsync(instructorId);
                 if (courses == null || !courses.Any())
                 {
                     return new List<CourseUserDto>();
