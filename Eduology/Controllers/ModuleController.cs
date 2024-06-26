@@ -95,7 +95,6 @@ namespace Eduology.Controllers
                 var success = await _ModuleService.DeleteModuleAsync(userId, module);
                 return Ok(new { message = $"Module with ID {module.Name} deleted successfully." });
 
-
             }
             catch (Exception ex)
             {
