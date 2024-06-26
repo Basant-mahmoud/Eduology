@@ -46,46 +46,34 @@ namespace Eduology.Controllers
                     return BadRequest(ModelState);
                 }
 
-                if (materialDto.FileURLs == null || materialDto.FileURLs.Count == 0)
+                if (materialDto.File == null || materialDto.File.Length == 0)
                 {
                     return BadRequest(new { message = "No file uploaded" });
                 }
 
-                // Save files to server
                 var uploadsPath = Path.Combine(_webHostEnvironment.ContentRootPath, "uploads");
                 if (!Directory.Exists(uploadsPath))
                 {
                     Directory.CreateDirectory(uploadsPath);
                 }
 
-                var fileUrls = new List<string>();
+                var filePath = Path.Combine(uploadsPath, materialDto.File.FileName);
 
-                foreach (var file in materialDto.FileURLs)
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    if (file.Length > 0)
-                    {
-                        //var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                        var filePath = Path.Combine(uploadsPath, file.Name);
-
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await file.CopyToAsync(stream);
-                        }
-                      
-                        fileUrls.Add(Path.Combine(uploadsPath, filePath)); 
-                    }
+                    await materialDto.File.CopyToAsync(stream);
                 }
 
-                // Prepare FileDto with file URLs (metadata)
-                var fileDtos = fileUrls.Select(url => new FileDto { Title = "", URL = url }).ToList();
+                var fileUrl = Path.Combine(filePath, materialDto.File.FileName);
+                var fileDto = new FileDto { Title = materialDto.File.FileName, URL = fileUrl };
+                var success = await _materialService.AddMaterialAsync(userId, materialDto, fileDto);
 
-                var success = await _materialService.AddMaterialAsync(userId, materialDto, fileDtos);
                 if (!success)
                 {
                     return NotFound(new { message = "Failed to add material. Input is not correct." });
                 }
 
-                return Ok(new { message = "Files uploaded and material added successfully", fileUrls });
+                return Ok(new { message = "File uploaded and material added successfully", fileUrl });
             }
             catch (Exception ex)
             {
