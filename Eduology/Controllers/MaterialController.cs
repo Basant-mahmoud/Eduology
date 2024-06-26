@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting;
+
 namespace Eduology.Controllers
 {
     [Route("api/[controller]")]
@@ -13,11 +14,13 @@ namespace Eduology.Controllers
     public class MaterialController : ControllerBase
     {
         private readonly IMaterialService _materialService;
-        
 
-        public MaterialController(IMaterialService materialService)
+        private readonly ILogger<MaterialController> _logger;
+
+        public MaterialController(IMaterialService materialService, ILogger<MaterialController> logger)
         {
             _materialService = materialService;
+            _logger = logger;
           
         }
 
@@ -25,27 +28,31 @@ namespace Eduology.Controllers
         {
             return User.FindFirst("uid")?.Value;
         }
+      
         [HttpPost("AddMaterial")]
         [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> AddMaterial([FromForm] MaterialDto materialDto)
+        public async Task<IActionResult> AddMaterial(IFormFile file, [FromBody] CourseModuleDto coursemodule)
         {
             try
             {
-                var userId = GetUserId();
+                var userId = GetUserId(); // Implement your user ID retrieval method
                 if (userId == null)
                 {
                     return Unauthorized(new { message = "User ID not found in the token" });
                 }
+
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
 
-                // Ensure the file is included in the request
-                if (materialDto.FileURLs == null || materialDto.FileURLs.Count == 0 || materialDto.FileURLs.Any(f => f.File == null))
+                var fileDto = await WriteFile(file);
+                var materialDto = new MaterialDto
                 {
-                    return BadRequest(new { message = "Files are required." });
-                }
+                    CourseId = coursemodule.CourseId,
+                    FileURLs = new List<FileDto> { fileDto },
+                    Module = coursemodule.ModuleName,
+                };
 
                 var success = await _materialService.AddMaterialAsync(userId, materialDto);
                 if (!success)
@@ -57,9 +64,40 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return BadRequest(new { message = ex.Message });
             }
         }
+
+
+        private async Task<FileDto> WriteFile(IFormFile file)
+        {
+            string filename = "";
+            try
+            {
+                var extension = "." + file.FileName.Split('.')[file.FileName.Split('.').Length - 1];
+                filename = DateTime.Now.Ticks.ToString() + extension;
+
+                var filepath = Path.Combine(Directory.GetCurrentDirectory(), "Upload\\Files");
+
+                if (!Directory.Exists(filepath))
+                {
+                    Directory.CreateDirectory(filepath);
+                }
+
+                var exactpath = Path.Combine(filepath, filename);
+                using (var stream = new FileStream(exactpath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                return new FileDto { Title = filename,  File= exactpath };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"File upload failed: {ex.Message}");
+            }
+        }
+
 
         [HttpPost("GetMaterialsToInstructor")]
         [Authorize(Roles = "Instructor")]

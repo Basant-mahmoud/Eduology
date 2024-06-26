@@ -29,7 +29,6 @@ namespace Eduology.Infrastructure.Services
         }
 
 
-
         public async Task<bool> AddMaterialAsync(string instructorId, MaterialDto materialDto)
         {
             try
@@ -67,22 +66,12 @@ namespace Eduology.Infrastructure.Services
 
                 foreach (var fileDto in materialDto.FileURLs)
                 {
-                    var fileId = Guid.NewGuid().ToString();
-                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads"); // Adjust the path as per your server setup
-                    var filePath = Path.Combine(uploadsFolder, fileDto.File.FileName);
-
-                    // Save the file to the server
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await fileDto.File.CopyToAsync(stream);
-                    }
-
                     var file = new File
                     {
-                        FileId = fileId,
+                        FileId = Guid.NewGuid().ToString(),
                         Title = fileDto.Title,
-                        URL = filePath, // Save the full path to access the file later
-                        MaterialId = material.MaterialId // Ensure MaterialId is set correctly
+                        URL = fileDto.File,
+                        MaterialId = material.MaterialId
                     };
 
                     material.Files.Add(file);
@@ -93,12 +82,12 @@ namespace Eduology.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                
                 throw ex;
-              }
+            }
         }
 
-        public async Task<ICollection<GetMaterialDto>> GetMaterialToInstructorsAsync(string instructorid,CourseUserRequestDto requestDto)
+
+        public async Task<ICollection<GetMaterialDto>> GetMaterialToInstructorsAsync(string instructorid, CourseUserRequestDto requestDto)
         {
             if (requestDto == null ||
                 string.IsNullOrEmpty(requestDto.CourseId) ||
@@ -143,7 +132,7 @@ namespace Eduology.Infrastructure.Services
                 else
                 {
                     var moduleDto = new GetMaterialDto
-                    {  
+                    {
                         Module = module.Name,
                         FileURLs = files
                     };
