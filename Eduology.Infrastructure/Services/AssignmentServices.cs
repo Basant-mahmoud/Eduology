@@ -53,26 +53,25 @@ namespace Eduology.Infrastructure.Services
         {
             bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, courseId);
             if (!IsRegistered)
-                return false;
+                throw new Exception("Instructor not registered to course");
             var isDeleted = await _asignmentRepository.DeleteAsync(id);
 
             if (isDeleted)
             {
-                Console.WriteLine($"Assignment with ID {id} deleted successfully.");
-                return true;
+                throw new Exception("Assignment deleted successfully");
             }
-            return false;
+            throw new Exception("Assignment with this id not found");
         }
 
         public async Task<Assignment> GetByIdAsync(int id, string userId,string role)
         {
             var assignment = await _asignmentRepository.GetByIdAsync(id);
             if (assignment == null)
-                return null;
+                throw new Exception("Assignment not available");
 
             bool isAssigned = await _courseRepository.IsUserAssignedToCourseAsync(userId, assignment.CourseId, role);
             if (!isAssigned)
-                return null;
+                throw new Exception("You are not registered in course");
 
             return assignment;
         }

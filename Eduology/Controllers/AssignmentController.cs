@@ -112,19 +112,23 @@ namespace Eduology.Controllers
         }
         [Authorize(Roles = "Instructor")]
         [HttpDelete("Delete/{assignmentId}")]
-        public async Task<ActionResult> Delete(int assignmentId, [FromBody] string courseId)
+        public async Task<ActionResult> Delete(int assignmentId, [FromBody] CourseIdDto course)
         {
             var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
             }
-            var _assignment = await _asignmentServices.DeleteAsync(assignmentId,courseId,userId);
-            if (_assignment == false)
+            try
             {
-                return BadRequest(ModelState);
+                var _assignment = await _asignmentServices.DeleteAsync(assignmentId, course.courseId, userId);
+                return Ok();
+
             }
-            return Ok(new { Message = "Assignment deleted Successfully" });
+           catch (Exception ex) 
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [Authorize(Roles = "Instructor")]
         [HttpPut("Update/{id}")]

@@ -70,7 +70,7 @@ namespace Eduology.Infrastructure.Repositories
 
         public async Task<Assignment> GetByIdAsync(int id)
         {
-            var assignment = await _context.Assignments.FirstOrDefaultAsync(e => e.AssignmentId == id);
+            var assignment = await _context.Assignments.FindAsync(id);
             if (assignment == null)
                 return null;
             return assignment;
@@ -112,7 +112,7 @@ namespace Eduology.Infrastructure.Repositories
         }
         public async Task<bool> DeleteAsync(int id)
         {
-            var assignment = await _context.Assignments.FindAsync(id);
+            var assignment = await _context.Assignments.FirstOrDefaultAsync(e => e.AssignmentId == id);
             if (assignment == null)
             {
                 return false;
