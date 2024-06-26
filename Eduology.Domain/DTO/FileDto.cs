@@ -10,6 +10,6 @@ namespace Eduology.Domain.DTO
     public class FileDto
     {
         public string Title { get; set; }
-        public string File { get; set; }
+        public string URL { get; set; }
     }
 }

@@ -28,8 +28,7 @@ namespace Eduology.Infrastructure.Services
             _moduleRepository = moduleRepository;
         }
 
-
-        public async Task<bool> AddMaterialAsync(string instructorId, MaterialDto materialDto)
+        public async Task<bool> AddMaterialAsync(string instructorId, MaterialDto materialDto, List<FileDto> fileDtos)
         {
             try
             {
@@ -64,14 +63,14 @@ namespace Eduology.Infrastructure.Services
                     Files = new List<File>()
                 };
 
-                foreach (var fileDto in materialDto.FileURLs)
+                foreach (var fileDto in fileDtos)
                 {
                     var file = new File
                     {
                         FileId = Guid.NewGuid().ToString(),
                         Title = fileDto.Title,
-                        URL = fileDto.File,
-                        MaterialId = material.MaterialId
+                        URL = fileDto.URL,
+                        MaterialId = material.MaterialId // Ensure MaterialId is correctly set
                     };
 
                     material.Files.Add(file);
