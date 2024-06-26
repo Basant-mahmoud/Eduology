@@ -37,6 +37,6 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="uploads\" />
+	  <Folder Include="Upload\Files\" />
 	</ItemGroup>
 </Project>
