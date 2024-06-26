@@ -9,7 +9,6 @@ namespace Eduology.Domain.DTO
     public class CourseDto
     {
         public string Name { get; set; }
-        public int Year { get; set; }
         public int OrganizationId   { get; set; }
     }
 }
