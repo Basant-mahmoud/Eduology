@@ -13,5 +13,7 @@ namespace Eduology.Domain.DTO
         public string CourseName { get; set; }
         public string CourseDescription { get; set; }
         public int year { get; set; }
+        public ICollection<string> Students { get; set; }
+        public ICollection<string> Instructors { get; set; }
     }
 }
