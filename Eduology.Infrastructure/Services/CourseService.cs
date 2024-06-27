@@ -25,6 +25,14 @@ namespace Eduology.Infrastructure.Services
 
         public async Task<courseCreationDetailsDto> CreateAsync(CourseDto courseDto,string adminId)
         {
+            var IsOrganization =await _courseRepository.OrganizationExistsAsync(courseDto.OrganizationId);
+            if (!IsOrganization)
+                throw new KeyNotFoundException("Organization not found.");
+            var AdminExist =await _courseRepository.isAdminExistAsync(adminId);
+            if (AdminExist == null)
+            {
+                throw new KeyNotFoundException("Admin user not found.");
+            }
             // Generate a unique course code
             string courseCode;
             do
@@ -41,8 +49,6 @@ namespace Eduology.Infrastructure.Services
                 OrganizationID = courseDto.OrganizationId,
                 
             };
-            try
-            {
                 await _courseRepository.CreateAsync(course, adminId);
                 courseCreationDetailsDto details = new courseCreationDetailsDto
                 {
@@ -50,11 +56,6 @@ namespace Eduology.Infrastructure.Services
                     Id = course.id,
                 };
                 return details;
-            }
-            catch (Exception ex) {
-                throw new Exception("An error occurred while Creating the course " + ex.Message);
-            }
-
         }
 
         private string GenerateCourseCode()

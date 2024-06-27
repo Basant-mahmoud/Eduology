@@ -23,21 +23,11 @@ namespace Eduology.Infrastructure.Repositories
         }
         public async Task<Course> CreateAsync(Course course,string adminId)
         {
-            // Check if the organization exists
-            if (!await OrganizationExistsAsync(course.OrganizationID))
-            {
-                throw new KeyNotFoundException("Organization not found."); 
-            }
             var organization = await _context.Organizations
                                                  .Include(o => o.Courses)
                                                  .FirstOrDefaultAsync(o => o.OrganizationID == course.OrganizationID);
-            var admin = await _context.Users
-                             .FirstOrDefaultAsync(u => u.Id == adminId);
+            var admin =await isAdminExistAsync(adminId);
 
-            if (admin == null)
-            {
-                throw new KeyNotFoundException("Admin user not found.");
-            }
             if (admin.Courses == null)
             {
                 admin.Courses = new List<Course>();
@@ -260,7 +250,17 @@ namespace Eduology.Infrastructure.Repositories
             var course = admin.Courses.FirstOrDefault(c => c.id == courseId); 
             return course;
         }
+        public async  Task<ApplicationUser> isAdminExistAsync(string AdminId)
+        {
+            var admin = awai _context.Users
+                            .FirstOrDefaultAsync(u => u.Id == AdminId);
 
+            if (admin == null)
+            {
+                return null;
+            }
+            return admin;
+        }
 
     }
 

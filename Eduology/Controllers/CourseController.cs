@@ -34,11 +34,18 @@ namespace Eduology.Controllers
             {
                 return BadRequest(ModelState);
             }
+            try
+            {
+                var createdCourse = await _courseService.CreateAsync(course, userId);
+                if (createdCourse == null)
+                    return BadRequest(ModelState);
+                return CreatedAtAction(nameof(GetCourseById), new { id = createdCourse }, createdCourse);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
-            var createdCourse = await _courseService.CreateAsync(course,userId);
-            if (createdCourse == null)
-                return BadRequest(ModelState);
-            return CreatedAtAction(nameof(GetCourseById), new { id = createdCourse }, createdCourse);
         }
         [Authorize(Roles = "Instructor,Student")]
         [HttpGet("GetById/{id}")]

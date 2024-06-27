@@ -25,6 +25,8 @@ namespace Eduology.Domain.Interfaces
         Task<bool> IsUserAssignedToCourseAsync(string userId, string courseId, string role);
         Task<bool> IsUserAssignedToCourseAsyncByNmae(string userId, string name, string role);
         Task<List<Course>> GetAllByOrganizationIdAsync(int organizationId);
-        Task<Course> GetByIdForAdminAsync(string courseId,string adminId); 
+        Task<Course> GetByIdForAdminAsync(string courseId,string adminId);
+        Task<ApplicationUser> isAdminExistAsync(string AdminId);
+
     }
 }
