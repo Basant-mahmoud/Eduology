@@ -1,4 +1,5 @@
-﻿using Eduology.Application.Services.Interface;
+﻿using Eduology.Application.Services.Helper;
+using Eduology.Application.Services.Interface;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Infrastructure.Repositories;
@@ -96,7 +97,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Student")]
         public async Task<IActionResult> RegisterToCourse([FromBody] RegisterUserToCourseDto model)
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -122,7 +123,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Student")]
         public async Task<ActionResult<CourseUserDto>> AllCoursestoStudent()
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -141,10 +142,6 @@ namespace Eduology.Controllers
             {
                 return NotFound(new { message = ex.Message });
             }
-        }
-        private string GetUserId()
-        {
-            return User.FindFirst("uid")?.Value;
         }
     } 
 }

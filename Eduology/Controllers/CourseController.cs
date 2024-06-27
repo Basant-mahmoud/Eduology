@@ -1,4 +1,5 @@
 ﻿using Eduology.Application.Interface;
+using Eduology.Application.Services.Helper;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
@@ -25,7 +26,7 @@ namespace Eduology.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CourseDto course)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
@@ -51,57 +52,78 @@ namespace Eduology.Controllers
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetCourseById(String id)
         {
-            var userId = User.FindFirst("uid")?.Value;
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = User.GetUserId();
+            var role = User.GetUserRole();
 
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
             }
-            var course = await _courseService.GetByIdAsync(id,userId,role);
-
-            if (course == null)
+            try
             {
-                return NotFound();
+                var course = await _courseService.GetByIdAsync(id, userId, role);
+
+                if (course == null)
+                {
+                    return NotFound();
+                }
+                return Ok(course);
             }
-            return Ok(course);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [Authorize(Roles = "Instructor,Student")]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
             }
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            var role = User.GetUserRole();
             if (role == null)
             {
                 return Unauthorized("Role not found in the token");
             }
-            var courses = await _courseService.GetAllAsync(userId,role);
-            if (courses == null || !courses.Any())
+            try
             {
-                return NoContent();
+                var courses = await _courseService.GetAllAsync(userId, role);
+                if (courses == null || !courses.Any())
+                {
+                    return NoContent();
+                }
+                return Ok(courses);
             }
-            return Ok(courses);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [Authorize(Roles = "Instructor,Student")]
         [HttpGet("GetByName/{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
-            var userId = User.FindFirst("uid")?.Value;
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = User.GetUserId();
+            var role = User.GetUserRole();
 
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
             }
-            CourseDetailsDto course = await _courseService.GetByNameAsync(name,userId,role);
-            if (course == null)
-                return NotFound();
-            return Ok(course);
+            try
+            {
+                CourseDetailsDto course = await _courseService.GetByNameAsync(name, userId, role);
+                if (course == null)
+                    return NotFound();
+                return Ok(course);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("Update/{id}")]
@@ -112,37 +134,58 @@ namespace Eduology.Controllers
                 return BadRequest(ModelState);
             }
 
-            var updated = await _courseService.UpdateAsync(id,courseDto);
-            if (!updated) 
+            try
             {
-                return NotFound();
-            }
+                var updated = await _courseService.UpdateAsync(id, courseDto);
+                if (!updated)
+                {
+                    return NotFound();
+                }
 
-            return Ok(new { message = "Course updated successfully" });
+                return Ok(new { message = "Course updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [Authorize(Roles = "Admin")]
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-           var course =  await _courseService.DeleteAsync(id);
-           if(!course)
-                return NotFound(new { message = $"Course with id {id} not found." });
-            return Ok(new { message = "Course deleted successfully" });
+            try
+            {
+                var course = await _courseService.DeleteAsync(id);
+                if (!course)
+                    return NotFound(new { message = $"Course with id {id} not found." });
+                return Ok(new { message = "Course deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("GetByOrganizationId/{id}")]
         public async Task<IActionResult> GetByOrganizationId(int id)
         {
-            var courses = await _courseService.GetAllByOrganizationIdAsync(id);
-            if (courses == null)
-                return NotFound(new { message = $"Organization with id {id} not found." });
-            return Ok(courses);
+            try
+            {
+                var courses = await _courseService.GetAllByOrganizationIdAsync(id);
+                if (courses == null)
+                    return NotFound(new { message = $"Organization with id {id} not found." });
+                return Ok(courses);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [Authorize(Roles = "Admin")]
         [HttpGet("GetByIdForAdmin/{id}")]
         public async Task<IActionResult> GetByIdForAdmin(string id)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = User.GetUserId();
             if (userId == null) return Unauthorized("Admin ID not found in the token");
             try
             {

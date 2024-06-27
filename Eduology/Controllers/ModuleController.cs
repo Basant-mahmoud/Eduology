@@ -1,4 +1,5 @@
 ﻿using Eduology.Application.Interface;
+using Eduology.Application.Services.Helper;
 using Eduology.Domain.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,15 +17,11 @@ namespace Eduology.Controllers
         {
             _ModuleService = moduleService;
         }
-        private string GetUserId()
-        {
-            return User.FindFirst("uid")?.Value;
-        }
         [HttpPost("AddModule")]
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> AddModule([FromBody] ModuleDto module)
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -59,7 +56,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> UpdateModule([FromBody] UpdateModuleDto module)
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -83,7 +80,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> DeleteModule([FromBody] ModuleDto module)
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });

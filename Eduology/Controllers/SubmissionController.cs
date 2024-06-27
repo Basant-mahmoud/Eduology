@@ -1,4 +1,5 @@
 ﻿using Eduology.Application.Interface;
+using Eduology.Application.Services.Helper;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -25,8 +26,8 @@ namespace Eduology.Controllers
         [HttpPost("GetById/{submistionId}")]
         public async Task<IActionResult> GetById(int submistionId, [FromBody] CourseIdDto cors)
         {
-            var userId = User.FindFirst("uid")?.Value;
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = User.GetUserId();
+            var role = User.GetUserRole();
             if (userId == null)
             {
                 return Unauthorized(new { Message = "User ID not found in the token" });
@@ -46,8 +47,8 @@ namespace Eduology.Controllers
         [HttpPost("Submit")]
         public async Task<IActionResult> SubmitAsync([FromForm] SubmissionDto submissionDto)
         {
-            var userId = User.FindFirst("uid")?.Value;
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = User.GetUserId();
+            var role = User.GetUserRole();
             if (userId == null)
             {
                 return Unauthorized(new { Message = "User ID not found in the token" });
@@ -93,8 +94,8 @@ namespace Eduology.Controllers
         [HttpDelete("DeleteSubmission")]
         public async Task<IActionResult> DeleteSubmission([FromBody] DeleteSubmissionDto deleteSubmissionDto)
         {
-            var userId = User.FindFirst("uid")?.Value;
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = User.GetUserId();
+            var role = User.GetUserRole();
             if (userId == null)
             {
                 return Unauthorized(new {Message = "User ID not found in the token"});
@@ -120,7 +121,7 @@ namespace Eduology.Controllers
         [HttpPost("GetAllSubmission")]
         public async Task<IActionResult> GetAllSubmission([FromBody] GetAllSubmisionDto getSubmissionDto)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { Message = "User ID not found in the token" });

@@ -1,4 +1,5 @@
 ﻿using Eduology.Application.Interface;
+using Eduology.Application.Services.Helper;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Models;
 using Eduology.Infrastructure.Services;
@@ -25,7 +26,7 @@ namespace Eduology.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult> Create([FromForm] AssignmentCreationDto assignment)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { Message = "User ID not found in the token" });
@@ -66,55 +67,79 @@ namespace Eduology.Controllers
                 },
 
             };
+            try
+            {
+                var _assignment = await _asignmentServices.CreateAsync(__assignment, userId);
 
+                return CreatedAtAction(nameof(GetById), new { id = _assignment.CourseId }, _assignment);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
-            var _assignment = await _asignmentServices.CreateAsync(__assignment, userId);
-
-            return CreatedAtAction(nameof(GetById), new { id = _assignment.CourseId }, _assignment);
+            
         }
 
         [Authorize(Roles = "Instructor,Student")]
         [HttpGet("GetById/{id}")]
         public async Task<ActionResult> GetById(int id)
         {
-            var userId = User.FindFirst("uid")?.Value;
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = User.GetUserId();
+            var userRole = User.GetUserRole();
 
             if (userId == null)
             {
                 return Unauthorized(new { Message = "User ID not found in the token" });
             }
-            var _assignment = await _asignmentServices.GetByIdAsync(id, userId, userRole);
-            if (_assignment == null)
+            try
             {
-                return BadRequest(ModelState);
+                var _assignment = await _asignmentServices.GetByIdAsync(id, userId, userRole);
+                if (_assignment == null)
+                {
+                    return BadRequest(ModelState);
+                }
+                return Ok(_assignment);
             }
-            return Ok(_assignment);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+           
+           
         }
         [Authorize(Roles = "Instructor,Student")]
         [HttpGet("GetByName/{name}")]
         public async Task<ActionResult> GetByName(String name)
         {
-            var userId = User.FindFirst("uid")?.Value;
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = User.GetUserId();
+            var userRole = User.GetUserRole();
 
             if (userId == null)
             {
                 return Unauthorized(new { Message = "User ID not found in the token" });
             }
-            var _assignment = await _asignmentServices.GetByNameAsync(name, userId, userRole);
-            if (_assignment == null)
+            try
             {
-                return BadRequest(ModelState);
+                var _assignment = await _asignmentServices.GetByNameAsync(name, userId, userRole);
+                if (_assignment == null)
+                {
+                    return BadRequest(ModelState);
+                }
+                return Ok(_assignment);
             }
-            return Ok(_assignment);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
         [Authorize(Roles = "Instructor")]
         [HttpDelete("Delete/{assignmentId}")]
         public async Task<ActionResult> Delete(int assignmentId, [FromBody] CourseIdDto course)
         {
-            var userId = User.FindFirst("uid")?.Value;
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = User.GetUserId();
+            var userRole = User.GetUserRole();
 
             if (userId == null)
             {
@@ -135,17 +160,24 @@ namespace Eduology.Controllers
         [HttpPut("Update/{id}")]
         public async Task<ActionResult> Update(int id, UpdateAssignmemtDto assignment)
         {
-            var userId = User.FindFirst("uid")?.Value;
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { Message = "User ID not found in the token" });
             }
-            var _assignment = await _asignmentServices.UpdateAsync(id, assignment, userId);
-            if (_assignment == null)
+            try
             {
-                return BadRequest(new { Message = "Assignment update failed." });
+                var _assignment = await _asignmentServices.UpdateAsync(id, assignment, userId);
+                if (_assignment == null)
+                {
+                    return BadRequest(new { Message = "Assignment update failed." });
+                }
+                return Ok(new { Message = "Assignment Updated Successfully" });
             }
-            return Ok(new { Message = "Assignment Updated Successfully" });
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
      

@@ -1,4 +1,5 @@
 ﻿using Eduology.Application.Interface;
+using Eduology.Application.Services.Helper;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +26,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<ActionResult<CreateAnnoncementDto>> CreateAnnouncement([FromBody] CreateAnnoncementDto announcementDto)
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -47,7 +48,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor, Student")]
         public async Task<ActionResult<AnnouncementDto>> GetAnnouncement(int announcemmentId,string courseId)
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -68,7 +69,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> DeleteAnnouncement(int announcemmentId, string courseId)
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -90,7 +91,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Instructor")]
         public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncementsToInstructorByCourseId(string courseId)
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -114,7 +115,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Student")]
         public async Task<ActionResult<IEnumerable<AnnouncementDto>>> GetAnnouncementsToStudentByCourseId(string courseId)
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -139,7 +140,7 @@ namespace Eduology.Controllers
         [Authorize(Roles = "Student")]
         public async Task<ActionResult<IEnumerable<AllAnnoncemetDto>>> GetAllCourseAnnouncementsToStudent()
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             if (userId == null)
             {
                 return Unauthorized(new { message = "User ID not found in the token" });
@@ -155,11 +156,6 @@ namespace Eduology.Controllers
             {
                 return NotFound(new { message = ex.Message });
             }
-        }
-
-        private string GetUserId()
-        {
-            return User.FindFirst("uid")?.Value;
         }
     }
 }
