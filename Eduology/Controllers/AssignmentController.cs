@@ -136,7 +136,7 @@ namespace Eduology.Controllers
         }
         [Authorize(Roles = "Instructor")]
         [HttpDelete("Delete/{assignmentId}")]
-        public async Task<ActionResult> Delete(int assignmentId, [FromBody] CourseIdDto course)
+        public async Task<ActionResult> Delete(int assignmentId, [FromBody] IdDto course)
         {
             var userId = User.GetUserId();
             var userRole = User.GetUserRole();
@@ -147,7 +147,7 @@ namespace Eduology.Controllers
             }
             try
             {
-                var _assignment = await _asignmentServices.DeleteAsync(assignmentId, course.courseId, userId,userRole);
+                var _assignment = await _asignmentServices.DeleteAsync(assignmentId, course.Id, userId,userRole);
                 return Ok(new {Message = "Assignment deleted successfully" });
 
             }

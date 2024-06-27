@@ -56,17 +56,15 @@ namespace Eduology.Infrastructure.Repositories
                 URL = submission.URL 
             };
         }
-        public async Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deleteSubmissionDto)
+        public async Task<Submission> DeleteAsync(int assignmentId, string studentId)
         {
-
-            var submission = await Context.submissions.FirstOrDefaultAsync(e => e.SubmissionId == deleteSubmissionDto.SubmissionId);
+            var submission = await Context.submissions.FirstOrDefaultAsync(e => e.AssignmentId == assignmentId && e.StudentId == studentId);
             if (submission == null)
                 return null;
-
             Context.submissions.Remove(submission);
             await Context.SaveChangesAsync();
 
-            return deleteSubmissionDto;
+            return submission;
         }
 
         public async Task<List<submissionDetailsDto>> GetSubmissionsByCourseAndAssignmentAsync(string courseId, int assignmentId)
@@ -93,5 +91,6 @@ namespace Eduology.Infrastructure.Repositories
 
             return submission;
         }
+
     }
 }

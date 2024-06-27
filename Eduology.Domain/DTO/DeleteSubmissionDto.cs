@@ -8,7 +8,6 @@ namespace Eduology.Domain.DTO
 {
     public class DeleteSubmissionDto
     {
-       public int SubmissionId {  get; set; }
        public string CourseId { get; set; }
        public int AssigmentId { get; set; }
     }

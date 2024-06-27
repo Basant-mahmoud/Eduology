@@ -26,7 +26,7 @@ namespace Eduology.Controllers
         }
         [Authorize(Roles = "Instructor")]
         [HttpPost("GetById/{submistionId}")]
-        public async Task<IActionResult> GetById(int submistionId, [FromBody] CourseIdDto cors)
+        public async Task<IActionResult> GetById(int submistionId, [FromBody] IdDto cors)
         {
             var userId = User.GetUserId();
             var role = User.GetUserRole();
@@ -36,7 +36,7 @@ namespace Eduology.Controllers
             }
             try
             {
-                var submission = await _submissionService.GetByIdAsync(submistionId, userId, cors.courseId);
+                var submission = await _submissionService.GetByIdAsync(submistionId, userId, cors.Id);
                 return Ok(submission);
             }
             catch (Exception ex)
@@ -104,13 +104,25 @@ namespace Eduology.Controllers
             try
             {
                 var deletesubmission = await _submissionService.DeleteAsync(deleteSubmissionDto, userId, role);
-                return Ok(new { Message = "Submission deleted successfully" });
+
+                if (deletesubmission)
+                {
+                    return Ok(new { Message = "Submission deleted successfully" });
+                }
+                else
+                {
+                    return BadRequest(new { Message = "Failed to delete submission." });
+                }
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
             catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
