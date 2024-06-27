@@ -143,9 +143,9 @@ namespace Eduology.Infrastructure.Services
             var existingSubmission = await _submissionRepository.GetSubmissionByStudentAndAssignmentAsync(userId, submissionExistDto.AssignmentId);
             if (existingSubmission != null)
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
 
 
