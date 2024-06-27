@@ -61,6 +61,8 @@ namespace Eduology
                 .AddEntityFrameworkStores<EduologyDBContext>();
             ////////////////////////
             builder.Services.AddTransient<IEmailSender, EmailSender>();
+            // Add password hasher
+            builder.Services.AddScoped<IPasswordHasher<ApplicationUser>, PasswordHasher<ApplicationUser>>();
             // Register repositories
             builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
