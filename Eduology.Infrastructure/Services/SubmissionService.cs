@@ -140,7 +140,7 @@ namespace Eduology.Infrastructure.Services
             {
                 throw new Exception("You Not Registered In This Course");
             }
-            var existingSubmission = await _submissionRepository.GetSubmissionByStudentAndAssignmentAsync(submissionExistDto.courseId, submissionExistDto.AssignmentId);
+            var existingSubmission = await _submissionRepository.GetSubmissionByStudentAndAssignmentAsync(userId, submissionExistDto.AssignmentId);
             if (existingSubmission != null)
             {
                 return false;
