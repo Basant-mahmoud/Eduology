@@ -9,10 +9,10 @@ namespace Eduology.Domain.Interfaces
 {
     public interface ISubmissionRepository
     {
-        public Task<SubmissionDto> CreateAsync(SubmissionDto submission,string userId);
+        public Task<submissionDetailsDto> CreateAsync(submissionDetailsDto submission,string userId);
+        public Task<submissionDetailsDto> GetByIdAsync(int id, string _courseId);
         public Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deletesubmision);
-        public Task<SubmissionDto> GetByIdAsync(int id,string _courseId);
-        Task<List<SubmissionDto>> GetSubmissionsByCourseAndAssignmentAsync(string courseId, int assignmentId);
+        Task<List<submissionDetailsDto>> GetSubmissionsByCourseAndAssignmentAsync(string courseId, int assignmentId);
 
     }
 }

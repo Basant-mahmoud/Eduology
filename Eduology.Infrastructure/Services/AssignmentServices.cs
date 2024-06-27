@@ -41,16 +41,20 @@ namespace Eduology.Infrastructure.Services
             return new AssignmentDto
             {
                 Id = assignment.Id,
-                Title = assignment.Title,
-                fileURLs = assignment.fileURLs,
                 CourseId = assignment.CourseId,
                 Deadline = assignment.Deadline,
                 Description = assignment.Description,
                 File = assignment.File,
+                fileURLs = new AssignmentFileDto
+                {
+                    Title = assignment.fileURLs.Title,
+                    URL = assignment.fileURLs.URL,
+                },
+                Title =assignment.Title,
             };
         }
 
-        public async Task<bool> DeleteAsync(int id, string courseId, string userId)
+        public async Task<bool> DeleteAsync(int id, string courseId, string userId,string role)
         {
             bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, courseId);
             if (!IsRegistered)
@@ -59,7 +63,13 @@ namespace Eduology.Infrastructure.Services
 
             if (isDeleted)
             {
-                throw new Exception("Assignment deleted successfully");
+                return true;
+            }
+            var file = await GetByIdAsync(id,userId,role);
+            var filePath = file.File.URL;
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
             }
             throw new Exception("Assignment with this id not found");
         }

@@ -123,6 +123,18 @@ namespace Eduology.Infrastructure.Persistence
            .HasMany(m => m.Materials)
            .WithOne(mat => mat.Module)
            .HasForeignKey(mat => mat.ModuleId);
+            // One-to-many relationship between Assignment and Submission
+            modelBuilder.Entity<Assignment>()
+                .HasMany(a => a.Submissions)
+                .WithOne(s => s.Assignment)
+                .HasForeignKey(s => s.AssignmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // One-to-many relationship between Course and Assignment
+            modelBuilder.Entity<Course>()
+                .HasMany(c => c.Assignments)
+                .WithOne(a => a.Course)
+                .HasForeignKey(a => a.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
 

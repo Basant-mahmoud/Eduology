@@ -50,8 +50,7 @@ namespace Eduology.Infrastructure.Repositories
             };
             assignment.File = file;
 
-            var assignmnet = await _context.Assignments.AddAsync(assignment);
-            assignmentDto.Id = assignment.AssignmentId;
+            await _context.Assignments.AddAsync(assignment);
             var course = await _context.Courses.FindAsync(assignmentDto.CourseId);
             course.Assignments.Add(assignment);
             _context.Courses.Update(course);

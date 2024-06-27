@@ -114,14 +114,16 @@ namespace Eduology.Controllers
         public async Task<ActionResult> Delete(int assignmentId, [FromBody] CourseIdDto course)
         {
             var userId = User.FindFirst("uid")?.Value;
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
             if (userId == null)
             {
                 return Unauthorized("User ID not found in the token");
             }
             try
             {
-                var _assignment = await _asignmentServices.DeleteAsync(assignmentId, course.courseId, userId);
-                return Ok();
+                var _assignment = await _asignmentServices.DeleteAsync(assignmentId, course.courseId, userId,userRole);
+                return Ok("Assignment deleted successfully");
 
             }
             catch (Exception ex)

@@ -11,6 +11,7 @@ namespace Eduology.Domain.Models
         public int SubmissionId { get; set; }
         public string URL { get; set; }
         public int Grade { get; set; }
+        public string Title { get; set; }
         public DateTime TimeStamp { get; set; }
         public int AssignmentId { get; set; } //Foreign key
         public Assignment Assignment { get; set; } //Navigation property

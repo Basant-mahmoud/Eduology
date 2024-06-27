@@ -1,7 +1,9 @@
 ﻿using Eduology.Application.Interface;
 using Eduology.Domain.DTO;
+using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -12,14 +14,16 @@ namespace Eduology.Controllers
     public class SubmissionController : ControllerBase
     {
         private readonly ISubmissionService _submissionService;
+        private readonly IWebHostEnvironment _environment;
 
-        public SubmissionController(ISubmissionService submissionService)
+        public SubmissionController(ISubmissionService submissionService, IWebHostEnvironment environment)
         {
             _submissionService = submissionService;
+            _environment = environment;
         }
         [Authorize(Roles = "Instructor")]
-        [HttpGet("courses/{courseId}/Submissions/GetById/{submistionId}")]
-        public async Task<IActionResult> GetById(string courseId, int submistionId)
+        [HttpPost("GetById/{submistionId}")]
+        public async Task<IActionResult> GetById(int submistionId, [FromBody] CourseIdDto cors)
         {
             var userId = User.FindFirst("uid")?.Value;
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
@@ -27,14 +31,14 @@ namespace Eduology.Controllers
             {
                 return Unauthorized("User ID not found in the token");
             }
-            var submission = await _submissionService.GetByIdAsync(submistionId, userId, courseId);
+            var submission = await _submissionService.GetByIdAsync(submistionId, userId, cors.courseId);
             if (submission == null)
                 return NotFound();
             return Ok(submission);
         }
         [Authorize(Roles = "Student")]
         [HttpPost("Submit")]
-        public async Task<IActionResult> SubmitAsync([FromBody] SubmissionDto submissionDto)
+        public async Task<IActionResult> SubmitAsync([FromForm] SubmissionDto submissionDto)
         {
             var userId = User.FindFirst("uid")?.Value;
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
@@ -44,10 +48,30 @@ namespace Eduology.Controllers
             }
             if (submissionDto == null)
                 return BadRequest("Submission data is null.");
+            var uploadsPath = Path.Combine(_environment.ContentRootPath, "uploads");
+            if (!Directory.Exists(uploadsPath))
+            {
+                Directory.CreateDirectory(uploadsPath);
+            }
 
+            var filePath = Path.Combine(uploadsPath, submissionDto.file.FileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await submissionDto.file.CopyToAsync(stream);
+            }
             try
             {
-                var submission = await _submissionService.CreateAsync(submissionDto,userId,role);
+                var _submissionDto = new submissionDetailsDto
+                {
+                    URL = filePath,
+                    Title = submissionDto.file.FileName,
+                    AssignmentId = submissionDto.AssignmentId,
+                    courseId = submissionDto.courseId,
+                    TimeStamp = DateTime.Now,
+                    file = submissionDto.file
+                };
+                var submission = await _submissionService.CreateAsync(_submissionDto,userId,role);
                 return Ok(submission);
             }
             catch (ArgumentException ex)
@@ -59,7 +83,7 @@ namespace Eduology.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [Authorize(Roles = "Instructor")]
+        [Authorize(Roles = "Student")]
         [HttpDelete("DeleteSubmission")]
         public async Task<IActionResult> DeleteSubmission([FromBody] DeleteSubmissionDto deleteSubmissionDto)
         {
@@ -74,8 +98,8 @@ namespace Eduology.Controllers
 
             try
             {
-                var deletesubmission = await _submissionService.DeleteAsync(deleteSubmissionDto,userId);
-                return Ok(deleteSubmissionDto);
+                var deletesubmission = await _submissionService.DeleteAsync(deleteSubmissionDto, userId,role);
+                return Ok("Submission deleted successfully");
             }
             catch (ArgumentException ex)
             {
@@ -100,12 +124,12 @@ namespace Eduology.Controllers
                 return BadRequest(new { message = "Submission data is null." });
             }
 
-                var submissions = await _submissionService.GetAllSubmission(userId, getSubmissionDto);
-                if (submissions == null || !submissions.Any())
-                {
-                    return NotFound(new { message = "No submissions found for the given course and assignment." });
-                }
-                return Ok(submissions);
+            var submissions = await _submissionService.GetAllSubmission(userId, getSubmissionDto);
+            if (submissions == null || !submissions.Any())
+            {
+                return NotFound(new { message = "No submissions found for the given course and assignment." });
+            }
+            return Ok(submissions);
         }
     }
 }
