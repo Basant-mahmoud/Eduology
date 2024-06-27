@@ -33,6 +33,11 @@ namespace Eduology.Infrastructure.Services
             {
                 throw new Exception("You Not Registered In This Course");
             }
+            var existingSubmission = await _submissionRepository.GetSubmissionByStudentAndAssignmentAsync(userId, submission.AssignmentId);
+            if (existingSubmission != null)
+            {
+                throw new InvalidOperationException("You have already submitted this assignment.");
+            }
             var assignment = await _assignmentService.GetByIdAsync(submission.AssignmentId,userId,role);
             if (assignment == null)
             {
@@ -58,6 +63,7 @@ namespace Eduology.Infrastructure.Services
             {
                 throw new Exception("Not Vaild Operation");
             }
+
             var assigment = await _assignmentService.GetByIdAsync(deletesubmission.AssigmentId, userId,role);
             var submission = await _submissionRepository.GetByIdAsync(deletesubmission.SubmissionId, deletesubmission.CourseId);
             var student = await _studentService.GetStudentByIdAsync(userId);
@@ -127,6 +133,21 @@ namespace Eduology.Infrastructure.Services
 
             return await _submissionRepository.GetSubmissionsByCourseAndAssignmentAsync(submissionDto.CourseId, submissionDto.AssignmentId);
         }
+        public async Task<bool> IsThereSubmissionByStudentAndAssignmentAsync(IsSubmissionExistDto submissionExistDto,string userId)
+        {
+            bool IsRegistered = await _courseRepository.ISStudentAssignedToCourse(userId, submissionExistDto.courseId);
+            if (!IsRegistered)
+            {
+                throw new Exception("You Not Registered In This Course");
+            }
+            var existingSubmission = await _submissionRepository.GetSubmissionByStudentAndAssignmentAsync(userId, submissionExistDto.AssignmentId);
+            if (existingSubmission != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
 
     }
 }

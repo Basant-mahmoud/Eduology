@@ -75,10 +75,10 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
 
-            
+
         }
 
         [Authorize(Roles = "Instructor,Student")]
@@ -103,10 +103,10 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
-           
-           
+
+
         }
         [Authorize(Roles = "Instructor,Student")]
         [HttpGet("GetByName/{name}")]
@@ -130,9 +130,9 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
-            
+
         }
         [Authorize(Roles = "Instructor")]
         [HttpDelete("Delete/{assignmentId}")]
@@ -153,7 +153,7 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"{ ex.Message}");
+                return BadRequest(new { message = ex.Message });
             }
         }
         [Authorize(Roles = "Instructor")]
@@ -176,7 +176,7 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
     }

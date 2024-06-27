@@ -85,5 +85,13 @@ namespace Eduology.Infrastructure.Repositories
                 Title = s.Title,
             }).ToList();
         }
+        public async Task<Submission> GetSubmissionByStudentAndAssignmentAsync(string studentId, int assignmentId)
+        {
+            var submission = await Context.submissions
+                .FirstOrDefaultAsync(s => s.StudentId == studentId && s.AssignmentId == assignmentId);
+            if (submission == null) return null;
+
+            return submission;
+        }
     }
 }

@@ -5,6 +5,7 @@ using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Shared;
 using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -40,9 +41,9 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"{ex.Message}");
+                return BadRequest(new { message = ex.Message });
             }
-           
+
         }
         [Authorize(Roles = "Student")]
         [HttpPost("Submit")]
@@ -84,7 +85,7 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
         [Authorize(Roles = "Student")]
@@ -95,7 +96,7 @@ namespace Eduology.Controllers
             var role = User.GetUserRole();
             if (userId == null)
             {
-                return Unauthorized(new {Message = "User ID not found in the token"});
+                return Unauthorized(new { Message = "User ID not found in the token" });
             }
             if (deleteSubmissionDto == null)
                 return BadRequest(new { Message = "Submission data is null." });
@@ -107,11 +108,11 @@ namespace Eduology.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest($"{ex.Message}");
+                return BadRequest(new { message = ex.Message });
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest($"{ex.Message}");
+                return BadRequest(new { message = ex.Message });
             }
         }
         [Authorize(Roles = "Instructor")]
@@ -135,5 +136,34 @@ namespace Eduology.Controllers
             }
             return Ok(submissions);
         }
+        [Authorize(Roles = "Student")]
+        [HttpPost("IsSubmited")]
+        public async Task<IActionResult> IsSubmited([FromBody] IsSubmissionExistDto submissionExistDto)
+        {
+            var userId = User.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized(new { Message = "User ID not found in the token" });
+            }
+            if (submissionExistDto == null)
+            {
+                return BadRequest(new { Message = "Submission data is null." });
+            }
+
+            try
+            {
+                bool isSubmit = await _submissionService.IsThereSubmissionByStudentAndAssignmentAsync(submissionExistDto,userId);
+                if (!isSubmit)
+                {
+                    return Ok(new { Message = "No submissions, you can submit" });
+                }
+                return Ok(new { Message = "You have already submitted" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message});
+            }
+        }
+
     }
 }
