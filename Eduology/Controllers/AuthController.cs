@@ -6,7 +6,7 @@ using Eduology.Application.Utilities;
 using Eduology.Application.Services.Interface;
 using Eduology.Application.Interface;
 using Microsoft.AspNetCore.Authorization;
-
+using OfficeOpenXml;
 namespace Eduology.Controllers
 {
     [Route("api/[controller]")]
@@ -45,6 +45,54 @@ namespace Eduology.Controllers
             }
 
             return Ok(result);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost("register-from-excel")]
+        public async Task<IActionResult> RegisterFromExcelAsync(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            var users = new List<RegisterModel>();
+
+            using (var stream = new MemoryStream())
+            {
+
+                await file.CopyToAsync(stream);
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                using (var package = new ExcelPackage(stream))
+                {
+
+                    var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+                    if (worksheet == null)
+                        return BadRequest("No worksheet found in Excel file.");
+
+                    for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
+                    {
+                        var model = new RegisterModel
+                        {
+                            Username = worksheet.Cells[row, 1].Text,
+                            Email = worksheet.Cells[row, 2].Text,
+                            Password = worksheet.Cells[row, 3].Text,
+                            Name = worksheet.Cells[row, 4].Text,
+                            OrganizationId = int.Parse(worksheet.Cells[row, 5].Text),
+                            Role = worksheet.Cells[row, 6].Text
+                        };
+
+                        users.Add(model);
+                    }
+                }
+            }
+
+            var results = new List<AuthModel>();
+            foreach (var user in users)
+            {
+                var result = await _authService.RegisterAsync(user);
+                results.Add(result);
+            }
+
+            return Ok(results);
         }
 
         [HttpPost("login")]
