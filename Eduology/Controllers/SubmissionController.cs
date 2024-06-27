@@ -5,6 +5,7 @@ using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -78,16 +79,12 @@ namespace Eduology.Controllers
                     TimeStamp = DateTime.Now,
                     file = submissionDto.file
                 };
-                var submission = await _submissionService.CreateAsync(_submissionDto,userId,role);
+                var submission = await _submissionService.CreateAsync(_submissionDto, userId, role);
                 return Ok(submission);
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
-                return BadRequest($"{ex.Message}");
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest($"{ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
         [Authorize(Roles = "Student")]

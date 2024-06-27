@@ -19,9 +19,9 @@ namespace Eduology.Domain.Interfaces
         Task<IEnumerable<Course>> GetAllAsync(string userId,string role);
         Task<Course> UpdateAsync(String id, CourseDto course);
         Task<bool> IsInstructorAssignedToCourse(string instructorId, string courseId);
-        Task<bool> ISStudentAssignedToCourse(string instructorId, string courseId);
+        Task<bool> ISStudentAssignedToCourse(string studentId, string courseId);
         Task<bool> IsInstructorAssignedToCourseByName(string instructorId, string Name);
-        Task<bool> IStudentAssignedToCourseByName(string instructorId, string Name);
+        Task<bool> IStudentAssignedToCourseByName(string studentId, string Name);
         Task<bool> IsUserAssignedToCourseAsync(string userId, string courseId, string role);
         Task<bool> IsUserAssignedToCourseAsyncByNmae(string userId, string name, string role);
         Task<List<Course>> GetAllByOrganizationIdAsync(int organizationId);

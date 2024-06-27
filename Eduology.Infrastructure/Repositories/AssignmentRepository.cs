@@ -55,6 +55,7 @@ namespace Eduology.Infrastructure.Repositories
             course.Assignments.Add(assignment);
             _context.Courses.Update(course);
             await _context.SaveChangesAsync();
+            assignmentDto.Id = assignment.AssignmentId;
             return assignmentDto;
         }
 
@@ -97,6 +98,7 @@ namespace Eduology.Infrastructure.Repositories
 
             _context.Assignments.Remove(assignment);
             await _context.SaveChangesAsync();
+
             return true;
         }
 

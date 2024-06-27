@@ -71,7 +71,7 @@ namespace Eduology.Controllers
             {
                 var _assignment = await _asignmentServices.CreateAsync(__assignment, userId);
 
-                return CreatedAtAction(nameof(GetById), new { id = _assignment.CourseId }, _assignment);
+                return CreatedAtAction(nameof(GetById), new { id = _assignment.Id }, _assignment);
             }
             catch (Exception ex)
             {
