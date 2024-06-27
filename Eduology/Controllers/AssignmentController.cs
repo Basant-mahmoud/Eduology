@@ -123,7 +123,7 @@ namespace Eduology.Controllers
             try
             {
                 var _assignment = await _asignmentServices.DeleteAsync(assignmentId, course.courseId, userId,userRole);
-                return Ok("Assignment deleted successfully");
+                return Ok(new {Message = "Assignment deleted successfully" });
 
             }
             catch (Exception ex)

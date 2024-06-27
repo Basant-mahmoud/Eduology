@@ -10,6 +10,7 @@ namespace Eduology.Domain.DTO
     {
         public string Description { get; set; }
         public DateTime Deadline { get; set; }
+        public string Name { get; set; }
         public String CourseId { get; set; }
     }
 }
