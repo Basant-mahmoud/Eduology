@@ -143,7 +143,7 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Failed to retrieve modules and materials." });
+                return  BadRequest(new { message = ex.Message });
             }
         }
         [HttpDelete("DeleteFile")]
@@ -160,14 +160,19 @@ namespace Eduology.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            var success = await _materialService.DeleteFileAsync(userId, deleteFileDto);
-            if (!success)
-            {
-                return NotFound(new { message = $"File with Id {deleteFileDto.fileId} not found or you don't have permission to delete it." });
+            try {
+                var success = await _materialService.DeleteFileAsync(userId, deleteFileDto);
+                if (!success)
+                {
+                    return NotFound(new { message = $"File  not found or you don't have permission to delete it." });
+                }
+                return Ok(new { message = "File deleted successfully." });
             }
-
-            return Ok(new { message = "File deleted successfully." });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            
         }
 
 

@@ -33,20 +33,27 @@ namespace Eduology.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            var (success, exists) = await _ModuleService.AddModuleAsync(userId,module);
-
-            if (exists)
+            try
             {
-                return Conflict(new { message = "Module already exists in the course." });
-            }
+                var (success, exists) = await _ModuleService.AddModuleAsync(userId, module);
 
-            if (!success)
+                if (exists)
+                {
+                    return Conflict(new { message = "Module already exists in the course." });
+                }
+
+                if (!success)
+                {
+                    return BadRequest(new { message = "Failed to add module. The course might not exist." });
+                }
+
+                return Ok(new { message = "Module added successfully." });
+            }
+            catch (Exception ex)
             {
-                return BadRequest(new { message = "Failed to add module. The course might not exist." });
+                return BadRequest(new { message = ex.Message });
             }
-
-            return Ok(new { message = "Module added successfully." });
+            
         }
         [HttpPut("UpdateModule")]
         [Authorize(Roles = "Instructor")]
@@ -59,14 +66,17 @@ namespace Eduology.Controllers
             } 
             if (!ModelState.IsValid)
             { return BadRequest(ModelState); }
-            var success = await _ModuleService.UpdateModuleAsync(userId, module);
-
-            if (!success)
+            try
             {
-                return NotFound(new { message = $"Module with name {module.Name}  not found in course ." });
+                var success = await _ModuleService.UpdateModuleAsync(userId, module);
+                return Ok(new { message = $"Module with ID {module.Name} update successfully." });
+            }
+          catch(Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
 
-            return Ok(new { message = $"Module with ID {module.Name} update successfully." });
+           
         }
 
         [HttpDelete("DeleteModule")]
@@ -80,16 +90,17 @@ namespace Eduology.Controllers
             }
             if (!ModelState.IsValid)
             { return BadRequest(ModelState); }
-            var success = await _ModuleService.DeleteModuleAsync(userId,module);
-
-            if (!success)
+            try
             {
-                return NotFound(new { message = $"Module with name {module.Name}  not found in course ." });
-            }
+                var success = await _ModuleService.DeleteModuleAsync(userId, module);
+                return Ok(new { message = $"Module with ID {module.Name} deleted successfully." });
 
-            return Ok(new { message = $"Module with ID {module.Name} deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            
         }
-        
-       
     }
 }

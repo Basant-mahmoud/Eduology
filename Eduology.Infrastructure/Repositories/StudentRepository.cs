@@ -74,19 +74,19 @@ namespace Eduology.Infrastructure.Repositories
             var student = await _context.Users.FindAsync(studentId);
             if (student == null)
             {
-                return false;
+                throw new Exception("Student not found in database");
             }
             var course = await _context.Courses
                 .Include(c => c.StudentCourses)
                 .FirstOrDefaultAsync(c => c.CourseCode == courseCode);
             if (course == null)
             {
-                return false;
+                throw new Exception("course not found ");
             }
             // Check if the student is already assigned to the course
             if (course.StudentCourses.Any(ci => ci.StudentId == studentId))
             {
-                return true;
+                throw new Exception("Instructor aready register in course");
             }
             var courseStudent = new StudentCourse
             {

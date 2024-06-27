@@ -168,11 +168,10 @@ namespace Eduology.Controllers
                     return Ok(new { message = "Instructor added to the course successfully." });
             }
 
-            catch (ValidationException ex)
+            catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
-
         }
         [HttpGet("AllCoursetoInstructor")]
         [Authorize(Roles = "Instructor")]

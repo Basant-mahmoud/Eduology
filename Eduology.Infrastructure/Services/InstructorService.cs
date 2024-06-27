@@ -128,12 +128,20 @@ namespace Eduology.Infrastructure.Services
 
         public async Task<bool> RegisterToCourseAsync(string instructorId, string courseCode)
         {
-            var instructor = await _instructorRepository.RegisterToCourseAsync(instructorId, courseCode);
-            if (instructor == null || instructor == false)
+            try
             {
-                throw new ValidationException($"Failed to register instructor with id {instructorId} to course {courseCode}.");
+                var instructor = await _instructorRepository.RegisterToCourseAsync(instructorId, courseCode);
+                if (!instructor)
+                {
+                    throw new Exception($"Failed to register instructor with id {instructorId} to course {courseCode}.");
+                }
+                return instructor;
+
             }
-            return instructor;
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }    
 
         public async Task<List<CourseUserDto>> GetAllCourseToSpecificInstructorAsync(string instructorId)

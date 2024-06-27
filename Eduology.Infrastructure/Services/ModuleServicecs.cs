@@ -22,7 +22,7 @@ namespace Eduology.Infrastructure.Services
         {
             if (moduleDto == null || string.IsNullOrEmpty(moduleDto.Name) || string.IsNullOrEmpty(moduleDto.CourseId)|| string.IsNullOrEmpty(instructorid))
             {
-                throw new ValidationException("Name CourseId and instructorid");
+                throw new ValidationException("Name or CourseId and instructorid");
             }
 
             var courseExists = await _courseRepository.GetByIdAsync(moduleDto.CourseId);
@@ -56,27 +56,36 @@ namespace Eduology.Infrastructure.Services
         {
             if (string.IsNullOrEmpty(moduleDto.Name) || string.IsNullOrEmpty(moduleDto.CourseId))
             {
-                return false;
+                throw new Exception("Module name or course id cant be null");
+            }
+            var existingCourse = await _courseRepository.GetByIdAsync(moduleDto.CourseId);
+            if (existingCourse == null)
+            {
+                throw new Exception("Course not found.");
             }
             var instructorExist = await _courseRepository.IsInstructorAssignedToCourse(instructorid, moduleDto.CourseId);
             if (instructorExist == false)
             {
-                return false ;
+                throw new Exception("Instructor is not join to this course.");
             }
 
             var success = await _moduleRepository.DeleteModuleAsync(moduleDto);
+            if (!success)
+            {
+                throw new Exception("Fail to delete module");
+            }
             return success;
         }
         public async Task<bool> UpdateModuleAsync(string instructorid,UpdateModuleDto updatemodule)
         {
             if (updatemodule == null || string.IsNullOrEmpty(updatemodule.Name) || string.IsNullOrEmpty(updatemodule.CourseId))
             {
-                return false;
+                throw new Exception("empty input");
             }
             var instructorExist = await _courseRepository.IsInstructorAssignedToCourse(instructorid, updatemodule.CourseId);
             if (instructorExist == false)
             {
-                return false;
+                throw new Exception("Instructor is not join to this course.");
             }
 
             var module = new ModuleDto
@@ -87,11 +96,15 @@ namespace Eduology.Infrastructure.Services
             var existingModule = await _moduleRepository.GetModuleByNameAsync(module);
             if (existingModule == null)
             {
-                return false; // Module not found
+                throw new Exception("not found this module");
             }
 
             
             var success = await _moduleRepository.UpdateModuleAsync(updatemodule);
+            if (!success)
+            {
+                throw new Exception("Fail to update module");
+            }
             return success;
         }
         
