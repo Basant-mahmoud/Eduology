@@ -34,71 +34,96 @@ namespace Eduology.Application.Services
         }
 
         public async Task<AuthModel> RegisterAsync(RegisterModel model)
-{
-    if (model.OrganizationId > 0)
-    {
-        if (!await _authRepository.OrganizationExistsAsync(model.OrganizationId))
         {
-            return new AuthModel { Message = "Invalid OrganizationId provided." };
+            if (model.OrganizationId > 0)
+            {
+                if (!await _authRepository.OrganizationExistsAsync(model.OrganizationId))
+                {
+                    return new AuthModel { Message = "Invalid OrganizationId provided." };
+                }
+            }
+
+            if (await _authRepository.EmailExistsAsync(model.Email))
+                return new AuthModel { Message = "Email is already registered!" };
+
+            if (await _authRepository.UsernameExistsAsync(model.Username))
+                return new AuthModel { Message = "Username is already registered!" };
+
+            var user = new ApplicationUser
+            {
+                UserName = model.Username,
+                Email = model.Email,
+                Name = model.Name,
+                OrganizationId = model.OrganizationId
+            };
+
+            var password = GeneratePassword();
+
+            // Create JWT token
+            var jwtSecurityToken = await CreateJwtToken(user);
+
+           /* try
+            {
+                await _emailSender.SendEmailAsync(user.Email, "Registration Successful",
+                    $"You have successfully registered to Eduology LMS. Your Email is {model.Email} and Your password is: {password}");
+            }
+            catch (Exception ex)
+            {
+                var cleanedMessage = "Failed to send registration email: Transaction failed.";
+                return new AuthModel { Message = cleanedMessage };
+            }*/
+
+            var result = await _userManager.CreateAsync(user, password);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(",", result.Errors.Select(e => e.Description));
+                return new AuthModel { Message = errors };
+            }
+
+            if (!string.IsNullOrEmpty(model.Role))
+            {
+                await _userManager.AddToRoleAsync(user, model.Role);
+            }
+
+            return new AuthModel
+            {
+                OrganizationId = model.OrganizationId,
+                Email = user.Email,
+                ExpiresOn = jwtSecurityToken.ValidTo,
+                IsAuthenticated = true,
+                Roles = new List<string> { model.Role },
+                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                Username = user.UserName
+            };
         }
-    }
 
-    if (await _authRepository.EmailExistsAsync(model.Email))
-        return new AuthModel { Message = "Email is already registered!" };
+        private string GeneratePassword()
+        {
+            var random = new Random();
+            const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string lowercase = "abcdefghijklmnopqrstuvwxyz";
+            const string digits = "0123456789";
+            const string nonAlphanumeric = "!@#$%^&*";
 
-    if (await _authRepository.UsernameExistsAsync(model.Username))
-        return new AuthModel { Message = "Username is already registered!" };
+            var passwordChars = new char[8]; // Assuming a minimum length of 8 characters
 
-    var user = new ApplicationUser
-    {
-        UserName = model.Username,
-        Email = model.Email,
-        Name = model.Name,
-        OrganizationId = model.OrganizationId
-    };
+            // Ensure the password has at least one uppercase letter, one lowercase letter, one digit, and one non-alphanumeric character
+            passwordChars[0] = uppercase[random.Next(uppercase.Length)];
+            passwordChars[1] = lowercase[random.Next(lowercase.Length)];
+            passwordChars[2] = digits[random.Next(digits.Length)];
+            passwordChars[3] = nonAlphanumeric[random.Next(nonAlphanumeric.Length)];
 
-    // Create JWT token
-    var jwtSecurityToken = await CreateJwtToken(user);
+            // Fill the remaining characters with random choices from all categories
+            string allChars = uppercase + lowercase + digits + nonAlphanumeric;
+            for (int i = 4; i < passwordChars.Length; i++)
+            {
+                passwordChars[i] = allChars[random.Next(allChars.Length)];
+            }
 
-    // Attempt to send the email first
-    /*
-    try
-    {
-        await _emailSender.SendEmailAsync(user.Email, "Registration Successful", 
-            $"You have successfully registered to Eduology LMS. Your Email is {model.Email} and Your password is: {model.Password}");
-    }
-    catch (Exception ex)
-    {
-        var cleanedMessage = "Failed to send registration email: Transaction failed.";
-        return new AuthModel { Message = cleanedMessage };
-    }
-    */
-    var result = await _userManager.CreateAsync(user, model.Password);
-
-    if (!result.Succeeded)
-    {
-        var errors = string.Join(",", result.Errors.Select(e => e.Description));
-        return new AuthModel { Message = errors };
-    }
-
-    if (!string.IsNullOrEmpty(model.Role))
-    {
-        await _userManager.AddToRoleAsync(user, model.Role);
-    }
-
-    return new AuthModel
-    {
-        OrganizationId = model.OrganizationId,
-        Email = user.Email,
-        ExpiresOn = jwtSecurityToken.ValidTo,
-        IsAuthenticated = true,
-        Roles = new List<string> { model.Role },
-        Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-        Username = user.UserName
-    };
-}
-
-
+            // Shuffle the characters to ensure the password is not predictable
+            return new string(passwordChars.OrderBy(c => random.Next()).ToArray());
+        }
         public async Task<AuthModel> LoginAsync(LoginModel model)
         {
             var authModel = new AuthModel();

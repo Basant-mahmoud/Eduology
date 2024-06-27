@@ -46,7 +46,7 @@ namespace Eduology.Controllers
 
             return Ok(result);
         }
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         [HttpPost("register-from-excel")]
         public async Task<IActionResult> RegisterFromExcelAsync(IFormFile file)
         {
@@ -57,13 +57,11 @@ namespace Eduology.Controllers
 
             using (var stream = new MemoryStream())
             {
-
                 await file.CopyToAsync(stream);
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
                 using (var package = new ExcelPackage(stream))
                 {
-
                     var worksheet = package.Workbook.Worksheets.FirstOrDefault();
                     if (worksheet == null)
                         return BadRequest("No worksheet found in Excel file.");
@@ -74,10 +72,9 @@ namespace Eduology.Controllers
                         {
                             Username = worksheet.Cells[row, 1].Text,
                             Email = worksheet.Cells[row, 2].Text,
-                            Password = worksheet.Cells[row, 3].Text,
-                            Name = worksheet.Cells[row, 4].Text,
-                            OrganizationId = int.Parse(worksheet.Cells[row, 5].Text),
-                            Role = worksheet.Cells[row, 6].Text
+                            Name = worksheet.Cells[row, 3].Text,
+                            OrganizationId = int.Parse(worksheet.Cells[row, 4].Text),
+                            Role = worksheet.Cells[row, 5].Text
                         };
 
                         users.Add(model);
