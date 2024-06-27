@@ -252,7 +252,7 @@ namespace Eduology.Infrastructure.Repositories
         }
         public async  Task<ApplicationUser> isAdminExistAsync(string AdminId)
         {
-            var admin = awai _context.Users
+            var admin = await _context.Users
                             .FirstOrDefaultAsync(u => u.Id == AdminId);
 
             if (admin == null)
