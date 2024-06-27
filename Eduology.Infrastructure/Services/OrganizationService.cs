@@ -15,11 +15,13 @@ namespace Eduology.Infrastructure.Services
     {
         private readonly IOrganizationRepository _organizationRepository;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IPasswordHasher<ApplicationUser> _passwordHasher;
 
-        public OrganizationService(IOrganizationRepository organizationRepository, UserManager<ApplicationUser> userManager)
+        public OrganizationService(IOrganizationRepository organizationRepository, UserManager<ApplicationUser> userManager, IPasswordHasher<ApplicationUser> passwordHasher)
         {
             _organizationRepository = organizationRepository;
             _userManager = userManager;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<List<OrganizationDetailsDto>> GetAllOrganizationsAsync()
@@ -86,26 +88,31 @@ namespace Eduology.Infrastructure.Services
                 throw new InvalidOperationException("Password and confirm password do not match!");
             }
 
+            // Hash the password
+            var hashedPassword = _passwordHasher.HashPassword(null, createOrganizationDto.Password);
+
             var organization = new Organization
             {
                 Name = createOrganizationDto.Name,
                 Phone = createOrganizationDto.Phone,
                 Email = createOrganizationDto.Email,
-                Password = createOrganizationDto.Password,
+                Password = hashedPassword,
                 ConfirmPassword = createOrganizationDto.ConfirmPassword
             };
 
             await _organizationRepository.AddAsync(organization);
 
-            return new OrganizationDto
+            var organizationDto = new OrganizationDto
             {
                 OrganizationId = organization.OrganizationID,
                 Name = organization.Name,
                 Phone = organization.Phone,
                 Email = organization.Email,
-                Password = organization.Password,
-                ConfirmPassword = organization.ConfirmPassword,
+                Password = createOrganizationDto.Password,
+                ConfirmPassword = createOrganizationDto.ConfirmPassword
             };
+
+            return organizationDto;
         }
 
         public async Task<bool> DeleteOrganizationAsync(int id)
