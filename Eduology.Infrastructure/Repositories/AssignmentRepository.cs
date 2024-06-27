@@ -81,7 +81,7 @@ namespace Eduology.Infrastructure.Repositories
                 throw new KeyNotFoundException($"Asssignment with Id {id} not found.");
             _assignment.Description = assignment.Description;
             _assignment.Deadline = assignment.Deadline;
-            _assignment.Title = assignment.Name;
+            _assignment.Title = assignment.Title;
              _context.Assignments.Update(_assignment);
             await _context.SaveChangesAsync();
 
