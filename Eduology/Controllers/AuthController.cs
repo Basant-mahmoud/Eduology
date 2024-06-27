@@ -46,7 +46,7 @@ namespace Eduology.Controllers
 
             return Ok(result);
         }
-       // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost("register-from-excel")]
         public async Task<IActionResult> RegisterFromExcelAsync(IFormFile file)
         {
