@@ -26,7 +26,7 @@ namespace Eduology.Infrastructure.Repositories
         {
             if (assignmentDto == null)
             {
-                throw new ArgumentNullException(nameof(assignmentDto));
+                return null;
             }
             var assignment = new Assignment
             {
@@ -39,7 +39,7 @@ namespace Eduology.Infrastructure.Repositories
             };
             if (assignmentDto.fileURLs == null)
             {
-                throw new ArgumentNullException(nameof(assignmentDto.fileURLs), "File information is required.");
+                return null;
             }
 
             var file = new AssignmentFile
@@ -78,7 +78,7 @@ namespace Eduology.Infrastructure.Repositories
                                                 .Include(a => a.File) 
                                                 .FirstOrDefaultAsync(a => a.AssignmentId == id);
             if (_assignment == null)
-                throw new KeyNotFoundException($"Asssignment with Id {id} not found.");
+                return null;
             _assignment.Description = assignment.Description;
             _assignment.Deadline = assignment.Deadline;
             _assignment.Title = assignment.Title;

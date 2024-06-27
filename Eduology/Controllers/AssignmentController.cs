@@ -28,7 +28,7 @@ namespace Eduology.Controllers
             var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new { Message = "User ID not found in the token" });
             }
             if (!ModelState.IsValid)
             {
@@ -37,7 +37,7 @@ namespace Eduology.Controllers
 
             if (assignment.File == null || assignment.File.Length == 0)
             {
-                return BadRequest("No file uploaded.");
+                return BadRequest(new { Message = "No file uploaded." });
             }
 
             var uploadsPath = Path.Combine(_environment.ContentRootPath, "uploads");
@@ -82,7 +82,7 @@ namespace Eduology.Controllers
 
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new { Message = "User ID not found in the token" });
             }
             var _assignment = await _asignmentServices.GetByIdAsync(id, userId, userRole);
             if (_assignment == null)
@@ -100,7 +100,7 @@ namespace Eduology.Controllers
 
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new { Message = "User ID not found in the token" });
             }
             var _assignment = await _asignmentServices.GetByNameAsync(name, userId, userRole);
             if (_assignment == null)
@@ -118,7 +118,7 @@ namespace Eduology.Controllers
 
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new { Message = "User ID not found in the token" });
             }
             try
             {
@@ -128,7 +128,7 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest($"{ ex.Message}");
             }
         }
         [Authorize(Roles = "Instructor")]
@@ -138,12 +138,12 @@ namespace Eduology.Controllers
             var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new { Message = "User ID not found in the token" });
             }
             var _assignment = await _asignmentServices.UpdateAsync(id, assignment, userId);
             if (_assignment == null)
             {
-                return BadRequest("Assignment update failed.");
+                return BadRequest(new { Message = "Assignment update failed." });
             }
             return Ok(new { Message = "Assignment Updated Successfully" });
         }

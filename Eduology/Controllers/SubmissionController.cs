@@ -29,12 +29,18 @@ namespace Eduology.Controllers
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new { Message = "User ID not found in the token" });
             }
-            var submission = await _submissionService.GetByIdAsync(submistionId, userId, cors.courseId);
-            if (submission == null)
-                return NotFound();
-            return Ok(submission);
+            try
+            {
+                var submission = await _submissionService.GetByIdAsync(submistionId, userId, cors.courseId);
+                return Ok(submission);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}");
+            }
+           
         }
         [Authorize(Roles = "Student")]
         [HttpPost("Submit")]
@@ -44,10 +50,10 @@ namespace Eduology.Controllers
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new { Message = "User ID not found in the token" });
             }
             if (submissionDto == null)
-                return BadRequest("Submission data is null.");
+                return BadRequest(new { Message = "Submission data is null." });
             var uploadsPath = Path.Combine(_environment.ContentRootPath, "uploads");
             if (!Directory.Exists(uploadsPath))
             {
@@ -76,11 +82,11 @@ namespace Eduology.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest($"{ex.Message}");
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest($"{ex.Message}");
             }
         }
         [Authorize(Roles = "Student")]
@@ -91,23 +97,23 @@ namespace Eduology.Controllers
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new {Message = "User ID not found in the token"});
             }
             if (deleteSubmissionDto == null)
-                return BadRequest("Submission data is null.");
+                return BadRequest(new { Message = "Submission data is null." });
 
             try
             {
-                var deletesubmission = await _submissionService.DeleteAsync(deleteSubmissionDto, userId,role);
-                return Ok("Submission deleted successfully");
+                var deletesubmission = await _submissionService.DeleteAsync(deleteSubmissionDto, userId, role);
+                return Ok(new { Message = "Submission deleted successfully" });
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest($"{ex.Message}");
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest($"{ex.Message}");
             }
         }
         [Authorize(Roles = "Instructor")]
@@ -117,7 +123,7 @@ namespace Eduology.Controllers
             var userId = User.FindFirst("uid")?.Value;
             if (userId == null)
             {
-                return Unauthorized("User ID not found in the token");
+                return Unauthorized(new { Message = "User ID not found in the token" });
             }
             if (getSubmissionDto == null)
             {

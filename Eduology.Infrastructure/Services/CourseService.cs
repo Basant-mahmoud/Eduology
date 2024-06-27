@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Eduology.Infrastructure.Repositories;
 using Eduology.Application.Services.Interface;
 using System.Data;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 namespace Eduology.Infrastructure.Services
 {
 
@@ -115,11 +116,11 @@ namespace Eduology.Infrastructure.Services
 
             if (!isEnrolledStudent && !isEnrolledInstructor)
             {
-                return null;
+                throw new Exception("You not registered in course");
             }
             var course = await _courseRepository.GetByIdAsync(ID);
             if (course == null)
-                return null;
+                throw new Exception("Course Not found");
             return course;
         }
 
@@ -128,11 +129,11 @@ namespace Eduology.Infrastructure.Services
             bool IsRegisterd = await _courseRepository.IsUserAssignedToCourseAsyncByNmae(UserID,name, role);
             if (!IsRegisterd)
             {
-                return null;
+                throw new Exception("You not registered in course");
             }
             var course = await _courseRepository.GetByNameAsync(name);
             if (course == null)
-                return null;
+                throw new Exception("Course Not found");
             return course;
         }
 
@@ -140,7 +141,7 @@ namespace Eduology.Infrastructure.Services
         {
             bool isExist = await _courseRepository.OrganizationExistsAsync(organizationId);
             if (!isExist)
-                return null;
+                 throw new Exception("Organization not found") ;
             var courses = await _courseRepository.GetAllByOrganizationIdAsync(organizationId);
             return courses;
         }
@@ -149,7 +150,8 @@ namespace Eduology.Infrastructure.Services
             try
             {
                 var course = await _courseRepository.GetByIdForAdminAsync(courseId, adminId);
-
+                if (course == null)
+                    throw new Exception("Course not found");
                 return new CourseDetailsDto
                 {
                     CourseId = courseId,
@@ -175,7 +177,7 @@ namespace Eduology.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while fetching course details " + ex.Message);
+                throw new Exception( "An error occurred, Admin not vaild");
             }
         }
 

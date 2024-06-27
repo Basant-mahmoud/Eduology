@@ -254,15 +254,10 @@ namespace Eduology.Infrastructure.Repositories
 
             if (admin == null)
             {
-                throw new Exception("Admin not found");
+                return null;
             }
 
-            var course = admin.Courses.FirstOrDefault(c => c.id == courseId);
-            if (course == null)
-            {
-                throw new Exception("Course not found for this admin");
-            }
-
+            var course = admin.Courses.FirstOrDefault(c => c.id == courseId); 
             return course;
         }
 

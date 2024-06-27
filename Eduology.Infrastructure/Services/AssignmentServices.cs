@@ -32,7 +32,7 @@ namespace Eduology.Infrastructure.Services
         {
             bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, assignment.CourseId);
             if (!IsRegistered)
-                throw new Exception("Invalid Instructor.");
+                throw new Exception("Invalid Instructor. you are not registered in course");
             var _assignment = await _asignmentRepository.CreateAsync(assignment, userId);
             if (assignment == null)
             {
@@ -102,10 +102,10 @@ namespace Eduology.Infrastructure.Services
         {
             bool IsRegistered = await _courseRepository.IsInstructorAssignedToCourse(userId, assignment.CourseId);
             if (!IsRegistered)
-                return null;
+                throw new Exception("You are not registered in course");
             var _assignment = await _asignmentRepository.UpdateAsync(id,assignment);
             if (_assignment == null)
-                return null;
+                 throw new Exception("Assignment not found");
             if (_instructorService.GetInstructorByIdAsync(userId).ToString() == null)
             {
                 throw new ArgumentException("Invalid InstructorId.");
