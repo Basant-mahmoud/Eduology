@@ -1,4 +1,5 @@
 ﻿using Eduology.Domain.DTO;
+using Eduology.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace Eduology.Domain.Interfaces
         public Task<submissionDetailsDto> GetByIdAsync(int id, string _courseId);
         public Task<DeleteSubmissionDto> DeleteAsync(DeleteSubmissionDto deletesubmision);
         Task<List<submissionDetailsDto>> GetSubmissionsByCourseAndAssignmentAsync(string courseId, int assignmentId);
+        public Task<Submission> GetSubmissionByStudentAndAssignmentAsync(string studentId, int assignmentId);
+
 
     }
 }

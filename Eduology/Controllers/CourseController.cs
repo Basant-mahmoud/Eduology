@@ -44,7 +44,7 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
 
         }
@@ -71,7 +71,7 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
         [Authorize(Roles = "Instructor,Student")]
@@ -99,7 +99,7 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
         [Authorize(Roles = "Instructor,Student")]
@@ -122,7 +122,7 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
         [Authorize(Roles = "Admin")]
@@ -146,7 +146,7 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
         [Authorize(Roles = "Admin")]
@@ -162,7 +162,7 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
         [Authorize(Roles = "Admin")]
@@ -178,7 +178,7 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
         [Authorize(Roles = "Admin")]
@@ -194,7 +194,7 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
     }
