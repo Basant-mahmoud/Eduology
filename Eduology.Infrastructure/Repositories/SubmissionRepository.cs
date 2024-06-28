@@ -58,14 +58,17 @@ namespace Eduology.Infrastructure.Repositories
         }
         public async Task<Submission> DeleteAsync(int assignmentId, string studentId)
         {
-            var submission = await Context.submissions.FirstOrDefaultAsync(e => e.AssignmentId == assignmentId && e.StudentId == studentId);
+            var submission = await Context.submissions
+                                          .FirstOrDefaultAsync(e => e.AssignmentId == assignmentId && e.StudentId == studentId);
             if (submission == null)
                 return null;
+
             Context.submissions.Remove(submission);
             await Context.SaveChangesAsync();
 
             return submission;
         }
+
 
         public async Task<List<submissionDetailsDto>> GetSubmissionsByCourseAndAssignmentAsync(string courseId, int assignmentId)
         {

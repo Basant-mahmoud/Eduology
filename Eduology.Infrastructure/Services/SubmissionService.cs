@@ -56,7 +56,7 @@ namespace Eduology.Infrastructure.Services
             return await _submissionRepository.CreateAsync(submission,userId);
         }
 
-        public async Task<bool> DeleteAsync(DeleteSubmissionDto deletesubmission, string userId,string role)
+        public async Task<bool> DeleteAsync(DeleteSubmissionDto deletesubmission, string userId, string role)
         {
             bool IsRegistered = await _courseRepository.ISStudentAssignedToCourse(userId, deletesubmission.CourseId);
             if (!IsRegistered)
@@ -64,7 +64,7 @@ namespace Eduology.Infrastructure.Services
                 throw new Exception("Not Vaild Operation");
             }
 
-            var assigment = await _assignmentService.GetByIdAsync(deletesubmission.AssigmentId, userId,role);
+            var assigment = await _assignmentService.GetByIdAsync(deletesubmission.AssigmentId, userId, role);
             var student = await _studentService.GetStudentByIdAsync(userId);
             if (student == null)
             {
@@ -73,22 +73,20 @@ namespace Eduology.Infrastructure.Services
             if (assigment == null)
             {
                 throw new ArgumentException("Invalid assignment ID.");
-
             }
             if (assigment.Deadline < DateTime.Now)
             {
                 throw new InvalidOperationException("Cant delete submmision.");
             }
-            if (_studentService.GetStudentByIdAsync(userId) == null)
-            {
-                throw new ArgumentException("Invalid student ID.");
-            }
+
             var deleted = await _submissionRepository.DeleteAsync(deletesubmission.AssigmentId, userId);
             if (deleted == null)
-                throw new Exception ("there is no submission");
-            return deleted!=null;
-
+            {
+                throw new Exception("there is no submission");
+            }
+            return true;
         }
+
 
 
 
