@@ -16,6 +16,7 @@ namespace Eduology.Domain.Models
         public List<string> Roles { get; set; }
         public string Token { get; set; }
         public DateTime ExpiresOn { get; set; }
+        public string name { get; set; }
        
     }
 }

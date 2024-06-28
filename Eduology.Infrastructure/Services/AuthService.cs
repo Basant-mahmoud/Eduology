@@ -142,6 +142,7 @@ namespace Eduology.Application.Services
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             authModel.Email = user.Email;
             authModel.Username = user.UserName;
+            authModel.name = user.Name;
             authModel.ExpiresOn = jwtSecurityToken.ValidTo;
             authModel.Roles = rolesList.ToList();
             authModel.OrganizationId = user.OrganizationId;
