@@ -11,6 +11,6 @@ namespace Eduology.Domain.DTO
         public string coursename {  get; set; }
         public string instructorname { get; set; }
         public string Content { get; set; }
-        public DateTime CreatedAT { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

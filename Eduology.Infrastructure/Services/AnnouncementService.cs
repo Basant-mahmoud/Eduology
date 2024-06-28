@@ -168,7 +168,7 @@ namespace Eduology.Infrastructure.Services
                 coursename = a.Course.Name,
                 instructorname = a.Instructor.Name, 
                 Content = a.Content,
-                CreatedAT = a.CreatedAT
+                CreatedAt = a.CreatedAT
             }).ToList();
         }
         private AnnouncementDto ConvertToDto(Announcement announcement)
