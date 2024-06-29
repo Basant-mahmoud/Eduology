@@ -101,6 +101,15 @@ namespace Eduology.Infrastructure.Services
             };
 
             await _organizationRepository.AddAsync(organization);
+            var user = new ApplicationUser
+            {
+                Email = createOrganizationDto.Email,
+                Name = createOrganizationDto.Name,
+                UserName = createOrganizationDto.Name,
+                OrganizationId = organization.OrganizationID
+            };
+            var result = await _userManager.CreateAsync(user, createOrganizationDto.Password);
+            await _userManager.AddToRoleAsync(user, "Admin");
 
             var organizationDto = new OrganizationDto
             {
