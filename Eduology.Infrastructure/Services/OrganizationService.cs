@@ -16,12 +16,13 @@ namespace Eduology.Infrastructure.Services
         private readonly IOrganizationRepository _organizationRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IPasswordHasher<ApplicationUser> _passwordHasher;
-
-        public OrganizationService(IOrganizationRepository organizationRepository, UserManager<ApplicationUser> userManager, IPasswordHasher<ApplicationUser> passwordHasher)
+        private readonly ISubscriptionPlanService _subscriptionPlanService;
+        public OrganizationService(IOrganizationRepository organizationRepository, UserManager<ApplicationUser> userManager, IPasswordHasher<ApplicationUser> passwordHasher,ISubscriptionPlanService subscriptionPlanService)
         {
             _organizationRepository = organizationRepository;
             _userManager = userManager;
             _passwordHasher = passwordHasher;
+            _subscriptionPlanService = subscriptionPlanService;
         }
 
         public async Task<List<OrganizationDetailsDto>> GetAllOrganizationsAsync()
@@ -54,7 +55,7 @@ namespace Eduology.Infrastructure.Services
             return await MapToOrganizationDetailsDtoAsync(organization);
         }
 
-        public async Task<OrganizationDto> CreateOrganizationAsync(CreateOrganizationDto createOrganizationDto)
+        public async Task<OrganizationDto> CreateOrganizationAsync(CreateOrganizationDto createOrganizationDto,string orderId)
         {
             // Check if the email is already registered as a user
             var existingEmail = await _userManager.FindByEmailAsync(createOrganizationDto.Email);
@@ -62,10 +63,11 @@ namespace Eduology.Infrastructure.Services
             {
                 throw new InvalidOperationException("Email is already registered");
             }
+
             var existingUser = await _userManager.FindByNameAsync(createOrganizationDto.Name);
             if (existingUser != null)
             {
-                throw new InvalidOperationException("User name is already taken");
+                throw new InvalidOperationException("Username is already taken");
             }
 
             // Check if the organization already exists
@@ -85,11 +87,17 @@ namespace Eduology.Infrastructure.Services
             // Validate password and confirm password
             if (createOrganizationDto.Password != createOrganizationDto.ConfirmPassword)
             {
-                throw new InvalidOperationException("Password and confirm password do not match!");
+                throw new InvalidOperationException("Password and confirm password do not match");
             }
 
             // Hash the password
             var hashedPassword = _passwordHasher.HashPassword(null, createOrganizationDto.Password);
+
+            var subscriptionPlan = await _subscriptionPlanService.GetSubscriptionPlanByNameAsync(createOrganizationDto.subscribtionplan);
+            if (subscriptionPlan == null)
+            {
+                throw new InvalidOperationException("Subscription plan not found");
+            }
 
             var organization = new Organization
             {
@@ -97,7 +105,9 @@ namespace Eduology.Infrastructure.Services
                 Phone = createOrganizationDto.Phone,
                 Email = createOrganizationDto.Email,
                 Password = hashedPassword,
-                ConfirmPassword = createOrganizationDto.ConfirmPassword
+                ConfirmPassword = createOrganizationDto.ConfirmPassword,
+                SubscriptionPlanId = subscriptionPlan.subscriptionPlanId,
+                orderId = orderId,
             };
 
             await _organizationRepository.AddAsync(organization);
@@ -109,11 +119,14 @@ namespace Eduology.Infrastructure.Services
                 Phone = organization.Phone,
                 Email = organization.Email,
                 Password = createOrganizationDto.Password,
-                ConfirmPassword = createOrganizationDto.ConfirmPassword
+                ConfirmPassword = createOrganizationDto.ConfirmPassword,
+                subscribtionplan = createOrganizationDto.subscribtionplan,
+                orderId = orderId
             };
 
             return organizationDto;
         }
+
 
         public async Task<bool> DeleteOrganizationAsync(int id)
         {

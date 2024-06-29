@@ -17,10 +17,9 @@ using Eduology.Infrastructure.Services;
 using Eduology.Application.Interface;
 using Microsoft.IdentityModel.Tokens;
 using Eduology.Application.Services.Helper;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting.Internal;
+using Eduology.Infrastructure.ExternalServices.Paymnet;
+using Eduology.Infrastructure.Options;
 
 namespace Eduology
 {
@@ -29,15 +28,13 @@ namespace Eduology
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            ////
-            ///
 
             // Build the IConfiguration instance
             var Configuration = new ConfigurationBuilder()
                 .SetBasePath(builder.Environment.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
-            //////
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowWebApp",
@@ -48,7 +45,6 @@ namespace Eduology
                         .AllowCredentials());
             });
 
-            /////////////////
             // Add services to the container.
             builder.Services.Configure<JWT>(Configuration.GetSection("JWT"));
 
@@ -59,7 +55,7 @@ namespace Eduology
             // Add Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<EduologyDBContext>();
-            ////////////////////////
+
             builder.Services.AddTransient<IEmailSender, EmailSender>();
             // Add password hasher
             builder.Services.AddScoped<IPasswordHasher<ApplicationUser>, PasswordHasher<ApplicationUser>>();
@@ -74,6 +70,7 @@ namespace Eduology
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
             builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
             builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
+            builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             // Register services
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IInstructorService, InstructorService>();
@@ -85,7 +82,8 @@ namespace Eduology
             builder.Services.AddScoped<ISubmissionService, SubmissionService>();
             builder.Services.AddScoped<IMaterialService, MaterialService>();
             builder.Services.AddScoped<IModuleService, ModuleServicecs>();
-          
+            builder.Services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
+
             // Configure JWT authentication
             builder.Services.AddAuthentication(options =>
             {
@@ -113,6 +111,7 @@ namespace Eduology
                 options.AddPolicy("InstructorPolicy", policy => policy.RequireRole("Instructor"));
                 options.AddPolicy("StudentPolicy", policy => policy.RequireRole("Student"));
             });
+
             // File upload configuration
             builder.Services.Configure<FormOptions>(options =>
             {
@@ -123,8 +122,13 @@ namespace Eduology
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            // builder.Services.AddSingleton<IWebHostEnvironment>(hostingEnvironment);
- 
+
+            // Add PayPal configuration
+            builder.Services.Configure<PayPalOptions>(Configuration.GetSection("PayPal"));
+
+            // Register PayPalService with DI container
+            builder.Services.AddSingleton<PayPalService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -134,7 +138,6 @@ namespace Eduology
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
 
             app.UseCors("AllowWebApp");
 

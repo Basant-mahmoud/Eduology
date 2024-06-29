@@ -37,6 +37,10 @@ namespace Eduology.Domain.Models
         public ICollection<Course> Courses { get; set; }
         public ICollection<ApplicationUser> Users { get; set; }
 
+        public int SubscriptionPlanId { get; set; }
+        [ForeignKey("SubscriptionPlanId")]
+        public virtual SubscriptionPlan SubscriptionPlan { get; set; }
+        public string orderId { get; set; }
 
     }
 }

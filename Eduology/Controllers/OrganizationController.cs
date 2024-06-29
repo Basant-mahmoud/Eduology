@@ -1,6 +1,7 @@
 ﻿using Eduology.Application.Interface;
 using Eduology.Application.Utilities;
 using Eduology.Domain.DTO;
+using Eduology.Infrastructure.ExternalServices.Paymnet;
 using Eduology.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +14,14 @@ namespace Eduology.Controllers
     public class OrganizationController : ControllerBase
     {
         private readonly IOrganizationService _organizationService;
+        private readonly ISubscriptionPlanService _subscriptionPlanService;
+        private readonly PayPalService _payPalService;
 
-        public OrganizationController(IOrganizationService organizationService)
+        public OrganizationController(IOrganizationService organizationService, ISubscriptionPlanService subscriptionPlanService, PayPalService payPalService)
         {
             _organizationService = organizationService;
+            _subscriptionPlanService = subscriptionPlanService;
+            _payPalService = payPalService;
         }
 
         [HttpPost("Create")]
@@ -47,8 +52,10 @@ namespace Eduology.Controllers
                     ModelState.AddModelError("ConfirmPassword", "Password and confirm password do not match");
                     return BadRequest(ModelState);
                 }
+                var selectedPlan = await _subscriptionPlanService.GetSubscriptionPlanByNameAsync(createrOrganizationDto.subscribtionplan);
+                string orderId = await _payPalService.CreateOrder(selectedPlan.Price, selectedPlan.Currency);
 
-                var createdOrganization = await _organizationService.CreateOrganizationAsync(createrOrganizationDto);
+                var createdOrganization = await _organizationService.CreateOrganizationAsync(createrOrganizationDto,orderId);
                 return Created("", createdOrganization);
             }
             catch (InvalidOperationException ex)

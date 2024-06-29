@@ -4,6 +4,7 @@ using Eduology.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eduology.Infrastructure.Migrations
 {
     [DbContext(typeof(EduologyDBContext))]
-    partial class EduologyDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240629163432_FixOrganizationSubscriptionPlanRelationship")]
+    partial class FixOrganizationSubscriptionPlanRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -352,10 +355,6 @@ namespace Eduology.Infrastructure.Migrations
 
                     b.Property<int>("SubscriptionPlanId")
                         .HasColumnType("int");
-
-                    b.Property<string>("orderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("OrganizationID");
 
