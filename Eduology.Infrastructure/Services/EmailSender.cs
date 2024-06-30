@@ -8,10 +8,10 @@ namespace Eduology.Infrastructure.Services
 {
     public class EmailSender : IEmailSender
     {
-        public Task SendEmailAsync(string email, string subject, string message)
+       public Task SendEmailAsync(string email, string subject, string message)
         {
-            var mail = "EduologyLMS@outlook.com";
-            var password = "Edulogy@123"; // Corrected variable name
+            /*var mail = "Eduology2024@outlook.com";
+            var password = "Eduology@2024"; 
              var client = new SmtpClient("smtp-mail.outlook.com", 587)
             {
                 EnableSsl = true,
@@ -19,7 +19,8 @@ namespace Eduology.Infrastructure.Services
             };
 
             var mailMessage = new MailMessage(from: mail, to: email, subject: subject, body: message);
-            return client.SendMailAsync(mailMessage); // Corrected method name and object initialization
+            return client.SendMailAsync(mailMessage); // Corrected method name and object initialization*/
+            return Task.CompletedTask;
         }
     }
 }

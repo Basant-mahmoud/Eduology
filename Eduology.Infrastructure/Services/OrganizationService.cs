@@ -56,18 +56,6 @@ namespace Eduology.Infrastructure.Services
 
         public async Task<OrganizationDto> CreateOrganizationAsync(CreateOrganizationDto createOrganizationDto)
         {
-            // Check if the email is already registered as a user
-            var existingEmail = await _userManager.FindByEmailAsync(createOrganizationDto.Email);
-            if (existingEmail != null)
-            {
-                throw new InvalidOperationException("Email is already registered");
-            }
-            var existingUser = await _userManager.FindByNameAsync(createOrganizationDto.Name);
-            if (existingUser != null)
-            {
-                throw new InvalidOperationException("User name is already taken");
-            }
-
             // Check if the organization already exists
             var existingOrganization = await _organizationRepository.GetByEmailAsync(createOrganizationDto.Email);
             if (existingOrganization != null)
@@ -101,15 +89,6 @@ namespace Eduology.Infrastructure.Services
             };
 
             await _organizationRepository.AddAsync(organization);
-            var user = new ApplicationUser
-            {
-                Email = createOrganizationDto.Email,
-                Name = createOrganizationDto.Name,
-                UserName = createOrganizationDto.Name,
-                OrganizationId = organization.OrganizationID
-            };
-            var result = await _userManager.CreateAsync(user, createOrganizationDto.Password);
-            await _userManager.AddToRoleAsync(user, "Admin");
 
             var organizationDto = new OrganizationDto
             {

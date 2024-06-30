@@ -62,7 +62,7 @@ namespace Eduology.Application.Services
             // Create JWT token
             var jwtSecurityToken = await CreateJwtToken(user);
 
-            try
+           /* try
             {
                 await _emailSender.SendEmailAsync(user.Email, "Registration Successful",
                     $"You have successfully registered to Eduology LMS. Your Email is {model.Email} and Your password is: {password}");
@@ -71,7 +71,7 @@ namespace Eduology.Application.Services
             {
                 var cleanedMessage = "Failed to send registration email: Transaction failed.";
                 return new AuthModel { Message = cleanedMessage };
-            }
+            }*/
 
             var result = await _userManager.CreateAsync(user, password);
 
@@ -80,6 +80,7 @@ namespace Eduology.Application.Services
                 var errors = string.Join(",", result.Errors.Select(e => e.Description));
                 return new AuthModel { Message = errors };
             }
+            var hashedPassword = user.PasswordHash; // Log this value for debugging
 
             if (!string.IsNullOrEmpty(model.Role))
             {
