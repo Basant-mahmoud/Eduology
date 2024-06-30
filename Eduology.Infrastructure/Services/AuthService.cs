@@ -95,7 +95,8 @@ namespace Eduology.Application.Services
                 Roles = new List<string> { model.Role },
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
                 Username = user.UserName,
-                Password = password
+                Password = password,
+                name = model.Name,
             };
         }
 
