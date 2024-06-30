@@ -89,14 +89,14 @@ namespace Eduology.Infrastructure.Services
             }
 
             // Hash the password
-            var hashedPassword = _passwordHasher.HashPassword(null, createOrganizationDto.Password);
+            //var hashedPassword = _passwordHasher.HashPassword(null, createOrganizationDto.Password);
 
             var organization = new Organization
             {
                 Name = createOrganizationDto.Name,
                 Phone = createOrganizationDto.Phone,
                 Email = createOrganizationDto.Email,
-                Password = hashedPassword,
+                Password = createOrganizationDto.Password,
                 ConfirmPassword = createOrganizationDto.ConfirmPassword
             };
 
