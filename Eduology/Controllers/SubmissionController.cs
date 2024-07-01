@@ -26,7 +26,7 @@ namespace Eduology.Controllers
         }
         [Authorize(Roles = "Instructor")]
         [HttpPost("GetById/{submistionId}")]
-        public async Task<IActionResult> GetById(int submistionId, [FromBody] IdDto cors)
+        public async Task<IActionResult> GetById(int submistionId, [FromBody] courseIdDto cors)
         {
             var userId = User.GetUserId();
             var role = User.GetUserRole();
@@ -36,7 +36,7 @@ namespace Eduology.Controllers
             }
             try
             {
-                var submission = await _submissionService.GetByIdAsync(submistionId, userId, cors.Id);
+                var submission = await _submissionService.GetByIdAsync(submistionId, userId, cors.courseId);
                 return Ok(submission);
             }
             catch (Exception ex)

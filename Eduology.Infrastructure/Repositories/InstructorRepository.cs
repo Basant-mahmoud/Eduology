@@ -118,7 +118,7 @@ namespace Eduology.Infrastructure.Repositories
             var instructor = await _context.Users.FindAsync(instructorId);
             if (instructor == null)
             {
-                throw new Exception("Instructor not found in database");
+                throw new Exception("Instructor not found");
                // return false;
             }
 
@@ -127,7 +127,7 @@ namespace Eduology.Infrastructure.Repositories
                 .FirstOrDefaultAsync(c => c.CourseCode == courseCode);
             if (course == null)
             {
-                throw new Exception("course not found in database");
+                throw new Exception("course not found");
                // return false;
             }
 
@@ -135,7 +135,7 @@ namespace Eduology.Infrastructure.Repositories
             if (course.CourseInstructors.Any(ci => ci.InstructorId == instructorId))
             {
                 Console.WriteLine("Instructor already assigned to the course");
-                throw new Exception("Instructor aready register in course");
+                throw new Exception("Instructor already register in course");
             }
 
             var courseInstructor = new CourseInstructor

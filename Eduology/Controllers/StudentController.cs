@@ -113,7 +113,7 @@ namespace Eduology.Controllers
                 var success = await _StudentService.RegisterToCourseAsync(userId, model.CourseCode);
                 return Ok(new { message = "Student added to the course successfully." });
             }
-            catch (ValidationException ex)
+            catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }

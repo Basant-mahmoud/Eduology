@@ -148,6 +148,9 @@ namespace Eduology.Infrastructure.Services
         }
         public async Task<CourseDetailsDto> GetByIdForAdminAsync(string courseId,string adminId)
         {
+            var admin  = await _courseRepository.isAdminExistAsync(adminId);
+            if (admin == null)
+                throw new Exception("admin not exist");
             try
             {
                 var course = await _courseRepository.GetByIdForAdminAsync(courseId, adminId);
@@ -178,7 +181,7 @@ namespace Eduology.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                throw new Exception( "An error occurred, Admin not vaild");
+                throw new Exception(ex.Message);
             }
         }
 

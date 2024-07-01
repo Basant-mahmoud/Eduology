@@ -1,0 +1,864 @@
+{
+	"info": {
+		"_postman_id": "1329a0c2-a204-4ea2-979f-eceff281360d",
+		"name": "Egypt APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16637456",
+		"_collection_link": "https://www.postman.com/universal-robot-990582/workspace/documentation-theneo/collection/16637456-1329a0c2-a204-4ea2-979f-eceff281360d?action=share&source=collection_link&creator=16637456"
+	},
+	"item": [
+		{
+			"name": "Create intention",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token sk_test_26e6c7a43fcd2a745c97b35a6e19e17da227ac3517bcec22584cdc28c64bda0d",
+						"type": "text"
+					},
+					{
+						"key": "Accept-Language",
+						"value": "\"de\"",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{SKT_MERCHANT}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 2000,\n    \"currency\": \"EGP\",\n    \"payment_methods\":  [15,16],////Enter your integration id\n    \n    \"items\": [\n        {\n            \"name\": \"Item name\",\n            \"amount\": 2000,\n            \"description\": \"Item description\",\n            \"quantity\": 1\n        }\n    ],\n    \"billing_data\": {\n        \"apartment\": \"dumy\",\n        \"first_name\": \"ala\",\n        \"last_name\": \"zain\",\n        \"street\": \"dumy\",\n        \"building\": \"dumy\",\n        \"phone_number\": \"+923459989111\",\n        \"city\": \"dumy\",\n        \"country\": \"dumy\",\n        \"email\": \"ali@gmail.com\",\n        \"floor\": \"dumy\",\n        \"state\": \"dumy\"\n    }\n     \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://accept.paymob.com/v1/intention/",
+					"protocol": "https",
+					"host": [
+						"accept",
+						"paymob",
+						"com"
+					],
+					"path": [
+						"v1",
+						"intention",
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Live intention",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{SKL_MERCHANT}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "\"de\"",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SKT_MERCHANT}}",
+								"description": "on testing envairoment ",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 150000,\n    \"currency\": \"EGP\",\n    \"payment_methods\": [ \"card\", \"valu\", \"premium\", \"wallets\", \"kiosk\", \"card-moto\", \"bank-installemnt\",\"sympl\"],\n    \"items\": [\n        {\n            \"name\": \"Item name\",\n            \"amount\": 150000,\n            \"description\": \"Item description\",\n            \"quantity\": 1\n        }\n    ],\n    \"billing_data\": {\n        \"apartment\": \"dumy\",\n        \"first_name\": \"dumy\",\n        \"last_name\": \"dumy\",\n        \"street\": \"dumy\",\n        \"building\": \"dumy\",\n        \"phone_number\": \"+201125773493\",\n        \"city\": \"dumy\",\n        \"country\": \"dumy\",\n        \"email\": \"dumy@dumy.com\",\n        \"floor\": \"dumy\",\n        \"state\": \"dumy\"\n    },\n    \"customer\": {\n        \"first_name\": \"dumy\",\n        \"last_name\": \"dumy\",\n        \"email\": \"dumy@dsumy.com\",\n        \"extras\": {\"re\":\"22\"}\n\n\n    },\n    \"extras\": {\"ee\":22}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXT_URL}}/{{NEXT_API_PATTERN}}/intention/",
+							"host": [
+								"{{NEXT_URL}}"
+							],
+							"path": [
+								"{{NEXT_API_PATTERN}}",
+								"intention",
+								""
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "nginx/1.21.1"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 13 Dec 2021 13:54:37 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "719"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Origin"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, HEAD, OPTIONS"
+						},
+						{
+							"key": "Paymob-Request-ID",
+							"value": "86115f89-c49d-4c4f-b26b-402a6a1abecb"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": \"75adeef7-064e-4034-87fc-b579bb63876a\",\n    \"client_secret\": \"ckl_c7598224241db0d049c279a61eb578e8\",\n    \"amount\": 150000,\n    \"special_reference\": null,\n    \"currency\": \"EGP\",\n    \"payment_methods\": [\n        {\n            \"integration_id\": \"2393\",\n            \"name\": \"Valu\",\n            \"use_cvv_with_moto\": false,\n            \"type\": \"online\"\n        },\n        {\n            \"integration_id\": \"2391\",\n            \"name\": \"Card\",\n            \"use_cvv_with_moto\": false,\n            \"type\": \"online\"\n        },\n        {\n            \"integration_id\": \"2387\",\n            \"name\": \"Card-Moto\",\n            \"use_cvv_with_moto\": false,\n            \"type\": \"moto\"\n        },\n        {\n            \"integration_id\": \"2381\",\n            \"name\": \"Kiosk\",\n            \"use_cvv_with_moto\": false,\n            \"type\": \"online\"\n        },\n        {\n            \"integration_id\": \"2377\",\n            \"name\": \"Wallets\",\n            \"use_cvv_with_moto\": false,\n            \"type\": \"online_new\"\n        },\n        {\n            \"integration_id\": \"2375\",\n            \"name\": \"Premium\",\n            \"use_cvv_with_moto\": false,\n            \"type\": \"online\"\n        }\n    ],\n    \"customer\": null,\n    \"extras\": {\n        \"ee\": 22\n    }\n}"
+				},
+				{
+					"name": "Test intention",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{SKL_MERCHANT}}",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Accept-Language",
+								"value": "\"de\"",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Authorization",
+								"value": "{{SKT_MERCHANT}}",
+								"description": "on testing envairoment ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 150000,\n    \"currency\": \"EGP\",\n    \"payment_methods\": [ \"card\", \"valu\", \"premium\", \"wallets\", \"kiosk\", \"card-moto\", \"bank-installemnt\",\"sympl\"],\n    \"items\": [\n        {\n            \"name\": \"Item name\",\n            \"amount\": 150000,\n            \"description\": \"Item description\",\n            \"quantity\": 1\n        }\n    ],\n    \"billing_data\": {\n        \"apartment\": \"dumy\",\n        \"first_name\": \"dumy\",\n        \"last_name\": \"dumy\",\n        \"street\": \"dumy\",\n        \"building\": \"dumy\",\n        \"phone_number\": \"+201125773493\",\n        \"city\": \"dumy\",\n        \"country\": \"dumy\",\n        \"email\": \"dumy@dumy.com\",\n        \"floor\": \"dumy\",\n        \"state\": \"dumy\"\n    },\n    \"customer\": {\n        \"first_name\": \"dumy\",\n        \"last_name\": \"dumy\",\n        \"email\": \"dumy@dsumy.com\",\n        \"extras\": {\"re\":\"22\"}\n\n\n    },\n    \"extras\": {\"ee\":22}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXT_URL}}/{{NEXT_API_PATTERN}}/intention/",
+							"host": [
+								"{{NEXT_URL}}"
+							],
+							"path": [
+								"{{NEXT_API_PATTERN}}",
+								"intention",
+								""
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "nginx/1.21.1"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 13 Dec 2021 13:55:08 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "719"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Origin"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, HEAD, OPTIONS"
+						},
+						{
+							"key": "Paymob-Request-ID",
+							"value": "302df1a5-7aa3-4bde-8eef-49b4ae5e8129"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": \"bf084a41-c5e1-4f8d-bcf2-9cfa207b5f62\",\n    \"client_secret\": \"ckt_563fac9293745e22a5fc5b2bdb52f5ce\",\n    \"amount\": 150000,\n    \"special_reference\": null,\n    \"currency\": \"EGP\",\n    \"payment_methods\": [\n        {\n            \"integration_id\": \"2392\",\n            \"name\": \"Valu\",\n            \"use_cvv_with_moto\": false,\n            \"type\": \"online\"\n        },\n        {\n            \"integration_id\": \"2390\",\n            \"name\": \"Card\",\n            \"use_cvv_with_moto\": false,\n            \"type\": \"online\"\n        },\n        {\n            \"integration_id\": \"2386\",\n            \"name\": \"Card-Moto\",\n            \"use_cvv_with_moto\": false,\n            \"type\": \"moto\"\n        },\n        {\n            \"integration_id\": \"2380\",\n            \"name\": \"Kiosk\",\n            \"use_cvv_with_moto\": false,\n            \"type\": \"online\"\n        },\n        {\n            \"integration_id\": \"2376\",\n            \"name\": \"Wallets\",\n            \"use_cvv_with_moto\": false,\n            \"type\": \"online_new\"\n        },\n        {\n            \"integration_id\": \"2374\",\n            \"name\": \"Premium\",\n            \"use_cvv_with_moto\": false,\n            \"type\": \"online\"\n        }\n    ],\n    \"customer\": null,\n    \"extras\": {\n        \"ee\": 22\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Refund",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token omn_sk_test_f15c897f8129728e21ba97ca07ef4d5fc9ea5d6800c21efed468812907fd3981",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"transaction_id\":\"436\",\r\n  \"amount_cents\": \"1000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://accept.paymob.com/api/acceptance/void_refund/refund",
+					"protocol": "https",
+					"host": [
+						"accept",
+						"paymob",
+						"com"
+					],
+					"path": [
+						"api",
+						"acceptance",
+						"void_refund",
+						"refund"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Capture",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token omn_sk_test_f15c897f8129728e21ba97ca07ef4d5fc9ea5d6800c21efed468812907fd3981",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \r\n\r\n\"transaction_id\": \"435\", \r\n\"amount_cents\": \"300\"\r\n  \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://accept.paymob.com/api/acceptance/capture",
+					"protocol": "https",
+					"host": [
+						"accept",
+						"paymob",
+						"com"
+					],
+					"path": [
+						"api",
+						"acceptance",
+						"capture"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Void",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token omn_sk_test_f15c897f8129728e21ba97ca07ef4d5fc9ea5d6800c21efed468812907fd3981",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\r\n\"transaction_id\": \"438\"\r\n  \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://accept.paymob.com/api/acceptance/void_refund/void",
+					"protocol": "https",
+					"host": [
+						"accept",
+						"paymob",
+						"com"
+					],
+					"path": [
+						"api",
+						"acceptance",
+						"void_refund",
+						"void"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Moto",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token omn_sk_test_f15c897f8129728e21ba97ca07ef4d5fc9ea5d6800c21efed468812907fd3981",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \"source\": \n\t\t\t{     \n        \"identifier\": \"d20d94...8000687835c3f1a9da9\",     \n        \"subtype\": \"TOKEN\"   \n      },  \n \"payment_token\": \"ZXlKMGVYQWlULjRi2T2...\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://accept.paymob.com/api/acceptance/payments/pay",
+					"protocol": "https",
+					"host": [
+						"accept",
+						"paymob",
+						"com"
+					],
+					"path": [
+						"api",
+						"acceptance",
+						"payments",
+						"pay"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Quicklinks-Login (Username, Password)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response",
+							"var response = JSON.parse(responseBody);",
+							"",
+							"// Set vars",
+							"pm.environment.set(\"jwt_token\", response.token);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\",\n    \"expiration\": 999999999999\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://accept.paymob.com/api/auth/tokens",
+					"protocol": "https",
+					"host": [
+						"accept",
+						"paymob",
+						"com"
+					],
+					"path": [
+						"api",
+						"auth",
+						"tokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Quicklinks-Create payment link",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response",
+							"var response = JSON.parse(responseBody);",
+							"",
+							"// Set vars",
+							"pm.environment.set(\"client_url\", response.client_url);",
+							"pm.environment.set(\"token\", response.client_url.split(\"token=\")[1]);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2TWpZc0luQm9ZWE5vSWpvaU9XRmxZVGd9ZM0R1Ri1pOXdBWFRQNFRuT3ppakRoZklVaHUzSGIyMk83aE5JWThOWHNKQnRWa211TXBpRUNVc3Z4SHhLbjNGUQ==",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "payment_link_image",
+							"type": "file",
+							"src": "/Users/paymob/Documents/Screenshot 2023-08-12 at 2.47.58 AM.png"
+						},
+						{
+							"key": "secret_key",
+							"value": "{{secret_key}}",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "amount_cents",
+							"value": "1300",
+							"type": "text"
+						},
+						{
+							"key": "expires_at",
+							"value": "2023-07-25T18:58:57",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "reference_id",
+							"value": "5295296",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "payment_methods",
+							"value": "158",
+							"type": "text"
+						},
+						{
+							"key": "payment_methods",
+							"value": "6",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "save_selection",
+							"value": "true",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "is_live",
+							"value": "true",
+							"type": "text"
+						},
+						{
+							"key": "full_name",
+							"value": "aleena",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "test@test.com",
+							"type": "text"
+						},
+						{
+							"key": "phone_number",
+							"value": "+01234567891",
+							"type": "text"
+						},
+						{
+							"key": "payment_methods",
+							"value": "832",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "payment_methods",
+							"value": "831",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "payment_methods",
+							"value": "10",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "https://accept.paymob.com/api/ecommerce/payment-links",
+					"protocol": "https",
+					"host": [
+						"accept",
+						"paymob",
+						"com"
+					],
+					"path": [
+						"api",
+						"ecommerce",
+						"payment-links"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Create payment link with client data",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "payment_link_image",
+									"type": "file",
+									"src": "/home/mostafaelrosasy/Downloads/pp.png"
+								},
+								{
+									"key": "secret_key",
+									"value": "{{secret_key}}",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "amount_cents",
+									"value": "5000",
+									"type": "text"
+								},
+								{
+									"key": "expires_at",
+									"value": "2023-06-28T14:5:57",
+									"type": "text"
+								},
+								{
+									"key": "reference_id",
+									"value": "5666569",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "payment_methods",
+									"value": "703",
+									"type": "text"
+								},
+								{
+									"key": "payment_methods",
+									"value": "702",
+									"type": "text"
+								},
+								{
+									"key": "save_selection",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "is_live",
+									"value": "true",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "full_name",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "test@test.com",
+									"type": "text"
+								},
+								{
+									"key": "phone_number",
+									"value": "01234567890",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ecommerce/payment-links",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ecommerce",
+								"payment-links"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Thu, 22 Jun 2023 13:48:13 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "544"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Server",
+							"value": "nginx"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, HEAD, OPTIONS"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Language, Cookie, Origin"
+						},
+						{
+							"key": "Content-Language",
+							"value": "en"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "ALLOWALL"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "1; mode=block"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubdomains; preload"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 93,\n    \"client_info\": {\n        \"id\": 1,\n        \"full_name\": \"test\",\n        \"email\": \"test@test.com\",\n        \"phone_number\": \"01234567890\"\n    },\n    \"amount_cents\": 5000,\n    \"state\": \"created\",\n    \"is_live\": false,\n    \"description\": null,\n    \"created_at\": \"2023-06-22T16:48:13.096819+03:00\",\n    \"expires_at\": \"2023-06-28T14:05:57+03:00\",\n    \"paid_at\": null,\n    \"reference_id\": null,\n    \"client_url\": \"https://accept-alpha.paymob.com/api/ecommerce/payment-links/unrestricted?token=LRR2M1pVcE1lYjk1OU9Ccmlwb2dNM1ZyQT09XzFQQmJTYlpBL0tZb3A3Z2RQdU9hSlE9PQ\",\n    \"payment_link_image\": null,\n    \"order\": 14810,\n    \"payment_intention\": 452,\n    \"merchant\": 28\n}"
+				},
+				{
+					"name": "Create payment link without client data",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "payment_link_image",
+									"type": "file",
+									"src": "/home/mostafaelrosasy/Downloads/pp.png"
+								},
+								{
+									"key": "secret_key",
+									"value": "{{secret_key}}",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "amount_cents",
+									"value": "5000",
+									"type": "text"
+								},
+								{
+									"key": "expires_at",
+									"value": "2023-06-28T14:5:57",
+									"type": "text"
+								},
+								{
+									"key": "reference_id",
+									"value": "5666569",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "payment_methods",
+									"value": "703",
+									"type": "text"
+								},
+								{
+									"key": "payment_methods",
+									"value": "702",
+									"type": "text"
+								},
+								{
+									"key": "save_selection",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "is_live",
+									"value": "true",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ecommerce/payment-links",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ecommerce",
+								"payment-links"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Thu, 22 Jun 2023 13:51:04 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "468"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Server",
+							"value": "nginx"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, POST, HEAD, OPTIONS"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Language, Cookie, Origin"
+						},
+						{
+							"key": "Content-Language",
+							"value": "en"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "ALLOWALL"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "1; mode=block"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubdomains; preload"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 95,\n    \"client_info\": null,\n    \"amount_cents\": 5000,\n    \"state\": \"created\",\n    \"is_live\": false,\n    \"description\": null,\n    \"created_at\": \"2023-06-22T16:51:04.417783+03:00\",\n    \"expires_at\": \"2023-06-28T14:05:57+03:00\",\n    \"paid_at\": null,\n    \"reference_id\": null,\n    \"client_url\": \"https://accept-alpha.paymob.com/api/ecommerce/payment-links/unrestricted?token=LRR2ZFh6OVA4TGtlaytmVEp6UVFpckFSUT09X01vaFhGNE1ZU010U0FZdFZiNFlXanc9PQ\",\n    \"payment_link_image\": null,\n    \"order\": 14812,\n    \"payment_intention\": 454,\n    \"merchant\": 28\n}"
+				}
+			]
+		}
+	]
+}

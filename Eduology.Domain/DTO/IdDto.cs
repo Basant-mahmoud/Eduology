@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Eduology.Domain.DTO
 {
-    public class IdDto
+    public class courseIdDto
     {
-        public string Id { get; set; }
+        public string courseId { get; set; }
     }
 }

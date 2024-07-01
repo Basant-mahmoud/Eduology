@@ -233,7 +233,7 @@ namespace Eduology.Infrastructure.Repositories
         }
         public async Task<Course> GetByIdForAdminAsync(string courseId,string adminId)
         {
-            var admin = await _context.Users
+           var admin = await _context.Users
                                       .Include(a => a.Courses)
                                       .ThenInclude(c => c.CourseInstructors)
                                       .ThenInclude(ci => ci.Instructor)

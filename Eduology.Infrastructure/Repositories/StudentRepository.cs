@@ -86,7 +86,7 @@ namespace Eduology.Infrastructure.Repositories
             // Check if the student is already assigned to the course
             if (course.StudentCourses.Any(ci => ci.StudentId == studentId))
             {
-                throw new Exception("Instructor aready register in course");
+                throw new Exception("Student already register in course");
             }
             var courseStudent = new StudentCourse
             {

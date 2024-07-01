@@ -81,6 +81,7 @@ namespace Eduology.Infrastructure.Repositories
             if (_assignment == null)
                 return null;
             _assignment.Description = assignment.Description;
+            // deadline 
             _assignment.Deadline = assignment.Deadline;
             _assignment.Title = assignment.Title;
              _context.Assignments.Update(_assignment);
