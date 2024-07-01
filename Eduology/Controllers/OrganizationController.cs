@@ -52,11 +52,12 @@ namespace Eduology.Controllers
                     ModelState.AddModelError("ConfirmPassword", "Password and confirm password do not match");
                     return BadRequest(ModelState);
                 }
-                var selectedPlan = await _subscriptionPlanService.GetSubscriptionPlanByNameAsync(createrOrganizationDto.subscribtionplan);
-                string orderId = await _payPalService.CreateOrder(selectedPlan.Price, selectedPlan.Currency);
 
-                var createdOrganization = await _organizationService.CreateOrganizationAsync(createrOrganizationDto,orderId);
-                return Created("", createdOrganization);
+                var selectedPlan = await _subscriptionPlanService.GetSubscriptionPlanByNameAsync(createrOrganizationDto.subscribtionplan);
+                string approvalUrl = await _payPalService.CreateOrder(selectedPlan.Price, selectedPlan.Currency);
+
+                var createdOrganization = await _organizationService.CreateOrganizationAsync(createrOrganizationDto, approvalUrl);
+                return Redirect(approvalUrl);
             }
             catch (InvalidOperationException ex)
             {
@@ -138,5 +139,6 @@ namespace Eduology.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+
     }
 }

@@ -17,6 +17,7 @@ namespace Eduology.Domain.Models
         public string Token { get; set; }
         public DateTime ExpiresOn { get; set; }
         public string name { get; set; }
-       
+        public string passward { get; set; }
+
     }
 }

@@ -31,9 +31,9 @@ namespace Eduology.Infrastructure.ExternalServices.Paymnet
             var response = await _client.Execute(request);
             var result = response.Result<Order>();
 
-            return result.Id;
+            var approvalLink = result.Links.FirstOrDefault(link => link.Rel == "approve")?.Href;
+            return approvalLink;
         }
-
         private OrderRequest BuildRequestBody(decimal amount, string currency)
         {
             return new OrderRequest
@@ -62,13 +62,14 @@ namespace Eduology.Infrastructure.ExternalServices.Paymnet
                 var response = await _client.Execute(request);
                 var result = response.Result<Order>();
 
-                return result.Id; 
+                return result.Id;
             }
             catch (HttpException ex)
             {
                 throw new Exception($"Failed to capture order: {ex.Message}");
             }
         }
+
 
     }
 }
