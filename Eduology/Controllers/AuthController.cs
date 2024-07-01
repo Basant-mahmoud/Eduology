@@ -7,6 +7,7 @@ using Eduology.Application.Services.Interface;
 using Eduology.Application.Interface;
 using Microsoft.AspNetCore.Authorization;
 using OfficeOpenXml;
+using Eduology.Domain.DTO;
 namespace Eduology.Controllers
 {
     [Route("api/[controller]")]

@@ -1,4 +1,5 @@
-﻿using Eduology.Domain.Models;
+﻿using Eduology.Domain.DTO;
+using Eduology.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
