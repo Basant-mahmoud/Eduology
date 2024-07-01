@@ -49,10 +49,6 @@ namespace Eduology.Infrastructure.Services
                 throw new InvalidOperationException("The assignment deadline has passed.");
             }
 
-            if (_studentService.GetStudentByIdAsync(userId) == null)
-            {
-                throw new ArgumentException("Invalid student ID.");
-            }
             return await _submissionRepository.CreateAsync(submission,userId);
         }
 
