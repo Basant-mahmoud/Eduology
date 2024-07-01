@@ -231,9 +231,9 @@ namespace Eduology.Infrastructure.Repositories
                                            .ToListAsync();
             return courseList;
         }
-        public async Task<Course> GetByIdForAdminAsync(string courseId,string adminId)
+        public async Task<Course> GetByIdForAdminAsync(string courseId, string adminId)
         {
-           var admin = await _context.Users
+            var admin = await _context.Users
                                       .Include(a => a.Courses)
                                       .ThenInclude(c => c.CourseInstructors)
                                       .ThenInclude(ci => ci.Instructor)
@@ -244,10 +244,15 @@ namespace Eduology.Infrastructure.Repositories
 
             if (admin == null)
             {
-                return null;
+                throw new Exception("Admin does not exist");
             }
 
-            var course = admin.Courses.FirstOrDefault(c => c.id == courseId); 
+            var course = admin.Courses?.FirstOrDefault(c => c.id == courseId);
+            if (course == null)
+            {
+                throw new Exception("Course not found");
+            }
+
             return course;
         }
         public async  Task<ApplicationUser> isAdminExistAsync(string AdminId)

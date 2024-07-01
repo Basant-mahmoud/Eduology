@@ -146,43 +146,38 @@ namespace Eduology.Infrastructure.Services
             var courses = await _courseRepository.GetAllByOrganizationIdAsync(organizationId);
             return courses;
         }
-        public async Task<CourseDetailsDto> GetByIdForAdminAsync(string courseId,string adminId)
+        public async Task<CourseDetailsDto> GetByIdForAdminAsync(string courseId, string adminId)
         {
-            var admin  = await _courseRepository.isAdminExistAsync(adminId);
-            if (admin == null)
-                throw new Exception("admin not exist");
-            try
+            var adminExists = await _courseRepository.isAdminExistAsync(adminId);
+            if (adminExists == null)
+                throw new Exception("Admin does not exist");
+
+            var course = await _courseRepository.GetByIdForAdminAsync(courseId, adminId);
+            if (course == null)
+                throw new Exception("Course not found");
+
+            return new CourseDetailsDto
             {
-                var course = await _courseRepository.GetByIdForAdminAsync(courseId, adminId);
-                if (course == null)
-                    throw new Exception("Course not found");
-                return new CourseDetailsDto
+                CourseId = courseId,
+                assignments = course.Assignments?.Select(a => new AssignmentDto
                 {
-                    CourseId = courseId,
-                    assignments = course.Assignments.Select(a => new AssignmentDto
+                    Id = a.AssignmentId,
+                    CourseId = a.CourseId,
+                    Title = a.Title,
+                    Description = a.Description,
+                    Deadline = a.Deadline,
+                    fileURLs = a.File == null ? null : new AssignmentFileDto
                     {
-                        Id = a.AssignmentId,
-                        CourseId = a.CourseId,
-                        Title = a.Title,
-                        Description = a.Description,
-                        Deadline = a.Deadline,
-                        fileURLs = a.File == null ? null : new AssignmentFileDto
-                        {
-                            URL = a.File.URL,
-                            Title = a.File.Title
-                        }
-                    }).ToList(),
-                    Instructors = course.CourseInstructors.Select(ci => ci.Instructor.Name).ToList(),
-                    students = course.StudentCourses.Select(sc => sc.Student.Name).ToList(),
-                    CourseCode = course.CourseCode,
-                    CourseName = course.Name,
-                    Description = course.Description
-                };
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+                        URL = a.File.URL,
+                        Title = a.File.Title
+                    }
+                }).ToList() ?? new List<AssignmentDto>(),
+                Instructors = course.CourseInstructors?.Select(ci => ci.Instructor.Name).ToList() ?? new List<string>(),
+                students = course.StudentCourses?.Select(sc => sc.Student.Name).ToList() ?? new List<string>(),
+                CourseCode = course.CourseCode,
+                CourseName = course.Name,
+                Description = course.Description
+            };
         }
 
     }
