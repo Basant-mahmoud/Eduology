@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eduology.Domain.Models
+namespace Eduology.Domain.DTO
 {
     public class AuthModel
     {
@@ -19,6 +19,6 @@ namespace Eduology.Domain.Models
         public string name { get; set; }
 
         public string Password { get; set; }
-       
+
     }
 }

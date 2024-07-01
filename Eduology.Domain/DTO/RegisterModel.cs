@@ -6,8 +6,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Eduology.Domain.Models
-{ 
+namespace Eduology.Domain.DTO
+{
     public class RegisterModel
     {
         [Required, StringLength(100)]
@@ -22,9 +22,9 @@ namespace Eduology.Domain.Models
         //[Required, StringLength(256)]
         //public string Password { get; set; }
 
-        [Required, StringLength(50)] 
+        [Required, StringLength(50)]
         public string Role { get; set; }
-        [Required] 
+        [Required]
         public int OrganizationId { get; set; }
     }
 }
