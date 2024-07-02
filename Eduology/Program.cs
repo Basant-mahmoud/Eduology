@@ -21,6 +21,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting.Internal;
+using aqay_apis.Services;
 
 namespace Eduology
 {
@@ -61,6 +62,7 @@ namespace Eduology
                 .AddEntityFrameworkStores<EduologyDBContext>();
             ////////////////////////
             builder.Services.AddTransient<IEmailSender, EmailSender>();
+            builder.Services.AddHttpClient();
             // Add password hasher
             builder.Services.AddScoped<IPasswordHasher<ApplicationUser>, PasswordHasher<ApplicationUser>>();
             // Register repositories
@@ -85,7 +87,8 @@ namespace Eduology
             builder.Services.AddScoped<ISubmissionService, SubmissionService>();
             builder.Services.AddScoped<IMaterialService, MaterialService>();
             builder.Services.AddScoped<IModuleService, ModuleServicecs>();
-          
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+
             // Configure JWT authentication
             builder.Services.AddAuthentication(options =>
             {
