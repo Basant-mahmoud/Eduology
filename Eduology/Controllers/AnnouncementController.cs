@@ -157,5 +157,26 @@ namespace Eduology.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+        [HttpGet("GetAllCourseAnnouncementsToInstructor")]
+        [Authorize(Roles = "Instructor")]
+        public async Task<ActionResult<IEnumerable<AllAnnoncemetDto>>> GetAllCourseAnnouncementsToInstructor()
+        {
+            var userId = User.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User ID not found in the token" });
+            }
+
+            try
+            {
+                var announcement = await _announcementService.GetAllAnnouncementsForInstructorAsync(userId);
+                return Ok(announcement);
+            }
+
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
     }
 }

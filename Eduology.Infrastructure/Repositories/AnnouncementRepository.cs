@@ -70,6 +70,13 @@ namespace Eduology.Infrastructure.Repositories
                 .Include(a => a.Instructor)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Announcement>> GetAllAnnouncementsForInstructorAsync(string instructorId)
+        {
+            return await _context.Announcements
+                .Where(a => a.Course.CourseInstructors.Any(sc => sc.InstructorId == instructorId))
+                .Include(a => a.Course)
+                .ToListAsync();
+        }
 
 
     }
