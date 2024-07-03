@@ -28,7 +28,7 @@ namespace Eduology.Infrastructure.External_Services.PaymentModels
         public string Currency { get; set; }
 
         [JsonProperty("integration_id")]
-        public int IntegrationId { get; set; }
+        public String IntegrationId { get; set; }
 
         [JsonProperty("lock_order_when_paid")]
         public bool LockOrderWhenPaid { get; set; }

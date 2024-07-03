@@ -64,7 +64,7 @@ namespace aqay_apis.Services
 
             return orderResponse.OrderId;
         }
-        public async Task<string> GeneratePaymentKeyAsync(string authToken)
+        public async Task<string> GeneratePaymentKeyAsync(string authToken, int orderId)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
 
@@ -73,7 +73,7 @@ namespace aqay_apis.Services
                 auth_token = authToken,
                 amount_cents = 100,
                 expiration = 3600,
-                order_id = 222376867,
+                order_id = orderId,
                 billing_data = new
                 {
                     apartment = "803",
@@ -91,14 +91,14 @@ namespace aqay_apis.Services
                     state = "Utah"
                 },
                 currency = "EGP",
-                integration_id = 4604660,
+                integration_id = "4604660",
                 lock_order_when_paid = false
             };
 
             var jsonBody = JsonConvert.SerializeObject(paymentKeyRequest);
             var requestContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("https://accept.paymobsolutions.com/api/acceptance/payment_keys", requestContent);
+            var response = await _httpClient.PostAsync("https://accept.paymob.com/api/acceptance/payment_keys", requestContent);
 
             response.EnsureSuccessStatusCode();
 

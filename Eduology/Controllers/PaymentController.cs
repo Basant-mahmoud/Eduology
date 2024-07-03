@@ -52,11 +52,11 @@ namespace Eduology.Controllers
                         State = "Utah"
                     },
                     Currency = "EGP",
-                    IntegrationId = _configuration.GetValue<int>("Paymob:IntegrationId"),
+                    IntegrationId = _configuration.GetValue<string>("Paymob:IntegrationId"),
                     LockOrderWhenPaid = false
                 };
                 var json = JsonSerializer.Serialize(paymentKeyRequest);
-                var paymentKey = await _paymobService.GeneratePaymentKeyAsync(authToken);
+                var paymentKey = await _paymobService.GeneratePaymentKeyAsync(authToken,orderId);
 
 
                 //var paymentKey = await _paymobService.GeneratePaymentKeyAsync(authToken, paymentKeyRequest);

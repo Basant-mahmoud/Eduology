@@ -10,7 +10,7 @@ namespace Eduology.Application.Interface
     {
         Task<string> GetAuthTokenAsync();
         Task<int> RegisterOrderAsync(string authToken);
-        Task<string> GeneratePaymentKeyAsync(string authToken);
+        Task<string> GeneratePaymentKeyAsync(string authToken,int orderId);
 
     }
 }
