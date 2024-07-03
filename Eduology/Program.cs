@@ -42,7 +42,7 @@ namespace Eduology
             {
                 options.AddPolicy("AllowWebApp",
                     policyBuilder => policyBuilder
-                        .WithOrigins("http://localhost:4200")
+                        .WithOrigins("https://eduology-611ydvx6f-muhammedcodings-projects.vercel.app", "http://localhost:4200")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials());
