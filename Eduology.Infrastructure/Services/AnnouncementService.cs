@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using Eduology.Infrastructure.Repositories;
 
 namespace Eduology.Infrastructure.Services
 {
@@ -19,15 +20,15 @@ namespace Eduology.Infrastructure.Services
         private readonly IAnnouncementRepository _announcementRepository;
         private readonly IStudentRepository _studentRepository;
         private readonly ICourseRepository _courseRepository;
+        private readonly IInstructorRepository _instructorRepository;
         private readonly UserManager<ApplicationUser> _userManager;
-        public AnnouncementService(IAnnouncementRepository announcementRepository, IStudentRepository studentRepository, UserManager<ApplicationUser> userManager, ICourseRepository courseRepository)
+        public AnnouncementService(IAnnouncementRepository announcementRepository, IStudentRepository studentRepository, UserManager<ApplicationUser> userManager, ICourseRepository courseRepository, IInstructorRepository instructorRepository)
         {
             _announcementRepository = announcementRepository;
             _studentRepository = studentRepository;
             _userManager = userManager;
             _courseRepository = courseRepository;
-
-
+            _instructorRepository = instructorRepository;
         }
 
         public async Task<AnnouncementDto> CreateAsync(string instructorid,CreateAnnoncementDto createannouncementDto)
@@ -167,6 +168,30 @@ namespace Eduology.Infrastructure.Services
             {
                 coursename = a.Course.Name,
                 instructorname = a.Instructor.Name, 
+                Content = a.Content,
+                CreatedAt = a.CreatedAT
+            }).ToList();
+        }
+        public async Task<IEnumerable<AllAnnoncemetDto>> GetAllAnnouncementsForInstructorAsync(string instructorid)
+        {
+            if (string.IsNullOrEmpty(instructorid))
+            {
+                throw new Exception("Instructor ID is required.");
+            }
+            var instructor = await _instructorRepository.GetInstructorByIdAsync(instructorid);
+            if (instructor == null)
+            {
+                throw new Exception($"Instructor with ID '{instructor}' not found.");
+            }
+            var announcements = await _announcementRepository.GetAllAnnouncementsForInstructorAsync(instructorid);
+            if (announcements == null || !announcements.Any())
+            {
+                return new List<AllAnnoncemetDto>();
+            }
+            return announcements.Select(a => new AllAnnoncemetDto
+            {
+                coursename = a.Course.Name,
+                instructorname = a.Instructor.Name,
                 Content = a.Content,
                 CreatedAt = a.CreatedAT
             }).ToList();
