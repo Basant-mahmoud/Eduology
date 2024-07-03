@@ -12,16 +12,16 @@ namespace Eduology.Controllers
     {
         private readonly IPaymentService _paymobService;
         private readonly IConfiguration _configuration;
-        private readonly 
-        public PaymentController(IPaymentService paymentService, IConfiguration configuration)
+        private readonly ISubscriptionPlanService _subscriptionPlanService;
+        public PaymentController(IPaymentService paymentService, IConfiguration configuration, ISubscriptionPlanService subscriptionPlanService)
         {
             _paymobService = paymentService;
             _configuration = configuration;
-            _
+            _subscriptionPlanService = subscriptionPlanService;
         }
 
-        [HttpPost("pay")]
-        public async Task<IActionResult> Pay()
+        [HttpPost("pay/{plan}")]
+        public async Task<IActionResult> Pay(string plan)
         {
                 // Get auth token
                 var authToken = await _paymobService.GetAuthTokenAsync();
@@ -29,11 +29,12 @@ namespace Eduology.Controllers
                 // Register order
                 var orderId = await _paymobService.RegisterOrderAsync(authToken);
 
-                // Generate payment key with hardcoded billing data
+            // Generate payment key with hardcoded billing data
+                var _plan = await _subscriptionPlanService.GetSubscriptionPlanByNameAsync(plan);
                 var paymentKeyRequest = new PaymentKeyRequest
                 {
                     AuthToken = authToken,
-                    AmountCents = 100,
+                    AmountCents = (int)_plan.Price,
                     Expiration = 3600,
                     OrderId = orderId,
                     Currency = "EGP",

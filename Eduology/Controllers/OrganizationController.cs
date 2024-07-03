@@ -61,6 +61,7 @@ namespace Eduology.Controllers
                     ModelState.AddModelError("subscribtionplan", "Invalid subscription plan specified");
                     return BadRequest(ModelState);
                 }
+
    
                 // Save the organization DTO and return the approval URL for redirection
                 var createdOrganization = await _organizationService.CreateOrganizationAsync(createrOrganizationDto, selectedPlan.subscriptionPlanId);
