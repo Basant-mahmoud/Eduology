@@ -1,9 +1,12 @@
 ﻿using Eduology.Application.Interface;
 using Eduology.Application.Utilities;
 using Eduology.Domain.DTO;
-using Eduology.Infrastructure.Services;
+using Eduology.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Eduology.Controllers
@@ -13,10 +16,14 @@ namespace Eduology.Controllers
     public class OrganizationController : ControllerBase
     {
         private readonly IOrganizationService _organizationService;
+        private readonly ISubscriptionPlanService _subscriptionPlanService;
+        private readonly IPaymentService _paymentService;
 
-        public OrganizationController(IOrganizationService organizationService)
+        public OrganizationController(IOrganizationService organizationService, ISubscriptionPlanService subscriptionPlanService, IPaymentService paymentService)
         {
             _organizationService = organizationService;
+            _subscriptionPlanService = subscriptionPlanService;
+            _paymentService = paymentService;
         }
 
         [HttpPost("Create")]
@@ -48,8 +55,16 @@ namespace Eduology.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var createdOrganization = await _organizationService.CreateOrganizationAsync(createrOrganizationDto);
-                return Created("", createdOrganization);
+                var selectedPlan = await _subscriptionPlanService.GetSubscriptionPlanByNameAsync(createrOrganizationDto.subscribtionplan);
+                if (selectedPlan == null)
+                {
+                    ModelState.AddModelError("subscribtionplan", "Invalid subscription plan specified");
+                    return BadRequest(ModelState);
+                }
+   
+                // Save the organization DTO and return the approval URL for redirection
+                var createdOrganization = await _organizationService.CreateOrganizationAsync(createrOrganizationDto, selectedPlan.subscriptionPlanId);
+                return Ok(createdOrganization);
             }
             catch (InvalidOperationException ex)
             {
@@ -106,12 +121,12 @@ namespace Eduology.Controllers
                 }
                 return Ok(students);
             }
-
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
             }
         }
+
         [HttpGet("GetAllInstructorsToOrganization/{organizationId}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAllInstructorsToOrganization(int organizationId)
@@ -125,7 +140,6 @@ namespace Eduology.Controllers
                 }
                 return Ok(instructors);
             }
-
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });

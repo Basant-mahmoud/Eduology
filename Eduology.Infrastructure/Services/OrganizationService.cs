@@ -54,7 +54,7 @@ namespace Eduology.Infrastructure.Services
             return await MapToOrganizationDetailsDtoAsync(organization);
         }
 
-        public async Task<OrganizationDto> CreateOrganizationAsync(CreateOrganizationDto createOrganizationDto)
+        public async Task<OrganizationDto> CreateOrganizationAsync(CreateOrganizationDto createOrganizationDto,int subscriptionPlanId)
         {
             // Check if the email is already registered as a user
             var existingEmail = await _userManager.FindByEmailAsync(createOrganizationDto.Email);
@@ -97,7 +97,8 @@ namespace Eduology.Infrastructure.Services
                 Phone = createOrganizationDto.Phone,
                 Email = createOrganizationDto.Email,
                 Password = createOrganizationDto.Password,
-                ConfirmPassword = createOrganizationDto.ConfirmPassword
+                ConfirmPassword = createOrganizationDto.ConfirmPassword,
+                SubscriptionPlanId = subscriptionPlanId
             };
 
             await _organizationRepository.AddAsync(organization);
