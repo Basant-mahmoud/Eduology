@@ -33,7 +33,7 @@ namespace Eduology.Controllers
                 var paymentKeyRequest = new PaymentKeyRequest
                 {
                     AuthToken = authToken,
-                    AmountCents = 10000,
+                    AmountCents = 100,
                     Expiration = 3600,
                     OrderId = orderId,
                     Currency = "EGP",

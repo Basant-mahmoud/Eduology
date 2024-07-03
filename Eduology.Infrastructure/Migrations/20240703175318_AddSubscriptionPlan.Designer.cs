@@ -4,6 +4,7 @@ using Eduology.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eduology.Infrastructure.Migrations
 {
     [DbContext(typeof(EduologyDBContext))]
-    partial class EduologyDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240703175318_AddSubscriptionPlan")]
+    partial class AddSubscriptionPlan
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -350,12 +353,7 @@ namespace Eduology.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SubscriptionPlanId")
-                        .HasColumnType("int");
-
                     b.HasKey("OrganizationID");
-
-                    b.HasIndex("SubscriptionPlanId");
 
                     b.ToTable("Organizations");
                 });
@@ -713,17 +711,6 @@ namespace Eduology.Infrastructure.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("Eduology.Domain.Models.Organization", b =>
-                {
-                    b.HasOne("Eduology.Domain.Models.SubscriptionPlan", "SubscriptionPlan")
-                        .WithMany("Organizations")
-                        .HasForeignKey("SubscriptionPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SubscriptionPlan");
-                });
-
             modelBuilder.Entity("Eduology.Domain.Models.StudentCourse", b =>
                 {
                     b.HasOne("Eduology.Domain.Models.Course", "Course")
@@ -866,11 +853,6 @@ namespace Eduology.Infrastructure.Migrations
                     b.Navigation("Courses");
 
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("Eduology.Domain.Models.SubscriptionPlan", b =>
-                {
-                    b.Navigation("Organizations");
                 });
 #pragma warning restore 612, 618
         }

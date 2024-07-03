@@ -30,7 +30,7 @@ namespace Eduology.Infrastructure.Persistence
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<CourseInstructor> courseInstructors { get; set; }
         public DbSet<StudentCourse> StudentCourses { get; set; }
-
+        public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
         public EduologyDBContext(DbContextOptions<EduologyDBContext> options) : base(options)
         { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -135,6 +135,10 @@ namespace Eduology.Infrastructure.Persistence
                 .WithOne(a => a.Course)
                 .HasForeignKey(a => a.CourseId)
                 .OnDelete(DeleteBehavior.Cascade);
+            //decimal precision and scale for SubscriptionPlan's Price 
+            modelBuilder.Entity<SubscriptionPlan>()
+              .Property(p => p.Price)
+             .HasColumnType("decimal(18,2)");
         }
 
 
