@@ -12,11 +12,12 @@ namespace Eduology.Controllers
     {
         private readonly IPaymentService _paymobService;
         private readonly IConfiguration _configuration;
-
+        private readonly 
         public PaymentController(IPaymentService paymentService, IConfiguration configuration)
         {
             _paymobService = paymentService;
             _configuration = configuration;
+            _
         }
 
         [HttpPost("pay")]
@@ -35,22 +36,6 @@ namespace Eduology.Controllers
                     AmountCents = 10000,
                     Expiration = 3600,
                     OrderId = orderId,
-                    BillingData = new BillingData
-                    {
-                        Apartment = "803",
-                        Email = "claudette09@exa.com",
-                        Floor = "42",
-                        FirstName = "Clifford",
-                        Street = "Ethan Land",
-                        Building = "8028",
-                        PhoneNumber = "+86(8)9135210487",
-                        ShippingMethod = "PKG",
-                        PostalCode = "01898",
-                        City = "Jaskolskiburgh",
-                        Country = "CR",
-                        LastName = "Nicolas",
-                        State = "Utah"
-                    },
                     Currency = "EGP",
                     IntegrationId = _configuration.GetValue<string>("Paymob:IntegrationId"),
                     LockOrderWhenPaid = false

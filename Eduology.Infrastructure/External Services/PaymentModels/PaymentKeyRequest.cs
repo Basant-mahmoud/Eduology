@@ -21,9 +21,6 @@ namespace Eduology.Infrastructure.External_Services.PaymentModels
         [JsonProperty("order_id")]
         public int OrderId { get; set; }
 
-        [JsonProperty("billing_data")]
-        public BillingData BillingData { get; set; }
-
         [JsonProperty("currency")]
         public string Currency { get; set; }
 
