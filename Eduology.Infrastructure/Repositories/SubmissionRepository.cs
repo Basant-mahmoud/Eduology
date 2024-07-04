@@ -121,6 +121,7 @@ namespace Eduology.Infrastructure.Repositories
                     AssignmentId = s.AssignmentId,
                     Grade = s.Grade,
                     CourseName = s.Assignment.Course.Name,
+                    AssignmentName = s.Assignment.Title,
                     Title = s.Title,
                     URL = s.URL,
                 })

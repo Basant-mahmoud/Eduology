@@ -14,5 +14,6 @@ namespace Eduology.Domain.DTO
         public int Grade { get; set; }
         public string Title { get; set; }
         public string URL { get; set; }
+        public string AssignmentName { get; set; }
     }
 }
