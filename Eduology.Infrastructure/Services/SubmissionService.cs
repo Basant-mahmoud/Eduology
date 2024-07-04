@@ -3,6 +3,7 @@ using Eduology.Application.Services.Interface;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Interfaces;
 using Eduology.Domain.Models;
+using Eduology.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Eduology.Infrastructure.Services
         private readonly IStudentService _studentService;
         private readonly ICourseRepository _courseRepository;
 
-        public SubmissionService(ISubmissionRepository submissionRepository, IAsignmentServices assignmentService,IStudentService studentService, ICourseRepository courseRepository)
+        public SubmissionService(ISubmissionRepository submissionRepository, IAsignmentServices assignmentService, IStudentService studentService, ICourseRepository courseRepository)
         {
             _submissionRepository = submissionRepository;
             _assignmentService = assignmentService;
@@ -26,9 +27,9 @@ namespace Eduology.Infrastructure.Services
             _courseRepository = courseRepository;
         }
 
-        public async Task<submissionDetailsDto> CreateAsync(submissionDetailsDto submission,string userId,string role)
+        public async Task<submissionDetailsDto> CreateAsync(submissionDetailsDto submission, string userId, string role)
         {
-            bool IsRegistered =  await _courseRepository.ISStudentAssignedToCourse(userId,submission.courseId);
+            bool IsRegistered = await _courseRepository.ISStudentAssignedToCourse(userId, submission.courseId);
             if (!IsRegistered)
             {
                 throw new Exception("You Not Registered In This Course");
@@ -38,7 +39,7 @@ namespace Eduology.Infrastructure.Services
             {
                 throw new InvalidOperationException("You have already submitted this assignment.");
             }
-            var assignment = await _assignmentService.GetByIdAsync(submission.AssignmentId,userId,role);
+            var assignment = await _assignmentService.GetByIdAsync(submission.AssignmentId, userId, role);
             if (assignment == null)
             {
                 throw new ArgumentException("Invalid assignment ID.");
@@ -49,7 +50,7 @@ namespace Eduology.Infrastructure.Services
                 throw new InvalidOperationException("The assignment deadline has passed.");
             }
 
-            return await _submissionRepository.CreateAsync(submission,userId);
+            return await _submissionRepository.CreateAsync(submission, userId);
         }
 
         public async Task<bool> DeleteAsync(DeleteSubmissionDto deletesubmission, string userId, string role)
@@ -122,7 +123,7 @@ namespace Eduology.Infrastructure.Services
 
             return await _submissionRepository.GetSubmissionsByCourseAndAssignmentAsync(submissionDto.CourseId, submissionDto.AssignmentId);
         }
-        public async Task<bool> IsThereSubmissionByStudentAndAssignmentAsync(IsSubmissionExistDto submissionExistDto,string userId)
+        public async Task<bool> IsThereSubmissionByStudentAndAssignmentAsync(IsSubmissionExistDto submissionExistDto, string userId)
         {
             bool IsRegistered = await _courseRepository.ISStudentAssignedToCourse(userId, submissionExistDto.courseId);
             if (!IsRegistered)
@@ -135,6 +136,37 @@ namespace Eduology.Infrastructure.Services
                 return true;
             }
             return false;
+        }
+        public async Task<bool> AssignGradeAsync(int submissionId, int grade, string userId, string courseid)
+        {
+            var submission = await _submissionRepository.GetGradeBySubmissionIdAsync(submissionId);
+            if (submission == null)
+            {
+                throw new KeyNotFoundException("Submission not found.");
+            }
+
+            bool isInstructorAssigned = await _courseRepository.IsInstructorAssignedToCourse(userId, courseid);
+            if (!isInstructorAssigned)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to grade this submission.");
+            }
+            var response = await _submissionRepository.GetByIdAsync(submissionId, courseid);
+            if (response == null)
+            {
+                throw new UnauthorizedAccessException("The submission is not related to an assignment in the specified course.");
+            }
+
+            return await _submissionRepository.UpdateGradeAsync(submissionId, grade);
+        }
+        public async Task<List<SubmissionGradeDto>> GetAllGradesAsync(string studentId)
+        {
+            var courses = await _courseRepository.GetCoursesByStudentIdAsync(studentId);
+            if (courses == null || !courses.Any())
+            {
+                throw new KeyNotFoundException("No courses found for the specified student.");
+            }
+
+            return await _submissionRepository.GetAllGradesByStudentAsync(studentId);
         }
 
 

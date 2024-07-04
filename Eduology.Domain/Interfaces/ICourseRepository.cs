@@ -27,6 +27,7 @@ namespace Eduology.Domain.Interfaces
         Task<List<Course>> GetAllByOrganizationIdAsync(int organizationId);
         Task<Course> GetByIdForAdminAsync(string courseId,string adminId);
         Task<ApplicationUser> isAdminExistAsync(string AdminId);
+        Task<List<Course>> GetCoursesByStudentIdAsync(string studentId);
 
     }
 }
