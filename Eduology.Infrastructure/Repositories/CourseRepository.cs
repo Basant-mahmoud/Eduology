@@ -266,6 +266,13 @@ namespace Eduology.Infrastructure.Repositories
             }
             return admin;
         }
+        public async Task<List<Course>> GetCoursesByStudentIdAsync(string studentId)
+        {
+            return await _context.Courses
+                .Include(c => c.StudentCourses)
+                .Where(c => c.StudentCourses.Any(sc => sc.StudentId == studentId))
+                .ToListAsync();
+        }
 
     }
 

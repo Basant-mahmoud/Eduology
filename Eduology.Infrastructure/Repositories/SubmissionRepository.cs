@@ -94,6 +94,39 @@ namespace Eduology.Infrastructure.Repositories
 
             return submission;
         }
+        public async Task<bool> UpdateGradeAsync(int submissionId, int grade)
+        {
+            var submission = await Context.submissions.FirstOrDefaultAsync(s => s.SubmissionId == submissionId);
+            if (submission == null) return false;
+
+            submission.Grade = grade;
+            Context.submissions.Update(submission);
+            await Context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<int?> GetGradeBySubmissionIdAsync(int submissionId)
+        {
+            var submission = await Context.submissions.FirstOrDefaultAsync(s => s.SubmissionId == submissionId);
+            return submission?.Grade;
+        }
+        public async Task<List<SubmissionGradeDto>> GetAllGradesByStudentAsync(string studentId)
+        {
+            var grades = await Context.submissions
+                .Where(s => s.StudentId == studentId)
+                .Select(s => new SubmissionGradeDto
+                {
+                    CourseId = s.Assignment.CourseId,
+                    AssignmentId = s.AssignmentId,
+                    Grade = s.Grade,
+                    CourseName = s.Assignment.Course.Name, 
+                    Title = s.Title,
+                    URL = s.URL,
+                })
+                .ToListAsync();
+
+            return grades;
+        }
 
     }
 }

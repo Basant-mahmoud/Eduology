@@ -14,6 +14,8 @@ namespace Eduology.Application.Interface
         Task<bool> DeleteAsync(DeleteSubmissionDto deletesubmission, string userId,string role);
         Task<List<submissionDetailsDto>> GetAllSubmission(string userId, GetAllSubmisionDto SubmissionDto);
         public Task<bool> IsThereSubmissionByStudentAndAssignmentAsync(IsSubmissionExistDto submissionExistDto,string userId);
+        public Task<bool> AssignGradeAsync(int submissionId, int grade, string userId, string courseid);
+        public Task<List<SubmissionGradeDto>> GetAllGradesAsync(string studentId);
 
 
     }
