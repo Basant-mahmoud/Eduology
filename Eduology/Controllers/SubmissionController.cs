@@ -164,7 +164,7 @@ namespace Eduology.Controllers
 
             try
             {
-                bool isSubmit = await _submissionService.IsThereSubmissionByStudentAndAssignmentAsync(submissionExistDto,userId);
+                bool isSubmit = await _submissionService.IsThereSubmissionByStudentAndAssignmentAsync(submissionExistDto, userId);
                 if (!isSubmit)
                 {
                     return Ok(new { Message = "No submissions, you can submit" });
@@ -173,9 +173,57 @@ namespace Eduology.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message});
+                return BadRequest(new { message = ex.Message });
             }
         }
+        [Authorize(Roles = "Instructor")]
+        [HttpPost("AssignGrade/{submissionId}")]
+        public async Task<IActionResult> AssignGrade(int submissionId, [FromBody] GradeDto gradeDto)
+        {
+            var userId = User.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized(new { Message = "User ID not found in the token" });
+            }
 
+            try
+            {
+                bool result = await _submissionService.AssignGradeAsync(submissionId, gradeDto.Grade, userId, gradeDto.courseid);
+                if (!result)
+                {
+                    return BadRequest(new { Message = "Failed to assign grade." });
+                }
+                return Ok(new { Message = "Grade assigned successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        [Authorize(Roles = "Student")]
+        [HttpGet("GetAllGrades")]
+        public async Task<IActionResult> GetAllGrades()
+        {
+            var userId = User.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized(new { Message = "User ID not found in the token" });
+            }
+
+            try
+            {
+                var grades = await _submissionService.GetAllGradesAsync(userId);
+                if (grades == null || !grades.Any())
+                {
+                    return NotFound(new { Message = "No grades found for the specified student." });
+                }
+                return Ok(grades);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+
+        }
     }
 }
