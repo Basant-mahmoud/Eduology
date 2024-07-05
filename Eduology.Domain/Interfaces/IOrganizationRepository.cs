@@ -18,5 +18,6 @@ namespace Eduology.Domain.Interfaces
         Task<Organization> GetByNameAsync(string name);
         Task<List<ApplicationUser>> GetStudentsByOrganizationIdAsync(int organizationId);
         Task<List<ApplicationUser>> GetInstructorToOrganizationIdAsync(int organizationId);
+        Task<string> GetOrganizationPasswordByIdAsync(int id);
     }
 }

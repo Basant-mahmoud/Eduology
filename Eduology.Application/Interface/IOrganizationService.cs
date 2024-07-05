@@ -16,5 +16,6 @@ namespace Eduology.Application.Interface
         Task<bool> DeleteOrganizationAsync(int id);
         Task<List<UserDto>> GetStudentsByOrganizationIdAsync(int organizationId);
         Task<IEnumerable<UserDto>> GetAllInstructorsToOrganizationAsync(int OrganizationId);
+        Task<string> GetOrganizationPasswordByIdAsync(int id);
     }
 }

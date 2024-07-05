@@ -118,5 +118,14 @@ namespace Eduology.Infrastructure.Repositories
 
             return instructorUsers;
         }
+        public async Task<string> GetOrganizationPasswordByIdAsync(int id)
+        {
+            var organization = await _context.Organizations
+                .Where(o => o.OrganizationID == id)
+                .Select(o => o.Password)
+                .FirstOrDefaultAsync();
+
+            return organization;
+        }
     }
 }
