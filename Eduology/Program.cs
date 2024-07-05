@@ -45,7 +45,7 @@ namespace Eduology
                          .WithOrigins(
                 "https://eduology-611ydvx6f-muhammedcodings-projects.vercel.app",
                 "http://localhost:4200",
-                "https://eduology-admin.vercel.app/#/login",
+                "https://eduology-admin.vercel.app",
                 "https://eduology.vercel.app")
 
                         .AllowAnyHeader()
