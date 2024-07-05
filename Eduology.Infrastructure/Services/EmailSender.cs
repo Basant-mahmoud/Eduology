@@ -10,8 +10,8 @@ namespace Eduology.Infrastructure.Services
     {
         public Task SendEmailAsync(string email, string subject, string message)
         {
-            var mail = "EduologyLMS@outlook.com";
-            var password = "Edulogy@123"; // Corrected variable name
+            var mail = "Mohamedhamdyy55@outlook.com";
+            var password = "01157417179Mh"; // Corrected variable name
              var client = new SmtpClient("smtp-mail.outlook.com", 587)
             {
                 EnableSsl = true,
