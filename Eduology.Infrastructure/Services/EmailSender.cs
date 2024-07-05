@@ -19,7 +19,7 @@ namespace Eduology.Infrastructure.Services
             };
 
             var mailMessage = new MailMessage(from: mail, to: email, subject: subject, body: message);
-            return client.SendMailAsync(mailMessage); 
+            return client.SendMailAsync(mailMessage);     
         }
     }
 }
