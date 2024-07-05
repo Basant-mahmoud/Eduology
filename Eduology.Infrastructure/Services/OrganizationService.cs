@@ -232,5 +232,16 @@ namespace Eduology.Infrastructure.Services
             };
 
         }
+        public async Task<string> GetOrganizationPasswordByIdAsync(int id)
+        {
+            var organization = await _organizationRepository.GetByIdAsync(id);
+            if (organization == null)
+            {
+                throw new KeyNotFoundException("Organization not found");
+            }
+
+            return organization.Password;
+        }
+
     }
 }

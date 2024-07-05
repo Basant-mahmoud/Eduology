@@ -24,13 +24,15 @@ namespace Eduology.Application.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IEmailSender _emailSender;
-        public AuthService(IOptions<JWT> jwt, IAuthRepository authRepository, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
+        private readonly IOrganizationService _organizationService;
+        public AuthService(IOptions<JWT> jwt, IAuthRepository authRepository, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender, IOrganizationService organizationService)
         {
             _jwt = jwt.Value;
             _authRepository = authRepository;
             _userManager = userManager;
             _roleManager = roleManager;
             _emailSender = emailSender;
+            _organizationService = organizationService;
 
         }
 
@@ -57,9 +59,15 @@ namespace Eduology.Application.Services
                 Name = model.Name,
                 OrganizationId = model.OrganizationId
             };
-
-            var password = GeneratePassword();
-
+            string password;
+            if (model.Role == "Admin")
+            {
+               password= await _organizationService.GetOrganizationPasswordByIdAsync(model.OrganizationId);
+            }
+            else
+            {
+                 password = GeneratePassword();
+            }
             // Create JWT token
             var jwtSecurityToken = await CreateJwtToken(user);
 

@@ -36,5 +36,6 @@ namespace Eduology.Infrastructure.Repositories
         {
             return await _userManager.FindByNameAsync(username) != null;
         }
+        
     }
 }
