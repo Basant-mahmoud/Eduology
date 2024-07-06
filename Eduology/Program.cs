@@ -41,9 +41,13 @@ namespace Eduology
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowWebApp",
-                    policyBuilder => policyBuilder
-                        .WithOrigins("https://eduology-611ydvx6f-muhammedcodings-projects.vercel.app", "http://localhost:4200")
-                        .AllowAnyHeader()
+                     policyBuilder => policyBuilder
+                          .WithOrigins(
+                 "https://eduology-611ydvx6f-muhammedcodings-projects.vercel.app",
+                 "http://localhost:4200",
+                 "https://eduology-admin.vercel.app",
+                 "https://eduology.vercel.app")
+                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials());
             });
