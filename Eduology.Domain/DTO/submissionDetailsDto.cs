@@ -17,5 +17,7 @@ namespace Eduology.Domain.DTO
         public DateTime TimeStamp { get; set; }
         public IFormFile file { get; set; }
         public int grade { get; set; }
+        public string studentName { get; set; }
+
     }
 }
