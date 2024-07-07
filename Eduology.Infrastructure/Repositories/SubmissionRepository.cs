@@ -85,7 +85,7 @@ namespace Eduology.Infrastructure.Repositories
                 TimeStamp = s.TimeStamp,
                 Title = s.Title,
                 grade = s.Grade,
-                studentName = s.Student.UserName
+                studentName = s.Student.Name
             }).ToList();
         }
         public async Task<Submission> GetSubmissionByStudentAndAssignmentAsync(string studentId, int assignmentId)
