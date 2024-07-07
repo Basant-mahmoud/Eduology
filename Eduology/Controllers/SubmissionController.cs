@@ -1,7 +1,10 @@
-﻿using Eduology.Application.Interface;
+﻿using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs;
+using Eduology.Application.Interface;
 using Eduology.Application.Services.Helper;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Models;
+using Eduology.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
@@ -18,11 +21,12 @@ namespace Eduology.Controllers
     {
         private readonly ISubmissionService _submissionService;
         private readonly IWebHostEnvironment _environment;
-
-        public SubmissionController(ISubmissionService submissionService, IWebHostEnvironment environment)
+        private readonly IConfiguration _configuration;
+        public SubmissionController(ISubmissionService submissionService, IWebHostEnvironment environment, IConfiguration configuration)
         {
             _submissionService = submissionService;
             _environment = environment;
+            _configuration = configuration;
         }
         [Authorize(Roles = "Instructor")]
         [HttpPost("GetById/{submistionId}")]
@@ -57,23 +61,28 @@ namespace Eduology.Controllers
             }
             if (submissionDto == null)
                 return BadRequest(new { Message = "Submission data is null." });
-            var uploadsPath = Path.Combine(_environment.ContentRootPath, "uploads");
-            if (!Directory.Exists(uploadsPath))
+            var connectionString = _configuration.GetConnectionString("AzureBlobStorage");
+            var containerName = "uploads";
+            var blobServiceClient = new BlobServiceClient(connectionString);
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+            await blobContainerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(submissionDto.file.FileName);
+            var blobClient = blobContainerClient.GetBlobClient(fileName);
+
+            using (var stream = submissionDto.file.OpenReadStream())
             {
-                Directory.CreateDirectory(uploadsPath);
+                await blobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = submissionDto.file.ContentType });
             }
 
-            var filePath = Path.Combine(uploadsPath, submissionDto.file.FileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await submissionDto.file.CopyToAsync(stream);
-            }
+            var fileUrl = blobClient.Uri.AbsoluteUri;
+            var fileDto = new FileDto { Title = submissionDto.file.FileName, URL = fileUrl };
             try
             {
                 var _submissionDto = new submissionDetailsDto
                 {
-                    URL = filePath,
+                    URL = fileUrl,
                     Title = submissionDto.file.FileName,
                     AssignmentId = submissionDto.AssignmentId,
                     courseId = submissionDto.courseId,

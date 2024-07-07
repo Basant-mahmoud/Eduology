@@ -1,4 +1,6 @@
-﻿using Eduology.Application.Interface;
+﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Eduology.Application.Interface;
 using Eduology.Application.Services.Helper;
 using Eduology.Domain.DTO;
 using Eduology.Domain.Models;
@@ -16,11 +18,12 @@ namespace Eduology.Controllers
     {
         private readonly IAsignmentServices _asignmentServices;
         private readonly IWebHostEnvironment _environment;
-
-        public AssignmentController(IAsignmentServices asignmentServices, IWebHostEnvironment environment)
+        private readonly IConfiguration _configuration;
+        public AssignmentController(IAsignmentServices asignmentServices, IWebHostEnvironment environment, IConfiguration configuration)
         {
             _asignmentServices = asignmentServices;
             _environment = environment;
+            _configuration = configuration;
         }
         [Authorize(Roles = "Instructor")]
         [HttpPost("Create")]
@@ -41,18 +44,24 @@ namespace Eduology.Controllers
                 return BadRequest(new { Message = "No file uploaded." });
             }
 
-            var uploadsPath = Path.Combine(_environment.ContentRootPath, "uploads");
-            if (!Directory.Exists(uploadsPath))
+            var connectionString = _configuration.GetConnectionString("AzureBlobStorage");
+            var containerName = "uploads";
+            var blobServiceClient = new BlobServiceClient(connectionString);
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+            await blobContainerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(assignment.File.FileName);
+            var blobClient = blobContainerClient.GetBlobClient(fileName);
+
+            using (var stream = assignment.File.OpenReadStream())
             {
-                Directory.CreateDirectory(uploadsPath);
+                await blobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = assignment.File.ContentType });
             }
 
-            var filePath = Path.Combine(uploadsPath, assignment.File.FileName);
+            var fileUrl = blobClient.Uri.AbsoluteUri;
+            var fileDto = new FileDto { Title = assignment.File.FileName, URL = fileUrl };
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await assignment.File.CopyToAsync(stream);
-            }
             var __assignment = new AssignmentDto
             {
                 CourseId = assignment.CourseId,
@@ -62,7 +71,7 @@ namespace Eduology.Controllers
                 Title = assignment.Title,
                 fileURLs = new AssignmentFileDto
                 {
-                    URL = filePath,
+                    URL = fileUrl,
                     Title = assignment.File.FileName
                 },
 
