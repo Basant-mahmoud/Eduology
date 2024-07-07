@@ -8,6 +8,13 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting;
 using Eduology.Domain.Models;
 using Eduology.Application.Services.Helper;
+using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System;
 
 namespace Eduology.Controllers
 {
@@ -16,15 +23,16 @@ namespace Eduology.Controllers
     public class MaterialController : ControllerBase
     {
         private readonly IMaterialService _materialService;
-
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IConfiguration _configuration;
 
-        public MaterialController(IMaterialService materialService, IWebHostEnvironment webHostEnvironment)
+        public MaterialController(IMaterialService materialService, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
             _materialService = materialService;
-
-             _webHostEnvironment = webHostEnvironment;
+            _webHostEnvironment = webHostEnvironment;
+            _configuration = configuration;
         }
+
         [HttpPost("AddMaterial")]
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> AddMaterial([FromForm] MaterialDto materialDto)
@@ -47,34 +55,23 @@ namespace Eduology.Controllers
                     return BadRequest(new { message = "No file uploaded" });
                 }
 
-                var uploadsPath = Path.Combine(_webHostEnvironment.ContentRootPath, "uploads");
-                if (!Directory.Exists(uploadsPath))
+                var connectionString = _configuration.GetConnectionString("AzureBlobStorage");
+                var containerName = "uploads";
+                var blobServiceClient = new BlobServiceClient(connectionString);
+                var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                await blobContainerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
+
+                var fileName = Guid.NewGuid() + Path.GetExtension(materialDto.File.FileName);
+                var blobClient = blobContainerClient.GetBlobClient(fileName);
+
+                using (var stream = materialDto.File.OpenReadStream())
                 {
-                    Directory.CreateDirectory(uploadsPath);
+                    await blobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = materialDto.File.ContentType });
                 }
 
-                var filePath = Path.Combine(uploadsPath, materialDto.File.FileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await materialDto.File.CopyToAsync(stream);
-                }
-
-                // Open and read the file to ensure it was uploaded correctly
-                try
-                {
-                    using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-                    {
-                        byte[] buffer = new byte[stream.Length];
-                        await stream.ReadAsync(buffer, 0, buffer.Length);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(new { message = $"Failed to open and read the file: {ex.Message}" });
-                }
-
-                var fileDto = new FileDto { Title = materialDto.File.FileName, URL = filePath };
+                var fileUrl = blobClient.Uri.AbsoluteUri;
+                var fileDto = new FileDto { Title = materialDto.File.FileName, URL = fileUrl };
                 var success = await _materialService.AddMaterialAsync(userId, materialDto, fileDto);
 
                 if (!success)
@@ -82,15 +79,13 @@ namespace Eduology.Controllers
                     return NotFound(new { message = "Failed to add material. Input is not correct." });
                 }
 
-                return Ok(new { message = "File uploaded and material added successfully", materialDto.File.FileName, filePath });
+                return Ok(new { message = "File uploaded and material added successfully", materialDto.File.FileName, fileUrl });
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
-
-
 
         [HttpPost("GetMaterialsToInstructor")]
         [Authorize(Roles = "Instructor")]
@@ -110,13 +105,11 @@ namespace Eduology.Controllers
             {
                 var result = await _materialService.GetMaterialToInstructorsAsync(userId, requestDto);
                 return Ok(result);
-
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
-
         }
 
         [HttpPost("GetMaterialsToStudent")]
@@ -136,13 +129,13 @@ namespace Eduology.Controllers
             {
                 var result = await _materialService.GetMaterialToStudentAsync(userId, requestDto);
                 return Ok(result);
-
             }
             catch (Exception ex)
             {
-                return  BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpDelete("DeleteFile")]
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> DeleteFile([FromBody] DeleteFileDto deleteFileDto)
@@ -157,11 +150,12 @@ namespace Eduology.Controllers
             {
                 return BadRequest(ModelState);
             }
-            try {
+            try
+            {
                 var success = await _materialService.DeleteFileAsync(userId, deleteFileDto);
                 if (!success)
                 {
-                    return NotFound(new { message = $"File  not found or you don't have permission to delete it." });
+                    return NotFound(new { message = $"File not found or you don't have permission to delete it." });
                 }
                 return Ok(new { message = "File deleted successfully." });
             }
@@ -169,9 +163,6 @@ namespace Eduology.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
-            
         }
-
-
     }
 }

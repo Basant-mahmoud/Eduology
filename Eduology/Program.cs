@@ -21,7 +21,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting.Internal;
-
+using Azure.Storage.Blobs;
 namespace Eduology
 {
     public class Program
@@ -90,7 +90,9 @@ namespace Eduology
             builder.Services.AddScoped<ISubmissionService, SubmissionService>();
             builder.Services.AddScoped<IMaterialService, MaterialService>();
             builder.Services.AddScoped<IModuleService, ModuleServicecs>();
-          
+            builder.Services.AddSingleton(new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage")));
+
+
             // Configure JWT authentication
             builder.Services.AddAuthentication(options =>
             {
