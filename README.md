@@ -45,3 +45,5 @@ Eduology is a learning management system developed using asp.net core.
 [Admin](https://eduology-admin.vercel.app/#/dashboard)
 
 [Student/Instructor](https://eduology.vercel.app/#/home)
+
+YouTube demo:(https://youtu.be/M-F7ZiMNRLc?feature=shared)
